@@ -1,16 +1,24 @@
 <?php
 /* For licensing terms, see /license.txt */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
  * This script initiates a ticket management system session
  * @package chamilo.plugin.ticket
  */
+<<<<<<< HEAD
 /**
  * Initialization
  */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $course_plugin = 'ticket'; //needed in order to load the plugin lang variables
 require_once dirname(__FILE__).'/config.php';
 $tool_name = get_lang('Ticket');
 $tpl = new Template($tool_name);
+<<<<<<< HEAD
 $bbb = new bbb();
 
 if ($bbb->plugin_enabled) {
@@ -51,5 +59,8 @@ if ($bbb->plugin_enabled) {
 } else {
     $message = Display::return_message(get_lang('ServerIsNotConfigured'), 'warning');
 }
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $tpl->assign('message', $message);
 $tpl->display_one_col_template();

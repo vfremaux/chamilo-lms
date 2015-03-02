@@ -32,7 +32,14 @@ if ($teacher) {
             $title = sprintf(get_lang('VideoConferenceXCourseX'), $id, $course_info['name']);
             $content = Display::url(get_lang('GoToTheVideoConference'), $_GET['url']);
 
-            $event_id = $agenda->add_event($_REQUEST['start'], null, 'true', null, $title, $content, array('everyone'));
+            $event_id = $agenda->add_event(
+                $_REQUEST['start'],
+                null,
+                'true',
+                $title,
+                $content,
+                array('everyone')
+            );
             if (!empty($event_id)) {
                 $message = Display::return_message(get_lang('VideoConferenceAddedToTheCalendar'), 'success');
             } else {
@@ -76,7 +83,7 @@ if (!empty($meetings)) {
 }
 $users_online   = $bbb->get_users_online_in_current_room();
 $status         = $bbb->is_server_running();
-$meeting_exists = $bbb->meeting_exists(api_get_course_id());
+$meeting_exists = $bbb->meeting_exists(api_get_course_id().'-'.api_get_session_id());
 $show_join_button = false;
 if ($meeting_exists || $teacher) {
     $show_join_button = true;

@@ -31,7 +31,18 @@ if ($teacher) {
             $title = sprintf(get_lang('VideoConferenceXCourseX'), $id, $course_info['name']);
             $content = Display::url(get_lang('GoToTheVideoConference'), $_GET['url']);
 
+<<<<<<< HEAD
             $event_id = $agenda->add_event($_REQUEST['start'], null, 'true', null, $title, $content, array('everyone'));
+=======
+            $event_id = $agenda->add_event(
+                $_REQUEST['start'],
+                null,
+                'true',
+                $title,
+                $content,
+                array('everyone')
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if (!empty($event_id)) {
                 $message = Display::return_message(get_lang('VideoConferenceAddedToTheCalendar'), 'success');
             } else {

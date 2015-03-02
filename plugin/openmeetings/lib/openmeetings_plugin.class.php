@@ -5,7 +5,11 @@
  */
 class OpenMeetingsPlugin extends Plugin
 {
+<<<<<<< HEAD
     public $is_course_plugin = true;
+=======
+    public $isCoursePlugin = true;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     //When creating a new course this settings are added to the course
     public $course_settings = array(array(
@@ -86,6 +90,10 @@ class OpenMeetingsPlugin extends Plugin
         Database::query($sql);
 
         //Deleting course settings
+<<<<<<< HEAD
         $this->uninstall_course_fields_in_all_courses();
+=======
+        $this->uninstall_course_fields_in_all_courses($this->course_settings);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }
