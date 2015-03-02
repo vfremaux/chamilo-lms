@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "chamilo/chamilo-lms",
     "type": "project",
     "homepage": "http://www.chamilo.org",
@@ -112,5 +113,10 @@
     "scripts": {
         "post-install-cmd": "ChamiloLMS\\Composer\\Tasks::postInstall",
         "post-update-cmd": "ChamiloLMS\\Composer\\Tasks::postUpdate"
+=======
+    "require": {
+        "php-ffmpeg/php-ffmpeg": "0.3.x-dev@dev",
+        "sabre/vobject" : "~3.1"
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }

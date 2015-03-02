@@ -16,7 +16,11 @@ if (!isset($_GET['cidReq'])) {
 // including necessary files
 require_once './main/inc/global.inc.php';
 
+<<<<<<< HEAD
 if (isset($_GET['cidReq']) && strlen($_GET['cidReq']) > 0) {
+=======
+if (isset($_GET['cidReq']) && strlen($_GET['cidReq']) > 0 ) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     api_protect_course_script(true);
 }
 
@@ -93,12 +97,17 @@ $(document).ready(function() {
 </script>';
 
 
+<<<<<<< HEAD
 if (isset($_GET['chatid']) && !empty($_GET['chatid'])) {
+=======
+if ($_GET['chatid'] != '') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     //send out call request
     $time = time();
     $time = date("Y-m-d H:i:s", $time);
     $chatid = intval($_GET['chatid']);
     if ($_GET['chatid'] == strval(intval($_GET['chatid']))) {
+<<<<<<< HEAD
         $sql = "UPDATE $track_user_table SET chatcall_user_id = '".Database::escape_string(
             $_user['user_id']
         )."', chatcall_date = '".Database::escape_string(
@@ -110,6 +119,12 @@ if (isset($_GET['chatid']) && !empty($_GET['chatid'])) {
             "Location: ".api_get_path(WEB_CODE_PATH)."chat/chat.php?".api_get_cidreq(
             )."&origin=whoisonline&target=".Security::remove_XSS($chatid)
         );
+=======
+        $sql = "update $track_user_table set chatcall_user_id = '".Database::escape_string($_user['user_id'])."', chatcall_date = '".Database::escape_string($time)."', chatcall_text = '' where (user_id = ".(int)Database::escape_string($chatid).")";
+        $result = Database::query($sql);
+        //redirect caller to chat
+        header("Location: ".api_get_path(WEB_CODE_PATH)."chat/chat.php?".api_get_cidreq()."&origin=whoisonline&target=".Security::remove_XSS($chatid));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         exit;
     }
 }
@@ -135,6 +150,14 @@ if ((api_get_setting('showonline', 'world') == 'true' && !$_user['user_id']) || 
         $user_list = Online::who_is_online(0, 9);
     }
 
+<<<<<<< HEAD
+=======
+    if(isset($_GET['cidReq']) && strlen($_GET['cidReq']) > 0 ) {
+        $user_list = who_is_online_in_this_course(0, 9, api_get_user_id(), api_get_setting('time_limit_whosonline'), $_GET['cidReq']);
+    } else {
+        $user_list = who_is_online(0, 9);
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if (!isset($_GET['id'])) {
         if (api_get_setting('allow_social_tool') == 'true') {
             if (!api_is_anonymous()) {
@@ -148,7 +171,11 @@ if ((api_get_setting('showonline', 'world') == 'true' && !$_user['user_id']) || 
         if (!isset($_GET['id'])) {
             if (api_get_setting('allow_social_tool') == 'true') {
                 if (!api_is_anonymous()) {
+<<<<<<< HEAD
                     $query = isset($_GET['q']) ? $_GET['q'] : null;
+=======
+                    $query = isset($_GET['q']) ? $_GET['q']: null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $social_right_content .= '<div class="span9">'.UserManager::get_search_form($query).'</div>';
                 }
             }
