@@ -20,7 +20,6 @@ require_once '../inc/global.inc.php';
 require 'agenda.inc.php';
 
 $current_course_tool = TOOL_CALENDAR_EVENT;
-
 $course_info = api_get_course_info();
 
 if (!empty($course_info)) {
@@ -31,13 +30,18 @@ $action = isset($_GET['action']) ? $_GET['action'] : null;
 $origin = isset($_GET['origin']) ? $_GET['origin'] : null;
 
 $this_section = SECTION_COURSES;
-
+$url = null;
 if (empty($action)) {
-    $url = api_get_path(WEB_CODE_PATH).'calendar/agenda_js.php?type=course';
+    if (!empty($course_info)) {
+        $url = api_get_path(WEB_CODE_PATH).'calendar/agenda_js.php?type=course'.'&'.api_get_cidreq();
+    } else {
+        $url = api_get_path(WEB_CODE_PATH).'calendar/agenda_js.php?';
+    }
     header("Location: $url");
     exit;
 }
 
+<<<<<<< HEAD
 /*
   TREATING THE PARAMETERS
   1. viewing month only or everything
@@ -90,8 +94,63 @@ if (!empty($group_id)) {
     Display::display_header($nameTools, 'Agenda');
 } elseif (empty($origin) or $origin != 'learnpath') {
     Display::display_header($nameTools, 'Agenda');
+=======
+/* 	Resource linker */
+$_SESSION['source_type'] = 'Agenda';
+require_once '../resourcelinker/resourcelinker.inc.php';
+require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
+$group_id = api_get_group_id();
+$eventId = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+$type = $event_type = isset($_GET['type']) ? $_GET['type'] : null;
+
+$htmlHeadXtra[] = "<script>
+
+function plus_repeated_event() {
+    if (document.getElementById('options2').style.display == 'none') {
+        document.getElementById('options2').style.display = 'block';
+    } else {
+        document.getElementById('options2').style.display = 'none';
+    }
+}
+    $(function() {
+        var checked = $('input[name=repeat]').attr('checked');
+        if (checked) {
+            $('#options2').show();
+        }
+    });
+</script>
+";
+
+// setting the name of the tool
+$nameTools = get_lang('Agenda');
+
+event_access_tool(TOOL_CALENDAR_EVENT);
+
+// permission stuff - also used by loading from global in agenda.inc.php
+$is_allowed_to_edit = api_is_allowed_to_edit(false, true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous());
+$agenda = new Agenda();
+$agenda->type = $type;
+$actions = $agenda->displayActions('calendar');
+
+if ($type == 'fromjs') {
+    $id_list = explode('_', $eventId);
+    $eventId = $id_list[1];
+    $event_type = $id_list[0];
 }
 
+if (!api_is_allowed_to_edit(null, true) && $event_type == 'course') {
+    api_not_allowed(true);
+}
+if ($event_type == 'course') {
+    $agendaUrl = api_get_path(WEB_CODE_PATH).'calendar/agenda_js.php?'.api_get_cidreq().'&type=course';
+} else {
+    $agendaUrl = api_get_path(WEB_CODE_PATH).'calendar/agenda_js.php?&type='.$event_type;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+}
+$course_info = api_get_course_info();
+$agenda->type = $event_type;
+
+<<<<<<< HEAD
 /*
   TRACKING
  */
@@ -120,17 +179,82 @@ $tbl_groupUser = Database::get_course_table(TABLE_GROUP_USER);
 $is_allowed_to_edit = api_is_allowed_to_edit(false, true) OR (api_get_course_setting(
     'allow_user_edit_agenda'
 ) && !api_is_anonymous());
+=======
+$message = null;
+$content = null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-// Tool introduction
-Display::display_introduction_section(TOOL_CALENDAR_EVENT);
+if (api_is_allowed_to_edit(false, true) OR
+    (api_get_course_setting('allow_user_edit_agenda') &&
+    !api_is_anonymous() &&
+    api_is_allowed_to_session_edit(false, true)) OR
+    GroupManager::user_has_access(api_get_user_id(), $group_id,  GroupManager::GROUP_TOOL_CALENDAR) &&
+    GroupManager::is_tutor_of_group(api_get_user_id(), $group_id)
+) {
+    switch ($action) {
+        case 'add':
+            $actionName = get_lang('Add');
+            $form = $agenda->getForm(array('action' => 'add'));
 
-/* 		MAIN SECTION	 */
+            if ($form->validate()) {
+                $values = $form->getSubmitValues();
 
-//setting the default year and month
-$select_year = '';
-$select_month = '';
-$select_day = '';
+                $sendEmail = isset($values['add_announcement']) ? true : false;
+                $allDay = isset($values['all_day']) ? 'true' : 'false';
 
+                $sendAttachment = isset($_FILES['user_upload']) ? true : false;
+                $attachment = $sendAttachment ? $_FILES['user_upload'] : null;
+                $attachmentComment = isset($values['file_comment']) ? $values['file_comment'] : null;
+
+                $startDate = $values['date_range_start'];
+                $endDate = $values['date_range_end'];
+
+                $eventId = $agenda->add_event(
+                    $startDate,
+                    $endDate,
+                    $allDay,
+                    $values['title'],
+                    $values['content'],
+                    $values['users_to_send'],
+                    $sendEmail,
+                    null,
+                    $attachment,
+                    $attachmentComment
+                );
+
+                if (!empty($values['repeat']) && !empty($eventId)) {
+                    // End date is always set as 23:59:59
+                    $endDate = substr($values['repeat_end_day'], 0, 10).' 23:59:59';
+                    $agenda->addRepeatedItem(
+                        $eventId,
+                        $values['repeat_type'],
+                        $endDate,
+                        $values['users_to_send']
+                    );
+                }
+                $message = Display::return_message(get_lang('AddSuccess'), 'confirmation');
+                if ($sendEmail) {
+                    $message .= Display::return_message(get_lang('AdditionalMailWasSentToSelectedUsers'), 'confirmation');
+                }
+                Session::write('message', $message);
+                header("Location: $agendaUrl");
+                exit;
+            } else {
+                $content = $form->return_form();
+            }
+            break;
+        case 'edit':
+            $actionName = get_lang('Edit');
+            $event = $agenda->get_event($eventId);
+
+            if (empty($event)) {
+                api_not_allowed(true);
+            }
+
+            $event['action'] = 'edit';
+            $event['id'] = $eventId;
+
+<<<<<<< HEAD
 if (!empty($_GET['year'])) {
     $select_year = (int)$_GET['year'];
 }
@@ -140,18 +264,22 @@ if (!empty($_GET['month'])) {
 if (!empty($_GET['day'])) {
     $select_day = (int)$_GET['day'];
 }
+=======
+            $form = $agenda->getForm($event);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-$today = getdate();
+            if ($form->validate()) {
+                $values = $form->getSubmitValues();
 
-if (empty($select_year)) {
-    $select_year = $today['year'];
-}
-if (empty($select_month)) {
-    $select_month = $today['mon'];
-}
+                $allDay = isset($values['all_day']) ? 'true' : 'false';
+                $startDate = $values['date_range_start'];
+                $endDate = $values['date_range_end'];
 
-echo '<div class="actions">';
+                $sendAttachment = isset($_FILES['user_upload']) ? true : false;
+                $attachment = $sendAttachment ? $_FILES['user_upload'] : null;
+                $attachmentComment = isset($values['file_comment']) ? $values['file_comment'] : null;
 
+<<<<<<< HEAD
 if (api_is_allowed_to_edit(false, true) OR
     (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous()) && api_is_allowed_to_session_edit(
         false,
@@ -165,24 +293,60 @@ if (api_is_allowed_to_edit(false, true) OR
 ) {
     echo display_courseadmin_links();
 }
+=======
+                // This is a sub event. Delete the current and create another BT#7803
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-echo '</div>';
+                if (!empty($event['parent_event_id'])) {
+                    $agenda->delete_event($eventId);
 
-$event_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-$type = $event_type = isset($_GET['type']) ? $_GET['type'] : null;
+                    $eventId = $agenda->add_event(
+                        $startDate,
+                        $endDate,
+                        $allDay,
+                        $values['title'],
+                        $values['content'],
+                        $values['users_to_send'],
+                        false,
+                        null,
+                        $attachment,
+                        $attachmentComment
+                    );
 
-if ($type == 'fromjs') {
-    $id_list = explode('_', $event_id);
-    $event_id = $id_list[1];
-    $event_type = $id_list[0];
-}
+                    $message = Display::return_message(get_lang('Updated'), 'confirmation');
+                    Session::write('message', $message);
+                    header("Location: $agendaUrl");
+                    exit;
+                }
 
-if (!api_is_allowed_to_edit(null, true) && $event_type == 'course') {
-    api_not_allowed();
-}
+                // Editing normal event.
 
-$course_info = api_get_course_info();
+                $agenda->edit_event(
+                    $eventId,
+                    $startDate,
+                    $endDate,
+                    $allDay,
+                    $values['title'],
+                    $values['content'],
+                    $values['users_to_send'],
+                    $attachment,
+                    $attachmentComment
+                );
 
+                if (!empty($values['repeat']) && !empty($eventId)) {
+                    // End date is always set as 23:59:59
+                    $endDate = substr($values['repeat_end_day'], 0, 10).' 23:59:59';
+                    $agenda->addRepeatedItem(
+                        $eventId,
+                        $values['repeat_type'],
+                        $endDate,
+                        $values['users_to_send']
+                    );
+                }
+
+                $deleteAttachment = isset($values['delete_attachment']) ? true : false;
+
+<<<<<<< HEAD
 if (api_is_allowed_to_edit(false, true) or
     (
         api_get_course_setting('allow_user_edit_agenda') &&
@@ -255,45 +419,54 @@ if (api_is_allowed_to_edit(false, true) or
                     ).'</a>',
                     false
                 );
+=======
+                if ($deleteAttachment && isset($event['attachment']) && !empty($event['attachment'])) {
+                    $agenda->deleteAttachmentFile(
+                        $event['attachment']['id'],
+                        $agenda->course
+                    );
+                }
+
+                $message = Display::return_message(get_lang('Updated'), 'confirmation');
+                Session::write('message', $message);
+                header("Location: $agendaUrl");
+                exit;
+            } else {
+                $content = $form->return_form();
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             break;
         case 'importical':
-            if (isset($_POST['ical_submit'])) {
+            $form = $agenda->getImportCalendarForm();
+            $content = $form->return_form();
+
+            if ($form->validate()) {
                 $ical_name = $_FILES['ical_import']['name'];
                 $ical_type = $_FILES['ical_import']['type'];
-
                 $ext = substr($ical_name, (strrpos($ical_name, ".") + 1));
 
-                //$ical_type === 'text/calendar'
                 if ($ext === 'ics' || $ext === 'ical' || $ext === 'icalendar' || $ext === 'ifb') {
-                    $agenda_result = agenda_import_ical($course_info, $_FILES['ical_import']);
+                    $result = $agenda->importEventFile($course_info, $_FILES['ical_import']);
                     $is_ical = true;
                 } else {
                     $is_ical = false;
                 }
 
                 if (!$is_ical) {
-                    Display::display_error_message(get_lang('IsNotiCalFormatFile'));
-                    display_ical_import_form();
+                    $message = Display::return_message(get_lang('IsNotiCalFormatFile'), 'error');
+                    $form = $agenda->getImportCalendarForm();
+                    $content = $form->return_form();
                     break;
                 } else {
-                    Display::display_confirmation_message(get_lang('AddSuccess'));
-                    echo $agenda_result;
+                    $message = Display::return_message(get_lang('AddSuccess'), 'error');
+                    $content = $result;
                 }
-            } else {
-                display_ical_import_form();
-            }
-            break;
-        case 'edit':
-            // a coach can only delete an element belonging to his session
-            if ($_POST['submit_event']) {
-                store_edited_agenda_item($event_id, $_REQUEST['id_attach'], $_REQUEST['file_comment']);
-                $action = 'view';
-            } else {
-                show_add_form($event_id, $event_type);
+                Session::write('message', $message);
             }
             break;
         case "delete":
+<<<<<<< HEAD
             if (!(api_is_course_coach() && !api_is_element_in_the_session(TOOL_AGENDA, $event_id))) {
                 // a coach can only delete an element belonging to his session
                 delete_agenda_item($event_id);
@@ -315,12 +488,43 @@ if (api_is_allowed_to_edit(false, true) or
             if (!empty($id_attach)) {
                 delete_attachment_file($id_attach);
                 $action = 'view';
+=======
+            if (!(api_is_course_coach() && !api_is_element_in_the_session(TOOL_AGENDA, $eventId) )) {
+                // a coach can only delete an element belonging to his session
+                $content = $agenda->delete_event($eventId);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             break;
     }
 }
 
-// The footer is displayed only if we are not in the learnpath
-if ($origin != 'learnpath') {
-    Display::display_footer();
+if (!empty($group_id)) {
+    $group_properties = GroupManager :: get_group_properties($group_id);
+    $interbreadcrumb[] = array(
+        "url" => api_get_path(WEB_CODE_PATH)."group/group.php",
+        "name" => get_lang('Groups')
+    );
+    $interbreadcrumb[] = array(
+        "url" => api_get_path(WEB_CODE_PATH)."group/group_space.php?gidReq=".$group_id,
+        "name" => get_lang('GroupSpace').' '.$group_properties['name']
+    );
 }
+if (!empty($actionName)) {
+    $interbreadcrumb[] = array(
+        "url" => $url,
+        "name" => get_lang('Agenda')
+    );
+}
+
+// Tool introduction
+$introduction = Display::return_introduction_section(TOOL_CALENDAR_EVENT);
+
+$message = Session::read('message');
+Session::erase('message');
+
+$tpl = new Template($actionName);
+$tpl->assign('content', $content);
+$tpl->assign('actions', $actions);
+
+// Loading main Chamilo 1 col template
+$tpl->display_one_col_template();

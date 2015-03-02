@@ -59,7 +59,14 @@ if (is_dir($file_url_sys)) {
 }
 //Check user visibility
 //$is_visible = DocumentManager::is_visible_by_id($document_id, $course_info, api_get_session_id(), api_get_user_id());
-$is_visible = DocumentManager::check_visibility_tree($document_id, api_get_course_id(), api_get_session_id(), api_get_user_id());
+$is_visible = DocumentManager::check_visibility_tree(
+    $document_id,
+    api_get_course_id(),
+    api_get_session_id(),
+    api_get_user_id(),
+    api_get_group_id()
+);
+
 if (!api_is_allowed_to_edit() && !$is_visible) {
     api_not_allowed(true);
 }
@@ -138,7 +145,7 @@ $pathinfo = pathinfo($header_file);
 if ($pathinfo['extension']=='wav' && preg_match('/_chnano_.wav/i', $file_url_web) && api_get_setting('enable_nanogong') == 'true'){
 	echo '<div align="center">';
 		echo '<br/>';
-		echo '<applet id="applet" archive="../inc/lib/nanogong/nanogong.jar" code="gong.NanoGong" width="160" height="40" >';
+		echo '<applet id="applet" archive="../inc/lib/nanogong/nanogong.jar" code="gong.NanoGong" width="160" height="95" >';
 			echo '<param name="SoundFileURL" value="'.$file_url_web.'" />';
 			echo '<param name="ShowSaveButton" value="false" />';
 			echo '<param name="ShowTime" value="true" />';

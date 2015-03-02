@@ -35,6 +35,7 @@ if (empty($mycourseid)) {
  * Choose CSS style (platform's, user's, or course's)
  */
 $my_style = api_get_visual_theme();
+<<<<<<< HEAD
 ?>
 <!DOCTYPE html>
 <html>
@@ -46,6 +47,37 @@ $my_style = api_get_visual_theme();
 function updateChat() {
 	if ('<?php echo $chat_size_old; ?>' != '<?php echo $chat_size_new; ?>')
 	{
+=======
+$chat_size_old = isset($chat_size_old) ? $chat_size_old : null;
+$chat_size_new = isset($chat_size_new) ? $chat_size_new : null;
+$connected_new = isset($connected_new) ? $connected_new : null;
+$connected_old = isset($connected_old) ? $connected_old : null;
+
+header('Content-Type: text/html; charset='.api_get_system_encoding());
+
+?><!DOCTYPE html>
+<html>
+<head>
+    <meta charset="<?php echo api_get_system_encoding(); ?>" />
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="<?php echo api_get_path(WEB_CSS_PATH).$my_style; ?>/default.css">
+    <style>
+        a {
+            font-size: 12px;
+        }
+        .background_submit {
+            background: url(../img/chat_little.gif) 2px 2px no-repeat;
+            padding: 2px 1px 1px 20px;
+        }
+        th {
+            font-size: 12px;
+        }
+    </style>
+<script>
+function updateChat()
+{
+	if ('<?php echo $chat_size_old; ?>' != '<?php echo $chat_size_new; ?>') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		parent.chat_chat.location.href='chat_chat.php?size=<?php echo $chat_size_new.'&'.api_get_cidreq(); ?>#bottom';
 	}
 }
@@ -61,8 +93,14 @@ function submitHiddenForm() {
 	document.formHidden.submit();
 }
 
+<<<<<<< HEAD
 function eventMessage() {
 	<?php if($chat_size): ?>
+=======
+function eventMessage()
+{
+	<?php if (isset($chat_size) && $chat_size): ?>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	parent.chat_hidden.document.formHidden.chat_size_old.value='<?php echo $chat_size; ?>';
 	parent.chat_chat.location.href='chat_chat.php?size=<?php echo $chat_size.'&'.api_get_cidreq(); ?>#bottom';
 	<?php endif; ?>

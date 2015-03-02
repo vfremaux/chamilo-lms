@@ -8,16 +8,28 @@
 /**
  * Code
  */
+<<<<<<< HEAD
+=======
+require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
+require_once api_get_path(LIBRARY_PATH).'course_category.lib.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
  * Auth can be used to instanciate objects or as a library to manage courses
  * @package chamilo.auth
  */
+<<<<<<< HEAD
 class AuthLib {
+=======
+class Auth
+{
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
 
     }
 
@@ -26,7 +38,8 @@ class AuthLib {
      * @param   int User id
      * @return  array an array containing all the information of the courses of the given user
      */
-    public function get_courses_of_user($user_id) {
+    public function get_courses_of_user($user_id)
+    {
         $TABLECOURS = Database::get_main_table(TABLE_MAIN_COURSE);
         $TABLECOURSUSER = Database::get_main_table(TABLE_MAIN_COURSE_USER);
         $TABLE_COURSE_FIELD = Database::get_main_table(TABLE_MAIN_COURSE_FIELD);
@@ -402,9 +415,10 @@ class AuthLib {
 
     /**
      * Counts the number of courses in a given course category
-     * @param   string  Category code
+     * @param   string  $categoryCode Category code
      * @return  int     Count of courses
      */
+<<<<<<< HEAD
     public function count_courses_in_category($category_code) {
         $tbl_course = Database::get_main_table(TABLE_MAIN_COURSE);
         $TABLE_COURSE_FIELD = Database :: get_main_table(TABLE_MAIN_COURSE_FIELD);
@@ -438,34 +452,28 @@ class AuthLib {
             }
         }
         return Database::num_rows(Database::query($sql));
+=======
+    public function count_courses_in_category($categoryCode)
+    {
+        return countCoursesInCategory($categoryCode);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
      * Get the browsing of the course categories (faculties)
      * @return array    array containing a list with all the categories and subcategories(if needed)
      */
-    public function browse_course_categories() {
-        $tbl_courses_nodes = Database::get_main_table(TABLE_MAIN_CATEGORY);
-        $sql = "SELECT * FROM $tbl_courses_nodes ORDER BY tree_pos ASC";
-        $result = Database::query($sql);
-        $categories = array();
-        while ($row = Database::fetch_array($result)) {
-            $count_courses = $this->count_courses_in_category($row['code']);
-            $row['count_courses'] = $count_courses;
-            if (!isset($row['parent_id'])) {
-                $categories[0][$row['tree_pos']] = $row;
-            } else {
-                $categories[$row['parent_id']][$row['tree_pos']] = $row;
-            }
-        }
-        return $categories;
+    public function browse_course_categories()
+    {
+        return browseCourseCategories();
     }
 
     /**
      * Display all the courses in the given course category. I could have used a parameter here
-     * @param   string  Category code
+     * @param   string  $categoryCode Category code
      * @return  array   Courses data
      */
+<<<<<<< HEAD
     public function browse_courses_in_category($category_code, $random_value = null) {
         $tbl_course = Database::get_main_table(TABLE_MAIN_COURSE);
         $TABLE_COURSE_FIELD = Database::get_main_table(TABLE_MAIN_COURSE_FIELD);
@@ -577,6 +585,11 @@ class AuthLib {
             );
         }
         return $courses;
+=======
+    public function browse_courses_in_category($categoryCode, $randomValue = null)
+    {
+        return browseCoursesInCategory($categoryCode, $randomValue);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -585,7 +598,8 @@ class AuthLib {
      * @param string $search_term: the string that the user submitted, what we are looking for
      * @return array an array containing a list of all the courses (the code, directory, dabase, visual_code, title, ... ) matching the the search term.
      */
-    public function search_courses($search_term) {
+    public function search_courses($search_term)
+    {
         $TABLECOURS = Database::get_main_table(TABLE_MAIN_COURSE);
         $TABLE_COURSE_FIELD = Database :: get_main_table(TABLE_MAIN_COURSE_FIELD);
         $TABLE_COURSE_FIELD_VALUE = Database :: get_main_table(TABLE_MAIN_COURSE_FIELD_VALUES);
@@ -623,9 +637,17 @@ class AuthLib {
         while ($row = Database::fetch_array($result_find)) {
             $row['registration_code'] = !empty($row['registration_code']);
             $count_users = count(CourseManager::get_user_list_from_course_code($row['code']));
+<<<<<<< HEAD
             $count_connections_last_month = Tracking::get_course_connections_count($row['id'], 0, api_get_utc_datetime(time() - (30 * 86400)));
+=======
+            $count_connections_last_month = Tracking::get_course_connections_count($row['code'], 0, api_get_utc_datetime(time() - (30 * 86400)));
+
+            $point_info = CourseManager::get_course_ranking($row['id'], 0);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             $courses[] = array(
+                'real_id' => $row['id'],
+                'point_info' => $point_info,
                 'code' => $row['code'],
                 'real_id' => $row['id'],
                 'directory' => $row['directory'],
@@ -650,7 +672,8 @@ class AuthLib {
      * @param string Course code
      * @return string  Message about results
      */
-    public function subscribe_user($course_code) {
+    public function subscribe_user($course_code)
+    {
         $user_id = api_get_user_id();
         $all_course_information = CourseManager::get_course_information($course_code);
 

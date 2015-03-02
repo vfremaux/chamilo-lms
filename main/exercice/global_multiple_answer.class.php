@@ -48,6 +48,53 @@ class GlobalMultipleAnswer extends Question
         }
         $html .= '</tr>';
 
+<<<<<<< HEAD
+=======
+        /**
+         * function which redifines Question::createAnswersForm
+         * @param the formvalidator instance
+         * @param the answers number to display
+         */
+        function createAnswersForm($form) {
+
+            $nb_answers = isset($_POST['nb_answers']) ? $_POST['nb_answers'] : 4;
+            $nb_answers += (isset($_POST['lessAnswers']) ? -1 : (isset($_POST['moreAnswers']) ? 1 : 0));
+
+            $obj_ex = $_SESSION['objExercise'];
+
+            /* Mise en variable de Affichage "Reponses" et son icone, "N�", "Vrai", "Reponse" */
+            $html = '<table class="data_table">
+					<tr>
+						<th width="10px">
+							' . get_lang('Number') . '
+						</th>
+						<th width="10px">
+							' . get_lang('True') . '
+						</th>
+						<th width="50%">
+							' . get_lang('Answer') . '
+						</th>';
+
+            // Espace entre l'entete et les reponses
+            $html .='<th>' . get_lang('Comment') . '</th>';
+            $html .='</tr>';
+            
+            
+            $form->addElement('label', get_lang('Answers') . '<br /> <img src="../img/fill_field.png">', $html);
+
+            /* Initialiation variable */
+            $defaults = array();
+            $correct = 0;
+
+            /* Mise en variable du nombre de reponse */
+            if (!empty($this->id)) {
+                $answer = new Answer($this->id);
+                $answer->read();
+                if (count($answer->nbrAnswers) > 0 && !$form->isSubmitted()) {
+                    $nb_answers = $answer->nbrAnswers;
+                }
+            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $form->addElement('label', get_lang('Answers').'<br />'.Display::return_icon('fill_field.png'), $html);
 
@@ -70,6 +117,7 @@ class GlobalMultipleAnswer extends Question
         $form->addElement('hidden', 'nb_answers');
         $boxes_names = array();
 
+<<<<<<< HEAD
         /* V�rification : Cr�action d'au moins une r�ponse */
         if ($nb_answers < 1) {
             $nb_answers = 1;
@@ -89,6 +137,39 @@ class GlobalMultipleAnswer extends Question
                 $defaults['answer['.$i.']']  = $answer->answer[$answer_id];
                 $defaults['comment['.$i.']'] = $answer->comment[$answer_id];
                 $defaults['correct['.$i.']'] = $answer->correct[$answer_id];
+=======
+                    //------------- D�but
+                    $scoreA = $answer->weighting[$i];
+                }
+                if ($scoreA > 0) {
+                    $scoreG = $scoreG + $scoreA;
+                }
+                //------------- Fin
+                //------------- Debut si un des scores par reponse est egal � 0 : la coche vaut 1 (coch�)
+                if ($scoreA == 0)
+                    $defaults['pts'] = 1;
+                else
+                    $defaults['pts'] = 0;
+
+                $renderer = & $form->defaultRenderer();			
+            
+                $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'correct['.$i.']');  
+                $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'counter['.$i.']');  
+                $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'answer['.$i.']');  
+                $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'comment['.$i.']');  
+                //$renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'weighting['.$i.']');        
+
+                $answer_number = $form->addElement('text', 'counter[' . $i . ']', null, 'value="' . $i . '"');
+                $answer_number->freeze();
+
+                $form->addElement('checkbox', 'correct[' . $i . ']', null, null, 'class="checkbox"');
+                $boxes_names[] = 'correct[' . $i . ']';
+
+                $form->addElement('html_editor', 'answer[' . $i . ']', null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '100'));
+                $form->addRule('answer[' . $i . ']', get_lang('ThisFieldIsRequired'), 'required');
+
+                $form->addElement('html_editor', 'comment[' . $i . ']', null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '100'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
                 //------------- D�but
                 $scoreA = $answer->weighting[$answer_id];
@@ -234,6 +315,7 @@ class GlobalMultipleAnswer extends Question
         // Set question weighting (score total)
         $questionWeighting = $answer_score;
 
+<<<<<<< HEAD
         // Set score per answer
         $nbr_corrects = $nbr_corrects == 0 ? 1 : $nbr_corrects;
         $answer_score = $nbr_corrects == 0 ? 0 : $answer_score;
@@ -284,6 +366,18 @@ class GlobalMultipleAnswer extends Question
             $header .= '<th>'.get_lang("Comment").'</th>';
         } else {
             $header .= '<th>&nbsp;</th>';
+=======
+        function return_header($feedback_type = null, $counter = null, $score = null) {
+            $header = parent::return_header($feedback_type, $counter, $score);
+            $header .= '<table class="'.$this->question_table_class .'">			
+			<tr>
+				<th>' . get_lang("Choice") . '</th>
+				<th>' . get_lang("ExpectedChoice") . '</th>
+				<th>' . get_lang("Answer") . '</th>';
+            $header .= '<th>' . get_lang("Comment") . '</th>';
+            $header .= '</tr>';
+            return $header;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         $header .= '</tr>';
 

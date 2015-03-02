@@ -53,7 +53,7 @@ if (isset($_GET['origin'])) {
 
 /* MAIN DISPLAY SECTION */
 
-/* Retrieving forum and forum categorie information */
+/* Retrieving forum and forum category information */
 
 // We are getting all the information about the current forum and forum category.
 // Note pcool: I tried to use only one sql statement (and function) for this,
@@ -120,8 +120,8 @@ if ($origin == 'learnpath') {
 /* Is the user allowed here? */
 
 // The user is not allowed here if
-// 1. the forumcategory, forum or thread is invisible (visibility==0)
-// 2. the forumcategory, forum or thread is locked (locked <>0)
+// 1. the forum category, forum or thread is invisible (visibility==0)
+// 2. the forum category, forum or thread is locked (locked <>0)
 // 3. if anonymous posts are not allowed
 // 4. if editing of replies is not allowed
 // The only exception is the course manager
@@ -181,7 +181,7 @@ echo "</tr>";
 echo '</table>';
 
 // The form for the reply
-$values = show_edit_post_form($current_post, $current_thread, $current_forum, isset($_SESSION['formelements']) ? $_SESSION['formelements'] : '');
+$values = show_edit_post_form($forum_setting, $current_post, $current_thread, $current_forum, isset($_SESSION['formelements']) ? $_SESSION['formelements'] : '');
 
 if (!empty($values) and isset($_POST['SubmitPost'])) {
     store_edit_post($values);

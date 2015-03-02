@@ -214,8 +214,13 @@ $_SESSION['temp_realpath_image']=$to;
 //load image to url
 $to_url=api_get_path(WEB_ARCHIVE_PATH).'temp/images/'.$file_crip;
 $image=urlencode($to_url);
+<<<<<<< HEAD
 $pixlr_url = 'http://pixlr.com/editor/?title='.$title.'&amp;image='.$image.'&amp;loc='.$loc.'&amp;referrer='.$referrer.'&amp;target='.$target.'&amp;exit='.$exit_path.'&amp;locktarget='.$locktarget.'&amp;locktitle='.$locktitle.'&amp;credentials='.$credentials;
 
+=======
+$pixlr_url = api_get_protocol().'://pixlr.com/editor/?title='.$title.'&amp;image='.$image.'&amp;loc='.$loc.'&amp;referrer='.$referrer.'&amp;target='.$target.'&amp;exit='.$exit_path.'&amp;locktarget='.$locktarget.'&amp;locktitle='.$locktitle.'&amp;credentials='.$credentials;
+ 
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 //make frame an send image
 ?>
 

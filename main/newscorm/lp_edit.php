@@ -23,9 +23,9 @@ if (isset($_SESSION['gradebook'])) {
 
 if (!empty($gradebook) && $gradebook == 'view') {
     $interbreadcrumb[] = array (
-            'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
-            'name' => get_lang('ToolGradebook')
-        );
+        'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
+        'name' => get_lang('ToolGradebook')
+    );
 }
 $interbreadcrumb[] = array('url' => 'lp_controller.php?action=list', 'name' => get_lang('LearningPaths'));
 $interbreadcrumb[] = array('url' => api_get_self()."?action=build&lp_id=".$_SESSION['oLP']->get_id(), 'name' => $_SESSION['oLP']->get_name());
@@ -170,6 +170,7 @@ if (api_is_platform_admin()) {
     $defaults['use_max_score'] = $_SESSION['oLP']->use_max_score;
 }
 
+<<<<<<< HEAD
 $form->addElement('checkbox', 'subscribe_users', null, get_lang('SubscribeUsersToLP'));
 
 $extraField = new ExtraField('lp');
@@ -184,6 +185,11 @@ $(function() {
 </script>';
 
 
+=======
+$extraField = new ExtraField('lp');
+$extra = $extraField->addElements($form, $_SESSION['oLP']->get_id());
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 //Submit button
 $form->addElement('style_submit_button', 'Submit', get_lang('SaveLPSettings'),'class="save"');
 
@@ -191,6 +197,18 @@ $form->addElement('style_submit_button', 'Submit', get_lang('SaveLPSettings'),'c
 $form->addElement('hidden', 'action', 'update_lp');
 $form->addElement('hidden', 'lp_id', $_SESSION['oLP']->get_id());
 
+<<<<<<< HEAD
+=======
+$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/tag/jquery.fcbkcomplete.js" type="text/javascript" language="javascript"></script>';
+$htmlHeadXtra[] = '<link  href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/tag/style.css" rel="stylesheet" type="text/css" />';
+$htmlHeadXtra[] ='<script>
+$(function() {
+    '.$extra['jquery_ready_content'].'
+});
+</script>';
+
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $defaults['publicated_on']  = ($publicated_on!='0000-00-00 00:00:00' && !empty($publicated_on))? api_get_local_time($publicated_on) : date('Y-m-d 12:00:00');
 $defaults['expired_on']     = ($expired_on   !='0000-00-00 00:00:00' && !empty($expired_on) ) ? api_get_local_time($expired_on): date('Y-m-d 12:00:00', time()+84600);
 $defaults['max_attempts'] = $_SESSION['oLP']->get_max_attempts();
@@ -201,7 +219,10 @@ Display::display_header(get_lang('CourseSettings'), 'Path');
 
 echo $_SESSION['oLP']->build_action_menu();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 echo '<div class="row">';
 
 if ($_SESSION['oLP']->get_hide_toc_frame() == 1) {

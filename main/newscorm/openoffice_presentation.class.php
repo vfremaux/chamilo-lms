@@ -31,10 +31,16 @@ class OpenofficePresentation extends OpenofficeDocument
         parent::__construct($course_code, $resource_id, $user_id);
     }
 
+<<<<<<< HEAD
 
     public function make_lp($files = array())
     {
         $_course = api_get_course_info();
+=======
+    public function make_lp($files = array())
+    {
+        global $_course;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $previous = 0;
         $i = 0;
 
@@ -43,11 +49,18 @@ class OpenofficePresentation extends OpenofficeDocument
         }
 
         foreach ($files as $file) {
+<<<<<<< HEAD
 
             list($slide_name, $file_name, $slide_body) = explode(
                 '||',
                 $file
             ); // '||' is used as separator between fields: slide name (with accents) || file name (without accents) || all slide text (to be indexed).
+=======
+            /* '||' is used as separator between fields:
+                slide name (with accents) || file name (without accents) || all slide text (to be indexed).
+            */
+            list($slide_name, $file_name, $slide_body) = explode('||', $file);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             // Filename is utf8 encoded, but when we decode, some chars are not translated (like quote &rsquo;).
             // so we remove these chars by translating it in htmlentities and the reconvert it in want charset.
@@ -65,13 +78,21 @@ class OpenofficePresentation extends OpenofficeDocument
 
             $i++;
             // Add the png to documents.
+<<<<<<< HEAD
             $document_id = FileManager::add_document(
+=======
+            $document_id = add_document(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $_course,
                 $this->created_dir.'/'.urlencode($file_name),
                 'file',
                 filesize($this->base_work_dir.$this->created_dir.'/'.$file_name),
                 $slide_name
             );
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             api_item_property_update(
                 $_course,
                 TOOL_DOCUMENT,
@@ -102,16 +123,24 @@ class OpenofficePresentation extends OpenofficeDocument
 
             $my_new_image = new Image($image);
             $my_new_image->resize($thumb_width, $thumb_height);
+<<<<<<< HEAD
             $my_new_image->send_image($this->base_work_dir.$this->created_dir.'/'.$thumb_name, -1, 'png');
 
             // Adding the thumbnail to documents.
             $document_id_thumb = FileManager::add_document(
+=======
+            $my_new_image->send_image($this->base_work_dir.$this->created_dir .'/'. $thumb_name, -1, 'png');
+
+            // Adding the thumbnail to documents.
+            $document_id_thumb = add_document(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $_course,
                 $this->created_dir.'/'.urlencode($thumb_name),
                 'file',
                 filesize($this->base_work_dir.$this->created_dir.'/'.$thumb_name),
                 $slide_name
             );
+<<<<<<< HEAD
             api_item_property_update(
                 $_course,
                 TOOL_THUMBNAIL,
@@ -121,6 +150,10 @@ class OpenofficePresentation extends OpenofficeDocument
                 0,
                 0
             );
+=======
+
+            api_item_property_update($_course, TOOL_THUMBNAIL, $document_id_thumb, 'DocumentAdded', api_get_user_id(), 0, 0);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             // Create an html file.
             $html_file = $file_name.'.html';
@@ -142,13 +175,21 @@ class OpenofficePresentation extends OpenofficeDocument
             ); // This indentation is to make the generated html files to look well.
 
             fclose($fp);
+<<<<<<< HEAD
             $document_id = FileManager::add_document(
+=======
+            $document_id = add_document(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $_course,
                 $this->created_dir.'/'.urlencode($html_file),
                 'file',
                 filesize($this->base_work_dir.$this->created_dir.'/'.$html_file),
                 $slide_name
             );
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if ($document_id) {
 
                 // Put the document in item_property update.
@@ -227,12 +268,17 @@ class OpenofficePresentation extends OpenofficeDocument
     function add_command_parameters()
     {
         if (empty($this->slide_width) || empty($this->slide_height)) {
+<<<<<<< HEAD
             list($this->slide_width, $this->slide_height) = explode(
                 'x',
                 api_get_setting('service_ppt2lp', 'size')
             );
         }
 
+=======
+            list($this->slide_width, $this->slide_height) = explode('x', api_get_setting('service_ppt2lp', 'size'));
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         return ' -w '.$this->slide_width.' -h '.$this->slide_height.' -d oogie "'.$this->base_work_dir.'/'.$this->file_path.'"  "'.$this->base_work_dir.$this->created_dir.'.html"';
     }
 
@@ -244,7 +290,11 @@ class OpenofficePresentation extends OpenofficeDocument
 
     function add_docs_to_visio($files = array())
     {
+<<<<<<< HEAD
         $_course = api_get_course_info();
+=======
+        global $_course;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         foreach ($files as $file) {
             list($slide_name, $file_name) = explode(
                 '||',

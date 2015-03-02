@@ -14,18 +14,31 @@
 */
 /* 		INIT SECTION	*/
 // name of the language file that needs to be included
-$language_file= array('messages','userInfo', 'admin');
+$language_file= array('messages', 'userInfo', 'admin');
 $cidReset	= true;
 require_once '../inc/global.inc.php';
 
 api_block_anonymous_users();
 
 if (api_get_setting('allow_message_tool') !='true') {
-	api_not_allowed();
+    api_not_allowed();
 }
+<<<<<<< HEAD
 $htmlHeadXtra[] = '<script>
 function validate(form,list) {
 	if (list.selectedIndex<0) {
+=======
+
+require_once api_get_path(LIBRARY_PATH).'group_portal_manager.lib.php';
+
+$nameTools = api_xml_http_response_encode(get_lang('Messages'));
+/*	Constants and variables */
+
+$htmlHeadXtra[]='
+<script language="javascript">
+function validate(form, list) {
+	if(list.selectedIndex<0) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     	alert("Please select someone to send the message to.")
     	return false
 	} else {
@@ -114,7 +127,12 @@ function show_compose_to_any ($user_id) {
     return $html;
 }
 
+<<<<<<< HEAD
 function show_compose_reply_to_message($message_id, $receiver_id) {
+=======
+function show_compose_reply_to_message($message_id, $receiver_id)
+{
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	$table_message = Database::get_main_table(TABLE_MESSAGE);
 	$query = "SELECT user_sender_id FROM $table_message WHERE user_receiver_id=".intval($receiver_id)." AND id='".intval($message_id)."';";
 	$result = Database::query($query);
@@ -156,11 +174,25 @@ function manage_form($default, $select_from_user_list = null, $sent_to = null)
 	$message_id 	= isset($_GET['message_id']) ? intval($_GET['message_id']) : null;
 	$param_f 		= isset($_GET['f']) ? Security::remove_XSS($_GET['f']):'';
 
-	$form = new FormValidator('compose_message',null,api_get_self().'?f='.$param_f, null, array('enctype'=>'multipart/form-data'));
+	$form = new FormValidator('compose_message', null, api_get_self().'?f='.$param_f, null, array('enctype'=>'multipart/form-data'));
 	if (empty($group_id)) {
 
 		if (isset($select_from_user_list)) {
+<<<<<<< HEAD
 			$form->add_textfield('id_text_name', get_lang('SendMessageTo'), true, array('id'=>'id_text_name','onkeyup'=>'send_request_and_search()','autocomplete'=>'off'));
+=======
+			$form->add_textfield(
+                'id_text_name',
+                get_lang('SendMessageTo'),
+                true,
+                array(
+                    'class' => 'span4',
+                    'id'=>'id_text_name',
+                    'onkeyup'=>'send_request_and_search()',
+                    'autocomplete'=>'off'
+                )
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			$form->addRule('id_text_name', get_lang('ThisFieldIsRequired'), 'required');
 			$form->addElement('html','<div id="id_div_search" style="padding:0px" class="message-select-box" >&nbsp;</div>');
 			$form->addElement('hidden','user_list', 0, array('id'=>'user_list'));
@@ -184,8 +216,13 @@ function manage_form($default, $select_from_user_list = null, $sent_to = null)
 		$form->addElement('hidden','parent_id',$message_id);
 	}
 
+<<<<<<< HEAD
 	$form->add_textfield('title', get_lang('Subject'), true);
 	$form->add_html_editor('content', get_lang('Message'), false, false, array('ToolbarSet' => 'Messages'));
+=======
+	$form->add_textfield('title', get_lang('Subject'), true, array('class' => 'span4'));
+	$form->add_html_editor('content', get_lang('Message'), false, false, array('ToolbarSet' => 'Messages', 'Width' => '95%', 'Height' => '250'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	if (isset($_GET['re_id'])) {
 	    $message_reply_info = MessageManager::get_message_by_id($_GET['re_id']);
@@ -195,7 +232,7 @@ function manage_form($default, $select_from_user_list = null, $sent_to = null)
 
 		//adding reply mail
 		$user_reply_info = UserManager::get_user_info_by_id($message_reply_info['user_sender_id']);
-		$default['content'] = '<br />'.sprintf(get_lang('XWroteY'), api_get_person_name($user_reply_info['firstname'], $user_reply_info['lastname']), Security::filter_terms($message_reply_info['content']));
+		$default['content'] = '<p><br/></p>'.sprintf(get_lang('XWroteY'), api_get_person_name($user_reply_info['firstname'], $user_reply_info['lastname']), Security::filter_terms($message_reply_info['content']));
 	}
 
 	if (empty($group_id)) {
@@ -263,7 +300,7 @@ $interbreadcrumb[]= array ('url' => api_get_path(WEB_PATH).'main/messages/inbox.
 
 $social_right_content = null;
 $group_id = isset($_REQUEST['group_id']) ? intval($_REQUEST['group_id']) : null;
-
+$social_right_content = null;
 if ($group_id != 0) {
 	$social_right_content .= '<div class=actions>';
 	$social_right_content .= '<a href="'.api_get_path(WEB_PATH).'main/social/groups.php?id='.$group_id.'">'.
@@ -291,6 +328,22 @@ if ($group_id != 0) {
 	}
 }
 
+<<<<<<< HEAD
+=======
+
+//LEFT COLUMN
+$social_left_content = null;
+if (api_get_setting('allow_social_tool') == 'true') {
+    $social_left_content = SocialManager::show_social_menu('messages');
+    $social_right_content .= '<div class="span9">';
+    $social_right_content .= '<div class="actions">';
+    $social_right_content .=  '<a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.Display::return_icon('back.png', get_lang('Back'), array(), 32).'</a>';
+    $social_right_content .=  '</div>';
+    $social_right_content .=  '</div>';
+    $social_right_content .= '<div class="span9">';
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 //MAIN CONTENT
 if (!isset($_POST['compose'])) {
     if(isset($_GET['re_id'])) {
@@ -336,6 +389,7 @@ if (!isset($_POST['compose'])) {
 if (api_get_setting('allow_social_tool') == 'true') {
     $social_right_content .=  '</div>';
 }
+<<<<<<< HEAD
 $tpl = $app['template'];
 $tpl->setTitle(get_lang('ComposeMessage'));
 
@@ -344,3 +398,19 @@ $tpl->assign('actions', $actions);
 $tpl->assign('message', $show_message);
 $tpl->assign('content', $content);
 $tpl->display_one_col_template();
+=======
+
+$tpl = new Template(get_lang('ComposeMessage'));
+if (api_get_setting('allow_social_tool') == 'true') {
+    $tpl->assign('social_left_content', $social_left_content);
+    $tpl->assign('social_right_content', $social_right_content);
+    $social_layout = $tpl->get_template('layout/social_layout.tpl');
+    $tpl->display($social_layout);
+} else {
+    $content = $social_right_content;
+    $tpl->assign('actions', $actions);
+    $tpl->assign('message', $show_message);
+    $tpl->assign('content', $content);
+    $tpl->display_one_col_template();
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

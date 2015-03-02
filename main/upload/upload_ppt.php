@@ -29,8 +29,13 @@ if (isset($_POST['convert'])) {
         if (in_array(strtolower(pathinfo($_FILES['user_file']['name'], PATHINFO_EXTENSION)), $allowed_extensions)) {
             require_once api_get_path(SYS_CODE_PATH).'newscorm/lp_upload.php';
             if (isset($o_ppt) && $first_item_id != 0) {
+<<<<<<< HEAD
                 if (api_get_setting('search_enabled') == 'true') {
                     require_once(api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php');
+=======
+                if (api_get_setting('search_enabled')=='true') {
+                    require_once api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $specific_fields = get_specific_field_list();
                     foreach ($specific_fields as $specific_field) {
                         $values = explode(',', trim($_POST[$specific_field['code']]));
@@ -38,6 +43,7 @@ if (isset($_POST['convert'])) {
                             foreach ($values as $value) {
                                 $value = trim($value);
                                 if (!empty($value)) {
+<<<<<<< HEAD
                                     add_specific_field_value(
                                         $specific_field['id'],
                                         api_get_course_id(),
@@ -45,15 +51,23 @@ if (isset($_POST['convert'])) {
                                         $o_ppt->lp_id,
                                         $value
                                     );
+=======
+                                    add_specific_field_value($specific_field['id'], api_get_course_id(), TOOL_LEARNPATH, $o_ppt->lp_id, $value);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                                 }
                             }
                         }
                     }
                 }
+<<<<<<< HEAD
                 header(
                     'Location: ../newscorm/lp_controller.php?'.api_get_cidreq(
                     ).'&lp_id='.$o_ppt->lp_id.'&action=view_item&id='.$first_item_id
                 );
+=======
+                header('Location: ../newscorm/lp_controller.php?'.api_get_cidreq().'&lp_id='.$o_ppt->lp_id.'&action=view_item&id='.$first_item_id);
+                exit;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             } else {
                 if (!empty($o_ppt->error)) {
                     $errorMessage = $o_ppt->error;
@@ -82,15 +96,20 @@ $nameTools = get_lang("OogieConversionPowerPoint");
 Display :: display_header($nameTools);
 $message = get_lang("WelcomeOogieConverter");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if (!empty($errorMessage)) {
     echo Display::return_message($errorMessage, 'warning', false);
 }
 
+$div_upload_limit = get_lang('UploadMaxSize').' : '.ini_get('post_max_size');
+
 $form = new FormValidator('upload_ppt', 'POST', '', '');
 $form->addElement('header', get_lang("WelcomeOogieSubtitle"));
-
 $form->addElement('html', Display::return_message($message, 'info', false));
+<<<<<<< HEAD
 
 // build the form
 $div_upload_limit = get_lang('UploadMaxSize').' : '.ini_get('post_max_size');
@@ -98,6 +117,12 @@ $form->addElement('file', 'user_file', array(Display::return_icon('powerpoint_bi
 $form->addElement('checkbox', 'take_slide_name', '', get_lang('TakeSlideName'));
 if (api_get_setting('search_enabled') == 'true') {
     require_once(api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php');
+=======
+$form->addElement('file', 'user_file', array('<img src="../img/powerpoint_big.gif" />', $div_upload_limit));
+$form->addElement('checkbox', 'take_slide_name', '', get_lang('TakeSlideName'));
+if (api_get_setting('search_enabled') == 'true') {
+    require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $specific_fields = get_specific_field_list();
     $form->addElement('checkbox', 'index_document', '', get_lang('SearchFeatureDoIndexDocument'));
     $form->addElement('select_language', 'language', get_lang('SearchFeatureDocumentLanguage'));
@@ -110,7 +135,11 @@ $form->addElement('style_submit_button', 'convert', get_lang('ConvertToLP'));
 $form->addElement('hidden', 'ppt2lp', 'true');
 
 $form->add_real_progress_bar(md5(rand(0, 10000)), 'user_file', 1, true);
+<<<<<<< HEAD
 $defaults = array('take_slide_name' => 'checked="checked"', 'index_document' => 'checked="checked"');
+=======
+$defaults = array('take_slide_name'=>'checked="checked"','index_document'=>'checked="checked"');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->setDefaults($defaults);
 
 // display the form

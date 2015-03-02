@@ -23,6 +23,11 @@ class Evaluation implements GradebookItem
 	private $visible;
     private $evaluation_type_id;
 
+<<<<<<< HEAD
+=======
+    // CONSTRUCTORS
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     function __construct() {
     }
 
@@ -80,7 +85,11 @@ class Evaluation implements GradebookItem
 		return isset($this->locked) && $this->locked == 1 ? true : false ;
 	}
 
+<<<<<<< HEAD
 	public function set_id($id) {
+=======
+	public function set_id ($id) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		$this->id = $id;
 	}
 
@@ -128,6 +137,7 @@ class Evaluation implements GradebookItem
 		$this->locked = $locked;
 	}
 
+<<<<<<< HEAD
     public function get_evaluation_type_id() {
         return isset($this->evaluation_type_id) ? $this->evaluation_type_id : 0;
     }
@@ -135,6 +145,8 @@ class Evaluation implements GradebookItem
     public function set_evaluation_type_id($id) {
         $this->evaluation_type_id = intval($id);
     }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // CRUD FUNCTIONS
 
@@ -184,12 +196,15 @@ class Evaluation implements GradebookItem
 			$sql .= ' locked = '.intval($locked);
 			$paramcount ++;
 		}
+<<<<<<< HEAD
         if (isset($name)) {
 			if ($paramcount != 0) $sql .= ' AND';
 			else $sql .= ' WHERE';
 			$sql .= " name = '".Database::escape_string($name)."'";
 			$paramcount ++;
 		}
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		$result = Database::query($sql);
 		$alleval = Evaluation::create_evaluation_objects_from_sql_result($result);
 		return $alleval;
@@ -261,7 +276,13 @@ class Evaluation implements GradebookItem
 				$this->type = 'evaluation';
 			}
 			$sql .= ", '".api_get_utc_datetime()."'";
+<<<<<<< HEAD
 			$sql .= ',\''.Database::escape_string($this->type).'\'';
+=======
+
+			$sql .= ',\''.Database::escape_string($this->type).'\'';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			$sql .= ")";
 
 			Database::query($sql);

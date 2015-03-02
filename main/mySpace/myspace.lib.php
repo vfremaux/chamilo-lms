@@ -1,5 +1,6 @@
 <?php
 /* For licensing terms, see /license.txt */
+<<<<<<< HEAD
 /**
  * MySpace class definition
  * @package chamilo.reporting
@@ -7,11 +8,18 @@
 /**
  * Init
  */
-/**
- * MySpace class definition
- */
-class MySpace {
+=======
 
+require_once api_get_path(LIBRARY_PATH).'export.lib.inc.php';
+require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+/**
+ * Class MySpace
+ * @package chamilo.reporting
+ */
+class MySpace
+{
 	/**
 	 * This function serves exporting data in CSV format.
 	 * @param array $header			The header labels.
@@ -58,8 +66,13 @@ class MySpace {
 	 * @param	int		Session id (optional, default = 0)
 	 * @return 	array   Conections
 	 */
+<<<<<<< HEAD
 	static function get_connections_to_course($user_id, $courseId, $session_id = 0) {
 
+=======
+	static function get_connections_to_course($user_id, $course_code, $session_id = 0)
+    {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		// Database table definitions
 	    $tbl_track_course 	= Database :: get_main_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
 
@@ -70,7 +83,11 @@ class MySpace {
 
 	    $sql = 'SELECT login_course_date, logout_course_date FROM ' . $tbl_track_course . '
                 WHERE   user_id = '.$user_id.' AND
+<<<<<<< HEAD
                         c_id ="'.$courseId.'" AND
+=======
+                        course_code="'.$course_code.'" AND
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         session_id = '.$session_id.'
                 ORDER BY login_course_date ASC';
 	    $rs = Database::query($sql);
@@ -95,16 +112,26 @@ class MySpace {
 		$session_id  = intval($session_id);
         $new_course_list = array();;
         foreach ($course_list as $course_item) {
+<<<<<<< HEAD
             $new_course_list[] =  '"'.Database::escape_string($course_item['real_id']).'"';
+=======
+            $new_course_list[] =  '"'.Database::escape_string($course_item['code']).'"';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         $course_list = implode(', ', $new_course_list);
 
         if (empty($course_list)) {
             return false;
         }
+<<<<<<< HEAD
 	    $sql = 'SELECT login_course_date, logout_course_date, c_id FROM '.$tbl_track_course.'
                 WHERE   user_id = '.$user_id.' AND
                         c_id IN ('.$course_list.') AND
+=======
+	    $sql = 'SELECT login_course_date, logout_course_date, course_code FROM ' . $tbl_track_course . '
+                WHERE   user_id = '.$user_id.' AND
+                        course_code IN ('.$course_list.') AND
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         session_id = '.$session_id.'
                 ORDER BY login_course_date ASC';
 	    $rs = Database::query($sql);
@@ -241,6 +268,581 @@ class MySpace {
 		$table->set_column_filter(4, array('MySpace','course_info_tracking_filter'));
 		$table->display();
 	}
+    /**
+     * Display a sortable table that contains an overview off all the progress of the user in a session
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     */
+    public static function display_tracking_lp_progress_overview($sessionId = '', $courseId = '', $date_from, $date_to) {
+
+        $course = api_get_course_info_by_id($courseId);
+        /**
+         * Column name
+         * The order is important you need to check the $column variable in the model.ajax.php file
+         */
+        $columns = array(
+            get_lang('Username'),
+            get_lang('FirstName'),
+            get_lang('LastName'),
+        );
+        //add lessons of course
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+        $lessons = LearnpathList::get_course_lessons($course['code'], $sessionId);
+
+        //create columns array
+        foreach ($lessons as $lesson_id => $lesson)
+        {
+            $columns[] = $lesson['name'];
+        }
+
+        $columns[] = get_lang('Total');
+
+        /**
+         * Column config
+         */
+        $column_model   = array(
+            array('name'=>'username',   'index'=>'username',  'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'firstname',  'index'=>'firstname',    'align'=>'left', 'search' => 'true'),
+            array('name'=>'lastname',   'index'=>'lastname',     'align'=>'left', 'search' => 'true'),
+        );
+        //get dinamic column names
+        foreach ($lessons as $lesson_id => $lesson)
+        {
+            $column_model[] = array('name'=> $lesson['id'],   'index'=>$lesson['id'],    'align'=>'left', 'search' => 'true');
+        }
+
+        $column_model[] = array('name'=>'total',   'index'=>'total',    'align'=>'left', 'search' => 'true');
+
+        $action_links = '';
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_session_lp_progress&session_id=' . $sessionId . '&course_id=' . $courseId . '&date_to=' . $date_to . '&date_from=' . $date_from;
+
+        //Table Id
+        $tableId = 'lpProgress';
+
+        //Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        //height auto
+        $extra_params['height'] = 'auto';
+
+        $table = Display::grid_js($tableId, $url, $columns, $column_model, $extra_params, array(), $action_links, true);
+
+        $return = '<script>$(function() {'. $table .
+            'jQuery("#'.$tableId.'").jqGrid("navGrid","#'.$tableId.'_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#'.$tableId.'").jqGrid("navButtonAdd","#'.$tableId.'_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#'.$tableId.'").jqGrid("excelExport",{"url":"'.$url.'&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+        return $return;
+    }
+    /**
+     * Display a sortable table that contains an overview off all the progress of the user in a session
+     * @param   int $sessionId  The session ID
+     * @param   int $courseId   The course ID
+     * @param   int $exerciseId The quiz ID
+     * @param   int $answer Answer status (0 = incorrect, 1 = correct, 2 = both)
+     * @return  string  HTML array of results formatted for gridJS
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     */
+    static function display_tracking_exercise_progress_overview(
+        $sessionId = 0,
+        $courseId = 0,
+        $exerciseId = 0,
+        $date_from = null,
+        $date_to = null
+    ) {
+        $date_from = Security::remove_XSS($date_from);
+        $date_to = Security::remove_XSS($date_to);
+        /**
+         * Column names
+         * The column order is important. Check $column variable in the main/inc/ajax/model.ajax.php file
+         */
+        $columns = array(
+            get_lang('Session'),
+            get_lang('ExerciseId'),
+            get_lang('ExerciseName'),
+            get_lang('Username'),
+            get_lang('LastName'),
+            get_lang('FirstName'),
+            get_lang('Time'),
+            get_lang('QuestionId'),
+            get_lang('QuestionTitle'),
+            get_lang('WorkDescription'),
+            get_lang('Answer'),
+            get_lang('Correct'),
+        );
+
+        /**
+         * Column config
+         */
+        $column_model   = array(
+            array('name'=>'session', 'index'=>'session', 'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'exercise_id', 'index'=>'exercise_id', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'quiz_title', 'index'=>'quiz_title', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'username', 'index'=>'username', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'lastname', 'index'=>'lastname', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'firstname', 'index'=>'firstname', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'time', 'index'=>'time', 'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'question_id', 'index'=>'question_id', 'align'=>'left', 'search' => 'true'),
+            array('name'=>'question', 'index'=>'question', 'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'description', 'index'=>'description', 'align'=>'left', 'width' => '550', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'answer', 'index'=>'answer', 'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'correct', 'index'=>'correct', 'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+        );
+        //get dynamic column names
+
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_exercise_progress&session_id=' . $sessionId . '&course_id=' . $courseId  . '&exercise_id=' . $exerciseId . '&date_to=' . $date_to . '&date_from=' . $date_from;
+
+        // Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        // height auto
+        $extra_params['height'] = 'auto';
+
+        $tableId = 'exerciseProgressOverview';
+        $table = Display::grid_js($tableId, $url, $columns, $column_model, $extra_params, array(), '', true);
+
+        $return = '<script>$(function() {'. $table .
+            'jQuery("#'.$tableId.'").jqGrid("navGrid","#'.$tableId.'_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#'.$tableId.'").jqGrid("navButtonAdd","#'.$tableId.'_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#'.$tableId.'").jqGrid("excelExport",{"url":"'.$url.'&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+        return $return;
+    }
+
+    /**
+     * Display a sortable table that contains an overview off all the progress of the user in a session
+     * @param   int $sessionId The session ID
+     * @param   int $courseId The course ID
+     * @param null $date_from
+     * @param null $date_to
+     * @internal param int $exerciseId The quiz ID
+     * @internal param int $answer Answer status (0 = incorrect, 1 = correct, 2 = both)
+     * @return  string  HTML array of results formatted for gridJS
+     * @author Francis Gonzales <francis.gonzales@beeznest.com>, Beeznest Team
+     */
+    static function display_tracking_grade_overview($sessionId = 0, $courseId = 0, $date_from = null, $date_to = null)
+    {
+        /**
+         * Column names
+         * The column order is important. Check $column variable in the main/inc/ajax/model.ajax.php file
+         */
+        $objExercise = new Exercise();
+        $exercises = $objExercise->getExercisesByCouseSession($courseId, $sessionId);
+
+        $cntExer = 4;
+        if (!empty($exercises)) {
+            $cntExer += count($exercises);
+        }
+
+        $column = array();
+        $column_model = array();
+        $i = 1;
+        //Get dynamic column names
+        foreach (range(1, $cntExer) as $cnt) {
+            switch ($cnt) {
+                case 1:
+                    $column[] = get_lang('Section');
+                    $column_model[] = array(
+                        'name' => 'session',
+                        'index' => 'session',
+                        'align' => 'center',
+                        'search' => 'true',
+                    );
+                    break;
+                case 2:
+                    $column[] = get_lang('Username');
+                    $column_model[] = array(
+                        'name' => 'username',
+                        'index' => 'username',
+                        'align' => 'center',
+                        'search' => 'true',
+                    );
+                    break;
+                case 3:
+                    $column[] = get_lang('FirstName');
+                    $column_model[] = array(
+                        'name' => 'name',
+                        'index' => 'name',
+                        'align' => 'left',
+                        'search' => 'true',
+                    );
+                    break;
+                case $cntExer:
+                    $column[] = get_lang('FinalScore');
+                    $column_model[] = array(
+                        'name' => 'finalscore',
+                        'index' => 'finalscore',
+                        'align' => 'center',
+                        'search' => 'true',
+                        'wrap_cell' => "true"
+                    );
+                    break;
+                default:
+                    $title = "";
+                    if (!empty($exercises[$cnt - 4]['title'])) {
+                        $title = ucwords(strtolower(trim($exercises[$cnt - 4]['title'])));
+                    }
+
+                    $column[] = $title;
+                    $column_model[] = array(
+                        'name' => 'exer' . $i,
+                        'index' => 'exer' . $i,
+                        'align' => 'center',
+                        'search' => 'true',
+                        'wrap_cell' => "true"
+                    );
+                    $i++;
+                    break;
+            }
+        }
+
+        //end get dynamic column names
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH) . 'model.ajax.php?a=get_exercise_grade&session_id=' . $sessionId . '&course_id=' . $courseId;
+
+        //Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        //height auto
+        $extra_params['height'] = 'auto';
+
+        $tableId = 'exerciseGradeOverview';
+        $table = Display::grid_js($tableId, $url, $column, $column_model, $extra_params, array(), '', true);
+
+        $return = '<script>$(function() {' . $table .
+                'jQuery("#' . $tableId . '").jqGrid("navGrid","#' . $tableId . '_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#' . $tableId . '").jqGrid("navButtonAdd","#' . $tableId . '_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#' . $tableId . '").jqGrid("excelExport",{"url":"' . $url . '&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+        return $return;
+    }
+
+    /**
+     * Display a sortable table that contains an overview off all the progress of the user in a session
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     */
+    function display_survey_overview($sessionId = 0, $courseId = 0, $surveyId = 0, $date_from, $date_to)
+    {
+        /**
+         * Column name
+         * The order is important you need to check the $column variable in the model.ajax.php file
+         */
+        $columns = array(
+            get_lang('Username'),
+            get_lang('FirstName'),
+            get_lang('LastName'),
+        );
+        //add lessons of course
+        $questions = survey_manager::get_questions($surveyId, $courseId);
+
+        foreach ($questions as $question) {
+            $columns[] = $question['question'];
+        }
+
+        /**
+         * Column config
+         */
+        $column_model   = array(
+            array('name'=>'username',   'index'=>'username',    'align'=>'left', 'search' => 'true', 'wrap_cell' => "true"),
+            array('name'=>'firstname',  'index'=>'firstname',   'align'=>'left', 'search' => 'true'),
+            array('name'=>'lastname',   'index'=>'lastname',    'align'=>'left', 'search' => 'true'),
+        );
+        //get dinamic column names
+        foreach ($questions as $question_id => $question) {
+            $column_model[] = array(
+                'name'=> $question_id,
+                'index'=>$question_id,
+                'width'=>'70',
+                'align'=>'left',
+                'search' => 'true'
+            );
+        }
+
+        $action_links = '';
+
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_survey_overview&session_id=' . $sessionId . '&course_id=' . $courseId . '&survey_id=' . $surveyId . '&date_to=' . $date_to . '&date_from=' . $date_from;
+
+        //Table Id
+        $tableId = 'lpProgress';
+
+        //Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        //height auto
+        $extra_params['height'] = 'auto';
+
+        $table = Display::grid_js($tableId, $url, $columns, $column_model, $extra_params, array(), $action_links, true);
+
+        $return = '<script>$(function() {'. $table .
+            'jQuery("#'.$tableId.'").jqGrid("navGrid","#'.$tableId.'_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#'.$tableId.'").jqGrid("navButtonAdd","#'.$tableId.'_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#'.$tableId.'").jqGrid("excelExport",{"url":"'.$url.'&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+
+        return $return;
+    }
+
+    /**
+     * Display a sortable table that contains an overview off all the progress of the user in a session
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     */
+    static function display_tracking_progress_overview($sessionId = 0, $courseId = 0,  $date_from, $date_to)
+    {
+       //The order is important you need to check the the $column variable in the model.ajax.php file
+        $columns = array(
+            get_lang('LastName'),
+            get_lang('FirstName'),
+            get_lang('Username'),
+            #get_lang('Profile'),
+            get_lang('Total'),
+            get_lang('Courses'),
+            get_lang('LearningPaths'),
+            get_lang('Exercises'),
+            get_lang('Forums'),
+            get_lang('Assignments'),
+            get_lang('ToolWiki'),
+            get_lang('ToolSurvey'),
+            //Learning paths
+            get_lang('LearnpathsTotal'),
+            get_lang('LearnpathsDone'),
+            get_lang('LearnpathsLeft'),
+            get_lang('LearnpathsProgress'),
+            //Exercises
+            get_lang('ExercisesTotal'),
+            get_lang('ExercisesDone'),
+            get_lang('ExercisesLeft'),
+            get_lang('ExercisesProgress'),
+            //Forums
+            get_lang('ForumsTotal'),
+            get_lang('ForumsDone'),
+            get_lang('ForumsLeft'),
+            get_lang('ForumsProgress'),
+            //Assignments
+            get_lang('AssignmentsTotal'),
+            get_lang('AssignmentsDone'),
+            get_lang('AssignmentsLeft'),
+            get_lang('AssignmentsProgress'),
+            //Wiki
+            get_lang('WikiTotal'),
+            get_lang('WikiRevisions'),
+            get_lang('WikiRead'),
+            get_lang('WikiUnread'),
+            get_lang('WikiProgress'),
+            //Surveys
+            get_lang('SurveysTotal'),
+            get_lang('SurveysDone'),
+            get_lang('SurveysLeft'),
+            get_lang('SurveysProgress'),
+        );
+
+        //Column config
+        $column_model   = array(
+            array('name'=>'lastname',   'index'=>'lastname',     'align'=>'left'),
+            array('name'=>'firstname',  'index'=>'firstname',    'align'=>'left'),
+            array('name'=>'username',   'index'=>'username',     'align'=>'left'),
+            #array('name'=>'profile',   'index'=>'username',     'align'=>'left'),
+            array('name'=>'total',      'index'=>'total',        'align'=>'left'),
+            array('name'=>'courses',    'index'=>'courses',      'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'lessons',    'index'=>'lessons',      'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'exercises',  'index'=>'exercises',    'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'forums',     'index'=>'forums',       'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'homeworks',  'index'=>'homeworks',    'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'wikis',      'index'=>'wikis',        'align'=>'left', 'sortable' => 'false'),
+            array('name'=>'surveys',    'index'=>'surveys',      'align'=>'left', 'sortable' => 'false'),
+            //Lessons
+            array('name'=>'lessons_total',    'index'=>'lessons_total',      'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'lessons_done',     'index'=>'lessons_done',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'lessons_left',     'index'=>'lessons_left',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'lessons_progress', 'index'=>'lessons_progress',   'align'=>'center', 'sortable' => 'false'),
+            //Exercises
+            array('name'=>'exercises_total',    'index'=>'exercises_total',      'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'exercises_done',     'index'=>'exercises_done',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'exercises_left',     'index'=>'exercises_left',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'exercises_progress', 'index'=>'exercises_progress',   'align'=>'center', 'sortable' => 'false'),
+            //Assignments
+            array('name'=>'forums_total',    'index'=>'forums_total',        'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'forums_done',     'index'=>'forums_done',         'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'forums_left',     'index'=>'forums_left',         'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'forums_progress', 'index'=>'forums_progress',     'align'=>'center', 'sortable' => 'false'),
+            //Assignments
+            array('name'=>'assigments_total',    'index'=>'assigments_total',        'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'assigments_done',     'index'=>'assigments_done',         'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'assigments_left',     'index'=>'assigments_left',         'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'assigments_progress', 'index'=>'assigments_progress',     'align'=>'center', 'sortable' => 'false'),
+            //Assignments
+            array('name'=>'wiki_total',         'index'=>'wiki_total',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'wiki_revisions',     'index'=>'wiki_revisions',   'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'wiki_read',          'index'=>'wiki_read',        'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'wiki_unread',        'index'=>'wiki_unread',      'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'wiki_progress',      'index'=>'wiki_progress',    'align'=>'center', 'sortable' => 'false'),
+            //Surveys
+            array('name'=>'surveys_total',    'index'=>'surveys_total',      'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'surveys_done',     'index'=>'surveys_done',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'surveys_left',     'index'=>'surveys_left',       'align'=>'center', 'sortable' => 'false'),
+            array('name'=>'surveys_progress', 'index'=>'surveys_progress',   'align'=>'center', 'sortable' => 'false'),
+        );
+
+        $action_links = '';
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_session_progress&session_id=' . $sessionId . '&course_id=' . $courseId . '&date_to=' . $date_to . '&date_from=' . $date_from;
+
+        //Table Id
+        $tableId = 'progressOverview';
+
+        //Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        $extra_params['shrinkToFit'] = 'true';
+
+        $extra_params['headertitles'] = 'true';
+
+        $extra_params['groupHeaders'] = array(
+            'courses_detail' => array(
+                "startColumnName"   => 'courses',
+                "numberOfColumns"   =>  7,
+                "titleText"         =>  get_lang('Global'),
+                ),
+            'lessons' => array(
+                "startColumnName"   => 'lessons_total',
+                "numberOfColumns"   =>  4,
+                "titleText"         =>  get_lang('LearningPaths'),
+                ),
+            'exercises' => array(
+                "startColumnName"   => 'exercises_total',
+                "numberOfColumns"   =>  4,
+                "titleText"         =>  get_lang('Exercises'),
+                ),
+            'forums' => array(
+                "startColumnName"   => 'forums_total',
+                "numberOfColumns"   =>  4,
+                "titleText"         =>  get_lang('Forums'),
+                ),
+            'assignments' => array(
+                "startColumnName"   => 'assigments_total',
+                "numberOfColumns"   =>  4,
+                "titleText"         =>  get_lang('Assignments'),
+                ),
+            'wikis' => array(
+                "startColumnName"   => 'wiki_total',
+                "numberOfColumns"   =>  5,
+                "titleText"         =>  get_lang('Wiki'),
+                ),
+            'surveys' => array(
+                "startColumnName"   => 'surveys_total',
+                "numberOfColumns"   =>  4,
+                "titleText"         =>  get_lang('Survey'),
+                ),
+        );
+        //height auto
+        $extra_params['height'] = 'auto';
+
+        $table = Display::grid_js($tableId, $url, $columns, $column_model, $extra_params, array(), $action_links, true);
+
+        $return = '<script>$(function() {'. $table .
+            'jQuery("#'.$tableId.'").jqGrid("navGrid","#'.$tableId.'_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#'.$tableId.'").jqGrid("navButtonAdd","#'.$tableId.'_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#'.$tableId.'").jqGrid("excelExport",{"url":"'.$url.'&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+        return $return;
+    }
+    /**
+     * Display a sortable table that contains an overview off all the access to a session
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     * @version Chamilo 1.9.6
+     */
+    static function display_tracking_access_overview($sessionId = 0, $courseId = 0, $studentId = '', $profile = '', $date_from, $date_to) {
+        //The order is important you need to check the the $column variable in the model.ajax.php file
+        $columns = array(
+            get_lang('LoginDate'),
+            get_lang('UserName'),
+            get_lang('LastName'),
+            get_lang('FirstName'),
+            get_lang('Clicks'),
+            get_lang('IP'),
+            get_lang('TimeLoggedIn'),
+            get_lang('Section'),
+        );
+
+        $column_model   = array(
+            array('name'=>'logindate',      'index'=>'loginDate',      'align'=>'left', 'search' => 'true'),
+            array('name'=>'username',       'index'=>'username',       'align'=>'left', 'search' => 'true'),
+            array('name'=>'firstname',      'index'=>'firstname',      'align'=>'left', 'search' => 'true'),
+            array('name'=>'lastname',       'index'=>'lastname',       'align'=>'left', 'search' => 'true'),
+            array('name'=>'clicks',         'index'=>'clicks',         'align'=>'left', 'search' => 'true'),
+            array('name'=>'ip',             'index'=>'ip',             'align'=>'left', 'search' => 'true'),
+            array('name'=>'timeloggedin',   'index'=>'timeLoggedIn',   'align'=>'left', 'search' => 'true'),
+            array('name'=>'session',   'index'=>'session',   'align'=>'left')
+        );
+
+        $action_links = '';
+        // jqgrid will use this URL to do the selects
+        $url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_session_access_overview&session_id=' . $sessionId . '&course_id=' . $courseId . '&student_id=' . $studentId . '&profile=' . $profile . '&date_to=' . $date_to . '&date_from=' . $date_from;
+
+        //Table Id
+        $tableId = 'accessOverview';
+
+        //Autowidth
+        $extra_params['autowidth'] = 'true';
+
+        //height auto
+        $extra_params['height'] = 'auto';
+
+        $table = Display::grid_js($tableId, $url, $columns, $column_model, $extra_params, array(), $action_links, true);
+
+        $return = '<script>$(function() {'. $table .
+            'jQuery("#'.$tableId.'").jqGrid("navGrid","#'.$tableId.'_pager",{view:false, edit:false, add:false, del:false, search:false, excel:true});
+                jQuery("#'.$tableId.'").jqGrid("navButtonAdd","#'.$tableId.'_pager",{
+                       caption:"",
+                       title:"' . get_lang('ExportExcel') . '",
+                       onClickButton : function () {
+                           jQuery("#'.$tableId.'").jqGrid("excelExport",{"url":"'.$url.'&export_format=xls"});
+                       }
+                });
+            });</script>';
+        $return .= Display::grid_html($tableId);
+        return $return;
+    }
+    /**
+     * get the numer of users on track_e_course_access
+     *
+     * @return integer
+     *
+     * @author César Perales <cesar.perales@beeznest.com>, Beeznest Team
+     * @version Chamilo 1.9.6
+     */
+
 
 	/**
 	 * Displays a form with all the additionally defined user fields of the profile
@@ -386,7 +988,11 @@ class MySpace {
         $from = intval($from);
         $number_of_items = intval($number_of_items);
 
+<<<<<<< HEAD
 		$sql = "SELECT code AS col0, title AS col1, id FROM $main_course_table";
+=======
+		$sql = "SELECT code AS col0, title AS col1 FROM $main_course_table";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		$sql .= " ORDER BY col$column $direction ";
 		$sql .= " LIMIT $from,$number_of_items";
 		$result = Database::query($sql);
@@ -1235,10 +1841,16 @@ class MySpace {
 		// get all courses with limit
 		$sql = "SELECT course.code, course.title, id
 				FROM $tbl_course course
+<<<<<<< HEAD
 				WHERE course.id IN (".implode(',',$courseList).")";
 
 		if (!in_array($direction, array('ASC','DESC')))
             $direction = 'ASC';
+=======
+				WHERE course.code IN (".implode(',',$courses_code).")";
+
+		if (!in_array($direction, array('ASC','DESC'))) $direction = 'ASC';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	    $column = intval($column);
 	    $from = intval($from);
@@ -1252,11 +1864,19 @@ class MySpace {
         }
 
 		$res = Database::query($sql);
+<<<<<<< HEAD
 		while ($row_course = Database::fetch_array($res, 'ASSOC')) {
 			$courseCode = $row_course['code'];
             $courseId = $row_course['id'];
 
 			$nb_students_in_course = $avg_progress_in_course = $avg_score_in_course = $avg_time_spent_in_course = $avg_score_in_exercise = 0;
+=======
+		while ($row_course = Database::fetch_row($res)) {
+
+			$course_code = $row_course[0];
+			$course_info = api_get_course_info($course_code);
+			$avg_assignments_in_course = $avg_messages_in_course = $nb_students_in_course = $avg_progress_in_course = $avg_score_in_course = $avg_time_spent_in_course = $avg_score_in_exercise = 0;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 			// students directly subscribed to the course
 			if (empty($session_id)) {
@@ -1272,12 +1892,21 @@ class MySpace {
 
 			if (count($users) > 0) {
 				$nb_students_in_course = count($users);
+<<<<<<< HEAD
 				$avg_assignments_in_course  = Tracking::count_student_assignments($users, $courseId, $session_id);
 				$avg_messages_in_course     = Tracking::count_student_messages($users, $courseId, $session_id);
 				$avg_progress_in_course     = Tracking::get_avg_student_progress($users, $courseId, array(), $session_id);
 				$avg_score_in_course        = Tracking::get_avg_student_score($users, $courseId, array(), $session_id);
 				$avg_score_in_exercise      = Tracking::get_avg_student_exercise_score($users, $courseId, 0, $session_id);
 				$avg_time_spent_in_course   = Tracking::get_time_spent_on_the_course($users, $courseId, $session_id);
+=======
+				$avg_assignments_in_course  = Tracking::count_student_assignments($users, $course_code, $session_id);
+				$avg_messages_in_course     = Tracking::count_student_messages($users, $course_code, $session_id);
+				$avg_progress_in_course     = Tracking::get_avg_student_progress($users, $course_code, array(), $session_id);
+				$avg_score_in_course        = Tracking::get_avg_student_score($users, $course_code, array(), $session_id);
+				$avg_score_in_exercise      = Tracking::get_avg_student_exercise_score($users, $course_code, 0, $session_id);
+				$avg_time_spent_in_course   = Tracking::get_time_spent_on_the_course($users, $course_code, $session_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 				$avg_progress_in_course = round($avg_progress_in_course / $nb_students_in_course, 2);
 				if (is_numeric($avg_score_in_course)) {
@@ -1819,6 +2448,7 @@ class MySpace {
 }
 
 
+<<<<<<< HEAD
 function get_stats($user_id, $courseId, $start_date = null, $end_date = null) {
     // Database table definitions
     $tbl_track_course   = Database :: get_main_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
@@ -1842,6 +2472,33 @@ function get_stats($user_id, $courseId, $start_date = null, $end_date = null) {
     $result = array();
 
     if (Database::num_rows($rs)) {
+=======
+function get_stats($user_id, $course_code, $start_date = null, $end_date = null) {
+    // Database table definitions
+    $tbl_track_course   = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
+    $tbl_main           = Database :: get_main_table(TABLE_MAIN_COURSE);
+
+    $course_info = api_get_course_info($course_code);
+    if (!empty($course_info)) {
+        $strg_sd    = "";
+        $strg_ed    = "";
+        if ($start_date != null && $end_date != null){
+            $end_date = add_day_to( $end_date );
+            $strg_sd = "AND login_course_date BETWEEN '$start_date' AND '$end_date'";
+            $strg_ed = "AND logout_course_date BETWEEN '$start_date' AND '$end_date'";
+        }
+        $sql = 'SELECT SEC_TO_TIME(avg(time_to_sec(timediff(logout_course_date,login_course_date)))) as avrg,
+            SEC_TO_TIME(sum(time_to_sec(timediff(logout_course_date,login_course_date)))) as total,
+            count(user_id) as times
+            FROM ' . $tbl_track_course . '
+            WHERE user_id = ' . intval($user_id) . '
+            AND course_code = "' . Database::escape_string($course_code) . '" '.$strg_sd.' '.$strg_ed.' '.'
+            ORDER BY login_course_date ASC';
+
+        $rs = Database::query($sql);
+        $result = array();
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if ($row = Database::fetch_array($rs)) {
             $foo_avg    = $row['avrg'];
             $foo_total  = $row['total'];
@@ -1871,13 +2528,24 @@ function add_day_to($end_date) {
  * @version OCT-22- 2010
  * @return  array
  */
+<<<<<<< HEAD
 function get_connections_to_course_by_date($user_id, $courseId, $start_date, $end_date) {
     // Database table definitions
     $tbl_track_course   = Database :: get_main_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
 
+=======
+function get_connections_to_course_by_date($user_id, $course_code, $start_date, $end_date)
+{
+    // Database table definitions
+    $tbl_track_course   = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_COURSE_ACCESS);
+    $course_info = api_get_course_info($course_code);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $user_id = intval($user_id);
+    $connections = array();
+
     if (!empty($course_info)) {
         $end_date = add_day_to($end_date);
+<<<<<<< HEAD
         $sql = "SELECT login_course_date, logout_course_date FROM $tbl_track_course
             WHERE user_id = $user_id
             AND c_id = '$courseId'
@@ -1886,13 +2554,31 @@ function get_connections_to_course_by_date($user_id, $courseId, $start_date, $en
             ORDER BY login_course_date ASC";
         $rs = Database::query($sql);
         $connections = array();
+=======
+        $sql = "SELECT login_course_date, logout_course_date
+                FROM $tbl_track_course
+                WHERE
+                  user_id = $user_id AND
+                  course_code = '$course_code' AND
+                  login_course_date BETWEEN '$start_date' AND '$end_date' AND
+                  logout_course_date BETWEEN '$start_date' AND '$end_date'
+                ORDER BY login_course_date ASC";
+        $rs = Database::query($sql);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         while ($row = Database::fetch_array($rs)) {
             $login_date = $row['login_course_date'];
             $logout_date = $row['logout_course_date'];
             $timestamp_login_date = strtotime($login_date);
             $timestamp_logout_date = strtotime($logout_date);
+<<<<<<< HEAD
             $connections[] = array('login' => $timestamp_login_date, 'logout' => $timestamp_logout_date);
+=======
+            $connections[] = array(
+                'login' => $timestamp_login_date,
+                'logout' => $timestamp_logout_date
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     }
     return $connections;

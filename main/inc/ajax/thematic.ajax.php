@@ -5,7 +5,11 @@
  */
 
 require_once '../global.inc.php';
+<<<<<<< HEAD
 
+=======
+require_once api_get_path(LIBRARY_PATH).'attendance.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 api_protect_course_script(true);
 
 $action = $_GET['a'];
@@ -86,13 +90,20 @@ switch ($action) {
 	case 'get_datetime_by_attendance':
 		$attendance_id       = intval($_REQUEST['attendance_id']);
 		$thematic_advance_id = intval($_REQUEST['thematic_advance_id']);
+<<<<<<< HEAD
         $courseInfo = api_get_course_info();
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 		$label = '';
 		$input_select = '';
 		if (!empty($attendance_id)) {
 			$attendance = new Attendance();
+<<<<<<< HEAD
 			$thematic   = new Thematic($courseInfo);
+=======
+			$thematic   = new Thematic();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $thematic_list = $thematic->get_thematic_list();
 
             $my_list = $thematic_list_temp = array();
@@ -146,6 +157,7 @@ switch ($action) {
 	    break;
 	case 'update_done_thematic_advance':
 		$thematic_advance_id = intval($_GET['thematic_advance_id']);
+<<<<<<< HEAD
         $courseInfo = api_get_course_info();
 		$total_average = 0;
 		if (!empty($thematic_advance_id)) {
@@ -153,6 +165,14 @@ switch ($action) {
 			$affected_rows  = $thematic->update_done_thematic_advances($thematic_advance_id);
 			//if ($affected_rows) {
 			$total_average  = $thematic->get_total_average_of_thematic_advances(null, api_get_session_id());
+=======
+		$total_average = 0;
+		if (!empty($thematic_advance_id)) {
+			$thematic = new Thematic();
+			$affected_rows  = $thematic->update_done_thematic_advances($thematic_advance_id);
+			//if ($affected_rows) {
+			$total_average  = $thematic->get_total_average_of_thematic_advances(api_get_course_id(), api_get_session_id());
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			//}
 		}
 		echo $total_average;

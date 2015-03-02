@@ -91,11 +91,24 @@ class LinkAddEditForm extends FormValidator
             }
         }
 
+<<<<<<< HEAD
 		$this->add_textfield('weight_mask', array(get_lang('Weight'), null, ' [0 .. '.$category_object[0]->get_weight().'] '), true, array (
 			'size' => '4',
 			'maxlength' => '5',
             'class' => 'span1'
 		));
+=======
+		$this->add_textfield(
+            'weight_mask',
+            array(get_lang('Weight'), null, ' [0 .. <span id="max_weight">'.$category_object[0]->get_weight().'</span>] '),
+            true,
+            array(
+			    'size' => '4',
+			    'maxlength' => '5',
+                'class' => 'span1'
+		    )
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $this->addElement('hidden', 'weight');
 

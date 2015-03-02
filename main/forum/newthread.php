@@ -51,6 +51,22 @@ if (isset($_GET['origin'])) {
     $origin =  Security::remove_XSS($_GET['origin']);
 }
 
+<<<<<<< HEAD
+=======
+// javascript
+$htmlHeadXtra[] = '<script>
+    function advanced_parameters() {
+        if(document.getElementById(\'id_qualify\').style.display == \'none\') {
+            document.getElementById(\'id_qualify\').style.display = \'block\';
+            document.getElementById(\'img_plus_and_minus\').innerHTML=\'&nbsp;'.Display::return_icon('div_hide.gif',get_lang('Hide'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedParameters').'\';
+        } else {
+            document.getElementById(\'id_qualify\').style.display = \'none\';
+            document.getElementById(\'img_plus_and_minus\').innerHTML=\'&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedParameters').'\';
+        }
+    }
+</script>';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /* MAIN DISPLAY SECTION */
 /* Retrieving forum and forum category information */
 
@@ -65,9 +81,9 @@ if (isset($_SESSION['gradebook'])){
 
 if (!empty($gradebook) && $gradebook == 'view') {
     $interbreadcrumb[] = array (
-            'url' => '../gradebook/'.Security::remove_XSS($_SESSION['gradebook_dest']),
-            'name' => get_lang('ToolGradebook')
-        );
+        'url' => '../gradebook/'.Security::remove_XSS($_SESSION['gradebook_dest']),
+        'name' => get_lang('ToolGradebook')
+    );
 }
 
 if (!empty($_GET['gidReq'])) {
@@ -134,23 +150,21 @@ if ($origin == 'learnpath') {
     Display::display_reduced_header();
 } else {
     Display :: display_header(null);
-    //api_display_tool_title($nameTools);
 }
-/* Display forms / Feedback Messages */
 
 handle_forum_and_forumcategories();
 
 // Action links
 echo '<div class="actions">';
 echo '<span style="float:right;">'.search_link().'</span>';
-echo '<a href="viewforum.php?origin='.$origin.'&forum='.Security::remove_XSS($_GET['forum']).'&amp;gidReq='.Security::remove_XSS($_GET['gidReq']).'">'.Display::return_icon('back.png',get_lang('BackToForum'),'',ICON_SIZE_MEDIUM).'</a>';
+echo '<a href="viewforum.php?origin='.$origin.'&forum='.Security::remove_XSS($_GET['forum']).'&'.api_get_cidreq().'">'.Display::return_icon('back.png',get_lang('BackToForum'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '</div>';
 
-$values = show_add_post_form('newthread', '', isset($_SESSION['formelements']) ? $_SESSION['formelements'] : null);
+$values = show_add_post_form($current_forum, $forum_setting, 'newthread', '', isset($_SESSION['formelements']) ? $_SESSION['formelements'] : null);
 
 if (!empty($values) && isset($values['SubmitPost'])) {
     // Add new thread in table forum_thread.
-    store_thread($values);
+    store_thread($current_forum, $values);
 }
 
 /* FOOTER */

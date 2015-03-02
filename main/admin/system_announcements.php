@@ -172,6 +172,8 @@ if ($action_todo) {
         $form->addElement('hidden', 'action','edit');
     }
 
+    $form->addElement('checkbox', 'send_email_test', null, get_lang('SendOnlyAnEmailToMySelfToTest'));
+
     $form->addElement('style_submit_button', 'submit', $text,'class="'.$class.'"');
     if (api_get_setting('wcag_anysurfer_public_pages') == 'true') {
         $values['content'] = WCAG_Rendering::HTML_to_text($values['content']);
@@ -192,12 +194,25 @@ if ($action_todo) {
             $values['lang'] = null;
         }
         if (api_get_setting('wcag_anysurfer_public_pages') == 'true') {
-            $values['content'] = WCAG_Rendering::text_to_HTML($values['content']);
+            //$values['content'] = WCAG_Rendering::text_to_HTML($values['content']);
         }
         switch ($values['action']) {
             case 'add':
-                $announcement_id = SystemAnnouncementManager::add_announcement($values['title'],$values['content'],$values['start'],$values['end'],$values['visible_teacher'],$values['visible_student'],$values['visible_guest'], $values['lang'],$values['send_mail'],  $values['add_to_calendar']);
-                if ($announcement_id !== false )  {
+                $announcement_id = SystemAnnouncementManager::add_announcement(
+                    $values['title'],
+                    $values['content'],
+                    $values['start'],
+                    $values['end'],
+                    $values['visible_teacher'],
+                    $values['visible_student'],
+                    $values['visible_guest'],
+                    $values['lang'],
+                    $values['send_mail'],
+                    $values['add_to_calendar'],
+                    $values['send_email_test']
+                );
+
+                if ($announcement_id !== false)  {
                     SystemAnnouncementManager::announcement_for_groups($announcement_id, array($values['group']));
                     Display :: display_confirmation_message(get_lang('AnnouncementAdded'));
                 } else {
@@ -206,7 +221,20 @@ if ($action_todo) {
                 }
                 break;
             case 'edit':
-                if (SystemAnnouncementManager::update_announcement($values['id'], $values['title'], $values['content'], $values['start'], $values['end'], $values['visible_teacher'], $values['visible_student'], $values['visible_guest'], $values['lang'], $values['send_mail'])) {
+                if (SystemAnnouncementManager::update_announcement(
+                    $values['id'],
+                    $values['title'],
+                    $values['content'],
+                    $values['start'],
+                    $values['end'],
+                    $values['visible_teacher'],
+                    $values['visible_student'],
+                    $values['visible_guest'],
+                    $values['lang'],
+                    $values['send_mail'],
+                    $values['send_email_test']
+                )
+                ) {
                     SystemAnnouncementManager::announcement_for_groups($values['id'], array($values['group']));
                     Display :: display_confirmation_message(get_lang('AnnouncementUpdated'));
                 } else {

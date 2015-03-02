@@ -17,9 +17,13 @@ $language_file = array('registration', 'messages', 'userInfo');
 $cidReset = true;
 require_once '../inc/global.inc.php';
 
+<<<<<<< HEAD
 if (api_is_profile_readable() == false) {
     api_not_allowed(true);
 }
+=======
+require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (api_get_setting('allow_social_tool') == 'true') {
     $this_section = SECTION_SOCIAL;
@@ -134,7 +138,12 @@ if (api_get_setting('profile', 'name') !== 'true') {
 }
 $form->applyFilter(array('lastname', 'firstname'), 'stripslashes');
 $form->applyFilter(array('lastname', 'firstname'), 'trim');
+<<<<<<< HEAD
 $form->addRule('lastname', get_lang('ThisFieldIsRequired'), 'required');
+=======
+$form->applyFilter(array('lastname', 'firstname'), 'html_filter');
+$form->addRule('lastname' , get_lang('ThisFieldIsRequired'), 'required');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->addRule('firstname', get_lang('ThisFieldIsRequired'), 'required');
 
 //	USERNAME
@@ -161,11 +170,16 @@ if (CONFVAL_ASK_FOR_OFFICIAL_CODE) {
     }
     $form->applyFilter('official_code', 'stripslashes');
     $form->applyFilter('official_code', 'trim');
+<<<<<<< HEAD
     if (api_get_setting('registration', 'officialcode') == 'true' && api_get_setting(
         'profile',
         'officialcode'
     ) == 'true'
     ) {
+=======
+    $form->applyFilter('official_code', 'html_filter');
+    if (api_get_setting('registration', 'officialcode') == 'true' && api_get_setting('profile', 'officialcode') == 'true') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $form->addRule('official_code', get_lang('ThisFieldIsRequired'), 'required');
     }
 }
@@ -202,11 +216,13 @@ if (api_get_setting('profile', 'phone') !== 'true') {
 }
 $form->applyFilter('phone', 'stripslashes');
 $form->applyFilter('phone', 'trim');
+$form->applyFilter('phone', 'html_filter');
 /*if (api_get_setting('registration', 'phone') == 'true') {
 	$form->addRule('phone', get_lang('ThisFieldIsRequired'), 'required');
 }
 $form->addRule('phone', get_lang('EmailWrong'), 'email');*/
 
+<<<<<<< HEAD
 //	PICTURE
 if (api_is_profile_editable() && api_get_setting('profile', 'picture') == 'true') {
     $form->addElement(
@@ -214,6 +230,11 @@ if (api_is_profile_editable() && api_get_setting('profile', 'picture') == 'true'
         'picture',
         ($user_data['picture_uri'] != '' ? get_lang('UpdateImage') : get_lang('AddImage'))
     );
+=======
+//    PICTURE
+if (is_profile_editable() && api_get_setting('profile', 'picture') == 'true') {
+    $form->addElement('file', 'picture', ($user_data['picture_uri'] != '' ? get_lang('UpdateImage') : get_lang('AddImage')), array('class' => 'picture-form'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $form->add_progress_bar();
     if (!empty($user_data['picture_uri'])) {
         $form->addElement('checkbox', 'remove_picture', null, get_lang('DelImage'));
@@ -243,6 +264,7 @@ if (api_is_profile_editable() && api_get_setting('user_selected_theme') == 'true
 }
 //	EXTENDED PROFILE  this make the page very slow!
 if (api_get_setting('extended_profile') == 'true') {
+<<<<<<< HEAD
     if (!isset($_GET['type']) || (isset($_GET['type']) && $_GET['type'] == 'extended')) {
         $width_extended_profile = 500;
         //$form->addElement('html', '<a href="javascript: void(0);" onclick="javascript: show_extend();"> show_extend_profile</a>');
@@ -302,6 +324,38 @@ if (is_platform_authentication() && api_is_profile_editable() && api_get_setting
         array('size' => 40)
     );
     $form->addElement('password', 'password1', get_lang('NewPass'), array('size' => 40));
+=======
+    $width_extended_profile = 500;
+    //$form->addElement('html', '<a href="javascript: void(0);" onclick="javascript: show_extend();"> show_extend_profile</a>');
+    //$form->addElement('static', null, '<em>'.get_lang('OptionalTextFields').'</em>');
+    //    MY COMPETENCES
+    $form->add_html_editor('competences', get_lang('MyCompetences'), false, false, array('ToolbarSet' => 'Profile', 'Width' => $width_extended_profile, 'Height' => '130'));
+    //    MY DIPLOMAS
+    $form->add_html_editor('diplomas', get_lang('MyDiplomas'), false, false, array('ToolbarSet' => 'Profile', 'Width' => $width_extended_profile, 'Height' => '130'));
+    //    WHAT I AM ABLE TO TEACH
+    $form->add_html_editor('teach', get_lang('MyTeach'), false, false, array('ToolbarSet' => 'Profile', 'Width' => $width_extended_profile, 'Height' => '130'));
+
+    //    MY PRODUCTIONS
+    $form->addElement('file', 'production', get_lang('MyProductions'));
+    if ($production_list = UserManager::build_production_list(api_get_user_id(), '', true)) {
+        $form->addElement('static', 'productions_list', null, $production_list);
+    }
+    //    MY PERSONAL OPEN AREA
+    $form->add_html_editor('openarea', get_lang('MyPersonalOpenArea'), false, false, array('ToolbarSet' => 'Profile', 'Width' => $width_extended_profile, 'Height' => '350'));
+    $form->applyFilter(array('competences', 'diplomas', 'teach', 'openarea'), 'stripslashes');
+    $form->applyFilter(array('competences', 'diplomas', 'teach'), 'trim'); // openarea is untrimmed for maximum openness
+
+}
+
+//    PASSWORD, if auth_source is platform
+if (is_platform_authentication() && is_profile_editable() && api_get_setting('profile', 'password') == 'true') {
+    $form->addElement('password', 'password0', array(get_lang('Pass'), get_lang('Enter2passToChange')), array('size' => 40));
+    $form->addElement('password', 'password1', get_lang('NewPass'), array('id'=> 'password1', 'size' => 40));
+
+    if (isset($_configuration['allow_strength_pass_checker']) && $_configuration['allow_strength_pass_checker']) {
+        $form->addElement('label', null, '<div id="password_progress"></div>');
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $form->addElement('password', 'password2', get_lang('Confirmation'), array('size' => 40));
     //	user must enter identical password twice so we can prevent some user errors
     $form->addRule(array('password1', 'password2'), get_lang('PassTwo'), 'compare');
@@ -374,11 +428,17 @@ function is_platform_authentication()
  * @param    $user_id    User id
  * @return    The filename of the new production or FALSE if the upload has failed
  */
+<<<<<<< HEAD
 function upload_user_production($user_id)
 {
     $image_path = UserManager::get_user_picture_path_by_id($user_id, 'system', true);
 
     $production_repository = $image_path['dir'].$user_id.'/';
+=======
+function upload_user_production($user_id) {
+    $image_path = UserManager::get_user_picture_path_by_id($user_id, 'system');
+    $production_repository = $image_path['dir'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if (!file_exists($production_repository)) {
         @mkdir($production_repository, api_get_permissions_for_new_directories(), true);
@@ -401,8 +461,12 @@ function upload_user_production($user_id)
  * @return    bool true o false
  * @uses Gets user ID from global variable
  */
+<<<<<<< HEAD
 function check_user_password($password)
 {
+=======
+function check_user_password($password) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     global $_user;
     $user_id = api_get_user_id();
     if ($user_id != strval(intval($user_id)) || empty($password)) {
@@ -410,6 +474,7 @@ function check_user_password($password)
     }
     $table_user = Database :: get_main_table(TABLE_MAIN_USER);
     $password = api_get_encrypted_password($password);
+    $password = Database::escape_string($password);
     $sql_password = "SELECT * FROM $table_user WHERE user_id='".$user_id."' AND password='".$password."'";
     $result = Database::query($sql_password);
 
@@ -466,8 +531,13 @@ if (is_platform_authentication()) {
 if ($form->validate()) {
 
     $wrong_current_password = false;
+<<<<<<< HEAD
 //	$user_data = $form->exportValues();
     $user_data = $form->getSubmitValues();
+=======
+//    $user_data = $form->exportValues();
+    $user_data = $form->getSubmitValues(1);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // set password if a new one was provided
     if (!empty($user_data['password0'])) {
@@ -624,6 +694,10 @@ if ($form->validate()) {
             } else {
                 $extras[$new_key] = $value;
             }
+        } elseif (strpos($key, 'remove_extra_') !== false) {
+            $extra_value = Security::filter_filename(urldecode(key($value)));
+            // To remove from user_field_value and folder
+            UserManager::update_extra_field_value($user_id, substr($key,13), $extra_value);
         } else {
             if (in_array($key, $available_values_to_modify)) {
                 $sql .= " $key = '".Database::escape_string($value)."',";
@@ -688,7 +762,23 @@ if ($form->validate()) {
     if (is_array($extras) && count($extras) > 0) {
         foreach ($extras as $key => $value) {
             //3. Tags are process in the UserManager::update_extra_field_value by the UserManager::process_tags function
-            UserManager::update_extra_field_value(api_get_user_id(), $key, $value);
+            // For array $value -> if exists key 'tmp_name' then must not be empty
+            // This avoid delete from user field value table when doesn't upload a file
+            if (is_array($value)) {
+                if (array_key_exists('tmp_name', $value) && empty($value['tmp_name'])) {
+                    //Nothing to do
+                } else {
+                    if (array_key_exists('tmp_name', $value)) {
+                        $value['tmp_name'] = Security::filter_filename($value['tmp_name']);
+                    }
+                    if (array_key_exists('name', $value)) {
+                        $value['name'] = Security::filter_filename($value['name']);
+                    }
+                    UserManager::update_extra_field_value($user_id, $key, $value);
+                }
+            } else {
+                UserManager::update_extra_field_value($user_id, $key, $value);
+            }
         }
     }
 

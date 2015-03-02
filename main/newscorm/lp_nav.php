@@ -29,7 +29,11 @@ require_once 'aicc.class.php';
 
 
 $htmlHeadXtra[] = '<script>
+<<<<<<< HEAD
   var chamilo_xajax_handler = window.parent.oxajax;
+=======
+    var chamilo_xajax_handler = window.parent.oxajax;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 </script>';
 
 $progress_bar = '';
@@ -56,7 +60,7 @@ if (isset($_SESSION['lpobject'])) {
 
     $mycourselptheme = null;
     if (api_get_setting('allow_course_theme') == 'true') {
-    	$mycourselptheme = api_get_course_setting('allow_learning_path_theme');
+        $mycourselptheme = api_get_course_setting('allow_learning_path_theme');
     }
 
     if (!empty($lp_theme_css) && !empty($mycourselptheme) && $mycourselptheme != -1 && $mycourselptheme == 1) {
@@ -71,4 +75,15 @@ if (isset($_SESSION['lpobject'])) {
 }
 session_write_close();
 ?>
-<span><?php echo (!empty($mediaplayer)) ? $mediaplayer : '&nbsp;' ?></span>
+<script type="text/javascript">
+$(document).ready(function() {
+    jQuery('video:not(.skip), audio:not(.skip)').mediaelementplayer({
+        success: function(player, node) {
+        }
+    });
+
+});
+</script>
+<span>
+    <?php echo (!empty($mediaplayer)) ? $mediaplayer : '&nbsp;' ?>
+</span>

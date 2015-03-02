@@ -31,15 +31,24 @@ if (!api_is_allowed_to_edit()) {
 
 $tool_name = get_lang("SubscribeUserToCourse");
 $type = isset($_REQUEST['type']) ? Security::remove_XSS($_REQUEST['type']) : null;
+<<<<<<< HEAD
+=======
+$keyword = isset($_REQUEST['keyword']) ? Security::remove_XSS($_REQUEST['keyword']) : null;
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if ($type == 'teacher') {
 	$tool_name = get_lang("SubscribeUserToCourseAsTeacher");
 }
 
-
 //extra entries in breadcrumb
 $interbreadcrumb[] = array ("url" => "user.php", "name" => get_lang("ToolUser"));
+<<<<<<< HEAD
 if (isset($_GET['keyword']) && $_GET['keyword']) {
 	$interbreadcrumb[] = array ("url" => "subscribe_user.php?type=".Security::remove_XSS($_GET['type']), "name" => $tool_name);
+=======
+if ($keyword) {
+	$interbreadcrumb[] = array ("url" => "subscribe_user.php?type=".$type, "name" => $tool_name);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	$tool_name = get_lang('SearchResults');
 }
 
@@ -48,7 +57,11 @@ Display :: display_header($tool_name, "User");
 // Build search-form
 echo '<div class="actions">';
 $actions = null;
+<<<<<<< HEAD
 if (isset($_GET['keyword'])) {
+=======
+if (isset($keyword)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $actions .= '<a href="subscribe_user.php?type='.$type.'">'.Display::return_icon('clean_group.gif').' '.get_lang('ClearSearchResults').'</a>';
 }
 if (isset($_GET['subscribe_user_filter_value']) AND !empty($_GET['subscribe_user_filter_value'])) {
@@ -77,18 +90,23 @@ $current_session_id = api_get_session_id();
 $list_register_user='';
 $list_not_register_user='';
 
+<<<<<<< HEAD
 if (isset ($_REQUEST['register'])) {
 	if (isset($_REQUEST['type']) && $_REQUEST['type']=='teacher') {
+=======
+if (isset($_REQUEST['register'])) {
+	if ($type =='teacher') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		if (!empty($current_session_id)) {
-			$result_simple_sub = SessionManager::set_coach_to_course_session(intval($_REQUEST['user_id']), $current_session_id, $_course['sysCode']);
+			$result_simple_sub = SessionManager::set_coach_to_course_session($_REQUEST['user_id'], $current_session_id, $_course['sysCode']);
 		} else {
-			$result_simple_sub = CourseManager :: subscribe_user(intval($_REQUEST['user_id']), $_course['sysCode'],COURSEMANAGER);
+			$result_simple_sub = CourseManager :: subscribe_user($_REQUEST['user_id'], $_course['sysCode'], COURSEMANAGER);
 		}
 	} else {
-		$result_simple_sub=CourseManager :: subscribe_user(intval($_REQUEST['user_id']), $_course['sysCode']);
+		$result_simple_sub=CourseManager :: subscribe_user($_REQUEST['user_id'], $_course['sysCode']);
 	}
 
-	$user_id_temp=$_SESSION['session_user_id'];
+	$user_id_temp = $_SESSION['session_user_id'];
 
 	if (is_array($user_id_temp)) {
 		$counter = count($user_id_temp);
@@ -113,7 +131,7 @@ if (isset ($_POST['action'])) {
 			if (is_array($_POST['user'])) {
 				foreach ($_POST['user'] as $index => $user_id) {
 					$user_id=intval($user_id);
-					if(isset($_REQUEST['type']) && $_REQUEST['type']=='teacher') {
+					if ($type =='teacher') {
 						if (!empty($current_session_id)) {
 							$is_suscribe[] = SessionManager::set_coach_to_course_session($user_id, $current_session_id, $_course['sysCode']);
 						} else {
@@ -122,7 +140,7 @@ if (isset ($_POST['action'])) {
 					} else {
 						$is_suscribe[]=CourseManager::subscribe_user($user_id, $_course['sysCode']);
 					}
-						$is_suscribe_user_id[]=$user_id;
+                    $is_suscribe_user_id[]=$user_id;
 				}
 			}
 
@@ -185,8 +203,13 @@ $sort_by_first_name = api_sort_by_first_name();
 
 // Build table
 $table = new SortableTable('subscribe_users', 'get_number_of_users', 'get_user_data', ($is_western_name_order xor $sort_by_first_name) ? 3 : 2);
+<<<<<<< HEAD
 $parameters['keyword'] = isset($_REQUEST['keyword']) ? Security::remove_XSS($_REQUEST['keyword']) : null;
 $parameters ['type'] = isset($_REQUEST['type']) ? $type : null;
+=======
+$parameters['keyword'] = $keyword;
+$parameters['type'] = $type;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $table->set_additional_parameters($parameters);
 $col = 0;
 $table->set_header($col ++, '', false);
@@ -210,7 +233,7 @@ $table->set_column_filter($col -1, 'reg_filter');
 $table->set_form_actions(array ('subscribe' => get_lang('reg')), 'user');
 
 if (!empty($_POST['keyword'])) {
-    $keyword_name=Security::remove_XSS($_POST['keyword']);
+    $keyword_name = Security::remove_XSS($_POST['keyword']);
     echo '<br/>'.get_lang('SearchResultsFor').' <span style="font-style: italic ;"> '.$keyword_name.' </span><br>';
 }
 
@@ -330,7 +353,7 @@ function get_number_of_users() {
 	}
 
 	// when there is a keyword then we are searching and we have to change the SQL statement
-	if (isset ($_GET['keyword']) AND !empty($_GET['keyword'])) {
+	if (isset($_GET['keyword']) AND !empty($_GET['keyword'])) {
 		$keyword = Database::escape_string(trim($_REQUEST['keyword']));
 		$sql .= " AND (firstname LIKE '%".$keyword."%' OR lastname LIKE '%".$keyword."%'   OR email LIKE '%".$keyword."%' OR username LIKE '%".$keyword."%'  OR official_code LIKE '%".$keyword."%')";
 
@@ -357,13 +380,33 @@ function get_number_of_users() {
 	   $row = Database::fetch_row($res);
 	   $count_user = $row[0];
 	}
+<<<<<<< HEAD
+=======
+
+	/* @todo seems not to be used
+	// we add 1 for every additional user (a user where the keyword matches one of the additional profile fields)
+	// that is not yet in the course and not yet in the search result
+	if (isset ($_REQUEST['keyword']) AND api_get_setting('ProfilingFilterAddingUsers') == 'true') {
+		foreach($additional_users as $additional_user_key=>$additional_user_value){
+			if (!in_array($additional_user_key,$users) AND !in_array($additional_user_key,$users_of_course)){
+				$result++;
+			}
+		}
+	}
+    */
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	return $count_user;
 }
 /**
  * Get the users to display on the current page.
  */
 function get_user_data($from, $number_of_items, $column, $direction) {
+<<<<<<< HEAD
 	global $_configuration;
+=======
+	global $_course, $_configuration;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $url_access_id = api_get_current_access_url_id();
     $course_code = api_get_course_id();
@@ -411,7 +454,11 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 		if (!empty($session_id)) {
 			$sql = "SELECT $select_fields
 					FROM $user_table u
+<<<<<<< HEAD
 					LEFT JOIN $tbl_session_rel_course_user cu on u.user_id = cu.id_user AND cu.c_id ='".$courseId."' AND id_session ='".$session_id."'
+=======
+					LEFT JOIN $tbl_session_rel_course_user cu on u.user_id = cu.id_user AND course_code='".$course_code."' AND id_session ='".$session_id."'
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     INNER JOIN  $tbl_url_rel_user as url_rel_user ON (url_rel_user.user_id = u.user_id) ";
 
 			// applying the filter of the additional user profile fields
@@ -449,7 +496,11 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 				}
 
 				// adding a teacher NOT trough a session on a portal with multiple URLs
+<<<<<<< HEAD
 				if ($_configuration['multiple_access_urls']) {
+=======
+				if (api_is_multiple_url_enabled()) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 					if ($url_access_id !=-1) {
 						$sql = "SELECT $select_fields
 						FROM $user_table u
@@ -476,9 +527,15 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 		if (!empty($session_id)) {
 			$sql = "SELECT $select_fields
                     FROM $user_table u
+<<<<<<< HEAD
                     LEFT JOIN $tbl_session_rel_course_user cu ON u.user_id = cu.id_user AND cu.c_id ='".$courseId."' AND id_session ='".$session_id."' ";
 
             if (api_is_multiple_url_enabled()) {
+=======
+                    LEFT JOIN $tbl_session_rel_course_user cu ON u.user_id = cu.id_user AND course_code='".$course_code."' AND id_session ='".$session_id."' ";
+
+            if (isset($_configuration['multiple_access_urls']) && $_configuration['multiple_access_urls']) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $sql .= " INNER JOIN  $tbl_url_rel_user as url_rel_user ON (url_rel_user.user_id = u.user_id) ";
             }
 
@@ -495,7 +552,11 @@ function get_user_data($from, $number_of_items, $column, $direction) {
                 $sql .=	"WHERE cu.id_user IS NULL AND u.status<>".DRH." AND (u.official_code <> 'ADMIN' OR u.official_code IS NULL) ";
             }
 
+<<<<<<< HEAD
             if (api_is_multiple_url_enabled()) {
+=======
+            if (isset($_configuration['multiple_access_urls']) && $_configuration['multiple_access_urls']) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $sql .=  "AND access_url_id = $url_access_id";
             }
 
@@ -519,7 +580,11 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 
 			//showing only the courses of the current Chamilo access_url_id
 
+<<<<<<< HEAD
 			if (api_is_multiple_url_enabled()) {
+=======
+			if (isset($_configuration['multiple_access_urls']) && $_configuration['multiple_access_urls']) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 				if ($url_access_id !=-1) {
 
@@ -548,7 +613,8 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 	}
 
 	// adding additional WHERE statements to the SQL for the search functionality
-	if (isset ($_REQUEST['keyword'])) {
+    $additional_users = null;
+	if (isset($_REQUEST['keyword'])) {
 		$keyword = Database::escape_string(trim($_REQUEST['keyword']));
 		$sql .= " AND (firstname LIKE '%".$keyword."%' OR lastname LIKE '%".$keyword."%'   OR email LIKE '%".$keyword."%'  OR username LIKE '%".$keyword."%'  OR official_code LIKE '%".$keyword."%')";
 
@@ -586,8 +652,13 @@ function get_user_data($from, $number_of_items, $column, $direction) {
 		}
 	}
 	// adding additional users based on the search on the additional profile fields
+<<<<<<< HEAD
 	if (isset ($_REQUEST['keyword'])){
 		if (isset($additional_users) && is_array($additional_users)) {
+=======
+	if (isset($_REQUEST['keyword'])){
+		if (is_array($additional_users)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			foreach($additional_users as $additional_user_key=>$additional_user_value){
 				if (!in_array($additional_user_key, $_SESSION['session_user_id']) AND !in_array($additional_user_key,$users_of_course)){
 					$users[]= array($additional_user_value['col0'],$additional_user_value['col1'],$additional_user_value['col2'].'*',$additional_user_value['col3'].'*',$additional_user_value['col4'],$additional_user_value['col5'], $additional_user_value['col6']);

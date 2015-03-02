@@ -47,11 +47,20 @@ class Security
      */
     public static function check_abs_path($abs_path, $checker_path)
     {
+<<<<<<< HEAD
         if (empty($checker_path)) {
             return false;
         } // The checker path must be set.
+=======
+        // The checker path must be set.
+        if (empty($checker_path)) {
+            return false;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $true_path = str_replace("\\", '/', realpath($abs_path));
+        $checker_path = str_replace("\\", '/', realpath($checker_path));
+
         $found = strpos($true_path.'/', $checker_path);
 
         if ($found === 0) {
@@ -64,13 +73,6 @@ class Security
                     return true;
                 }
             }
-            // Code specific to courses directory stored on other disk.
-            /*
-            $checker_path = str_replace(api_get_path(SYS_COURSE_PATH), $_configuration['symbolic_course_folder_abs'], $checker_path);
-            $found = strpos($true_path.'/', $checker_path);
-            if ($found === 0) {
-                return true;
-            }*/
         }
 
         return false;
@@ -86,9 +88,16 @@ class Security
      */
     public static function check_rel_path($rel_path, $checker_path)
     {
+<<<<<<< HEAD
         if (empty($checker_path)) {
             return false;
         } // The checker path must be set.
+=======
+        // The checker path must be set.
+        if (empty($checker_path)) {
+            return false;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $current_path = getcwd(); // No trailing slash.
         if (substr($rel_path, -1, 1) != '/') {
             $rel_path = '/'.$rel_path;
@@ -109,10 +118,16 @@ class Security
      * other languages' files extensions)
      * @param   string  Unfiltered filename
      * @param   string  Filtered filename
+     * @return string
      */
     public static function filter_filename($filename)
     {
+<<<<<<< HEAD
         return FileManager::disable_dangerous_file($filename);
+=======
+        require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
+        return disable_dangerous_file($filename);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -125,8 +140,11 @@ class Security
      */
     public static function check_token($request_type = 'post')
     {
+<<<<<<< HEAD
         $currentSessionToken = Security::getCurrentToken();
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         switch ($request_type) {
             case 'request':
                 if (isset($currentSessionToken) && isset($_REQUEST['sec_token']) && $currentSessionToken === $_REQUEST['sec_token']) {
@@ -191,7 +209,11 @@ class Security
      */
     public static function get_HTML_token()
     {
+<<<<<<< HEAD
         $token = md5(uniqid(rand(), true));
+=======
+        $token = md5(uniqid(rand(), TRUE));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $string = '<input type="hidden" name="sec_token" value="'.$token.'" />';
         $_SESSION['sec_token'] = $token;
 
@@ -209,19 +231,35 @@ class Security
      */
     public static function get_token()
     {
+<<<<<<< HEAD
         $token = md5(uniqid(rand(), true));
+=======
+        $token = md5(uniqid(rand(), TRUE));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $_SESSION['sec_token'] = $token;
 
         return $token;
     }
 
     /**
+<<<<<<< HEAD
      * Get current token
      * @return null
      */
     public static function getCurrentToken()
     {
         return isset($_SESSION['sec_token']) ? $_SESSION['sec_token'] : null;
+=======
+     * @return string
+     */
+    public static function get_existing_token()
+    {
+        if (isset($_SESSION['sec_token']) && !empty($_SESSION['sec_token'])) {
+            return $_SESSION['sec_token'];
+        } else {
+            return self::get_token();
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -231,11 +269,62 @@ class Security
      */
     public static function get_ua()
     {
+<<<<<<< HEAD
         $_SESSION['sec_ua_seed'] = uniqid(rand(), true);
+=======
+        $_SESSION['sec_ua_seed'] = uniqid(rand(), TRUE);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $_SESSION['sec_ua'] = $_SERVER['HTTP_USER_AGENT'].$_SESSION['sec_ua_seed'];
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * This function filters a variable to the type given, with the options given
+     * @param	mixed	The variable to be filtered
+     * @param	string	The type of variable we expect (bool,int,float,string)
+     * @param	array	Additional options
+     * @return	bool	True if variable was filtered and added to the current object, false otherwise
+     */
+    public static function filter($var, $type = 'string', $options = array())
+    {
+        // This function has not been finished! Do not use!
+        $result = false;
+        // Get variable name and value.
+        $args = func_get_args();
+        $names = array_keys($args);
+        $name = $names[0];
+        $value = $args[$name];
+        switch ($type) {
+            case 'bool':
+                $result = (bool) $var;
+                break;
+            case 'int':
+                $result = (int) $var;
+                break;
+            case 'float':
+                $result = (float) $var;
+                break;
+            case 'string/html':
+                $result = self::remove_XSS($var);
+                break;
+            case 'string/db':
+                $result = Database::escape_string($var);
+                break;
+            case 'array':
+                // An array variable shouldn't be given to the filter.
+                return false;
+            default:
+                return false;
+        }
+        if (!empty($option['save'])) {
+            self::$clean[$name] = $result;
+        }
+        return $result;
+    }
+
+    /**
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * This function returns a variable from the clean array. If the variable doesn't exist,
      * it returns null
      * @param    string    Variable name
@@ -254,6 +343,7 @@ class Security
      * This function tackles the XSS injections.
      * Filtering for XSS is very easily done by using the htmlentities() function.
      * This kind of filtering prevents JavaScript snippets to be understood as such.
+<<<<<<< HEAD
      * @param    mixed    The variable to filter for XSS, this params can be a string or an array (example : array(x,y))
      * @param   integer The user status,constant allowed (STUDENT, COURSEMANAGER, ANONYMOUS, COURSEMANAGERLOWSECURITY)
      * @return    mixed    Filtered string or array
@@ -265,16 +355,51 @@ class Security
         if ($filter_terms) {
             $var = self::filter_terms($var);
         }
+=======
+     * @param string	The variable to filter for XSS, this params can be a string or an array (example : array(x,y))
+     * @param int The user status,constant allowed (STUDENT, COURSEMANAGER, ANONYMOUS, COURSEMANAGERLOWSECURITY)
+     * @param bool $filter_terms
+     * @return	mixed	Filtered string or array
+     */
+    public static function remove_XSS($var, $user_status = null, $filter_terms = false)
+    {
+    	if ($filter_terms) {
+    		$var = self::filter_terms($var);
+    	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+
+        if (empty($user_status)) {
+            if (api_is_anonymous()) {
+                $user_status = ANONYMOUS;
+            } else {
+                if (api_is_allowed_to_edit()) {
+                    $user_status = COURSEMANAGER;
+                } else {
+                    $user_status = STUDENT;
+                }
+            }
+        }
 
         if ($user_status == COURSEMANAGERLOWSECURITY) {
             return $var; // No filtering.
         }
+
         static $purifier = array();
         if (!isset($purifier[$user_status])) {
+<<<<<<< HEAD
             global $app;
             $cache_dir = $app['htmlpurifier.serializer'];
+=======
+            if (!class_exists('HTMLPurifier')) {
+                // Lazy loading.
+                require realpath(__DIR__).'/htmlpurifier/library/HTMLPurifier.auto.php';
+            }
+            $cache_dir = api_get_path(SYS_ARCHIVE_PATH).'Serializer';
+            if (!file_exists($cache_dir)) {
+                mkdir($cache_dir, 0777);
+            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $config = HTMLPurifier_Config::createDefault();
-            //$config->set('Cache.DefinitionImpl', null); // Enable this line for testing purposes, for turning off caching. Don't forget to disable this line later!
             $config->set('Cache.SerializerPath', $cache_dir);
             $config->set('Core.Encoding', api_get_system_encoding());
             $config->set('HTML.Doctype', 'XHTML 1.0 Transitional');
@@ -287,8 +412,14 @@ class Security
                 $config->set('Filter.Custom', array(new HTMLPurifier_Filter_AllowIframes()));
             }
 
+<<<<<<< HEAD
             //Shows _target attribute in anchors
             $config->set('Attr.AllowedFrameTargets', array('_blank', '_top', '_self', '_parent'));
+=======
+            // Shows _target attribute in anchors
+            $config->set('Attr.AllowedFrameTargets', array('_blank','_top','_self', '_parent'));
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if ($user_status == STUDENT) {
                 global $allowed_html_student;
                 $config->set('HTML.SafeEmbed', true);
@@ -307,16 +438,36 @@ class Security
                 global $allowed_html_anonymous;
                 $config->set('HTML.Allowed', $allowed_html_anonymous);
             }
+<<<<<<< HEAD
             $config->set(
                 'Attr.EnableID',
                 true
             ); // We need it for example for the flv player (ids of surrounding div-tags have to be preserved).
+=======
+
+            $config->set('Attr.EnableID', true); // We need it for example for the flv player (ids of surrounding div-tags have to be preserved).
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $config->set('CSS.AllowImportant', true);
             $config->set('CSS.AllowTricky', true); // We need for the flv player the css definition display: none;
             $config->set('CSS.Proprietary', true);
+
+<<<<<<< HEAD
+=======
+            // Allow uri scheme.
+            $config->set('URI.AllowedSchemes', array(
+                'http' => true,
+                'https' => true,
+                'mailto' => true,
+                'ftp' => true,
+                'nntp' => true,
+                'news' => true,
+                'data' => true,
+            ));
+
             $purifier[$user_status] = new HTMLPurifier($config);
         }
 
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (is_array($var)) {
             return $purifier[$user_status]->purifyArray($var);
         } else {
@@ -332,7 +483,11 @@ class Security
      */
     static function filter_terms($text)
     {
+<<<<<<< HEAD
         static $bad_terms = array();
+=======
+    	static $bad_terms = array();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         if (empty($bad_terms)) {
             $list = api_get_setting('filter_terms');
@@ -350,6 +505,37 @@ class Security
                 $bad_terms = array_filter($bad_terms);
             }
         }
+<<<<<<< HEAD
+=======
+
+    	$replace = '***';
+
+    	if (!empty($bad_terms)) {
+    		//Fast way
+    		$new_text = str_ireplace($bad_terms, $replace, $text, $count);
+
+    		//We need statistics
+    		/*
+    		if (strlen($new_text) != strlen($text)) {
+    			$table = Database::get_main_table(TABLE_STATISTIC_TRACK_FILTERED_TERMS);
+    			$attributes = array();
+
+
+    			$attributes['user_id'] 		=
+    			$attributes['course_id'] 	=
+    			$attributes['session_id'] 	=
+    			$attributes['tool_id'] 		=
+    			$attributes['term'] 		=
+    			$attributes['created_at'] 	= api_get_utc_datetime();
+    			$sql = Database::insert($table, $attributes);
+    		}
+    		*/
+    		$text = $new_text;
+
+    	}
+		return $text;
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $replace = '***';
         if (!empty($bad_terms)) {

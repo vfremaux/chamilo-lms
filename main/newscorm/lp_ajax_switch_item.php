@@ -40,10 +40,20 @@ require_once 'aiccItem.class.php';
  */
 function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_item)
 {
+<<<<<<< HEAD
     $debug = 0;
     $return = '';
     if ($debug > 0) {
         error_log('In xajax_switch_item_details('.$lp_id.','.$user_id.','.$view_id.','.$current_item.','.$next_item.')', 0);
+=======
+    $debug  = 0;
+    $return = '';
+    if ($debug > 0) {
+        error_log(
+            'In xajax_switch_item_details('.$lp_id.','.$user_id.','.$view_id.','.$current_item.','.$next_item.')',
+            0
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
     //$objResponse = new xajaxResponse();
     /* $item_id may be one of:
@@ -153,6 +163,7 @@ function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_it
      * -suspend_data
      */
     $myscore = $mylpi->get_score();
+<<<<<<< HEAD
     $mymax = $mylpi->get_max();
     if ($mymax === '') {
         $mymax = "''";
@@ -168,6 +179,32 @@ function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_it
     $mysuspend_data = $mylpi->get_suspend_data();
     $myic = $mylpi->get_interactions_count();
     $myistring = '';
+=======
+    $mymax   = $mylpi->get_max();
+    if ($mymax === '') {
+        $mymax = "''";
+    }
+    $mymin              = $mylpi->get_min();
+    $mylesson_status    = $mylpi->get_status();
+    $mylesson_location  = $mylpi->get_lesson_location();
+    $mytotal_time       = $mylpi->get_scorm_time('js');
+    $mymastery_score    = $mylpi->get_mastery_score();
+    $mymax_time_allowed = $mylpi->get_max_time_allowed();
+    $mylaunch_data      = $mylpi->get_launch_data();
+    /*
+    if ($mylpi->get_type() == 'asset') {
+        // Temporary measure to save completion of an asset. Later on, Chamilo should trigger something on unload, maybe... (even though that would mean the last item cannot be completed)
+        $mylesson_status = 'completed';
+        $mylpi->set_status('completed');
+        $mylpi->save();
+    }
+    */
+    $mysession_time    = $mylpi->get_total_time();
+    $mysuspend_data    = $mylpi->get_suspend_data();
+    $mylesson_location = $mylpi->get_lesson_location();
+    $myic              = $mylpi->get_interactions_count();
+    $myistring         = '';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     for ($i = 0; $i < $myic; $i++) {
         $myistring .= ",[".$i.",'','','','','','','']";
     }
@@ -210,19 +247,19 @@ function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_it
      * -lms_view_id
      * -lms_user_id
      */
-    $mytotal = $mylp->get_total_items_count_without_chapters();
-    $mycomplete = $mylp->get_complete_items_count();
-    $myprogress_mode = $mylp->get_progress_bar_mode();
-    $myprogress_mode = ($myprogress_mode == '' ? '%' : $myprogress_mode);
-    $mynext = $mylp->get_next_item_id();
-    $myprevious = $mylp->get_previous_item_id();
-    $myitemtype = $mylpi->get_type();
-    $mylesson_mode = $mylpi->get_lesson_mode();
-    $mycredit = $mylpi->get_credit();
-    $mylaunch_data = $mylpi->get_launch_data();
+    $mytotal              = $mylp->get_total_items_count_without_chapters();
+    $mycomplete           = $mylp->get_complete_items_count();
+    $myprogress_mode      = $mylp->get_progress_bar_mode();
+    $myprogress_mode      = ($myprogress_mode == '' ? '%' : $myprogress_mode);
+    $mynext               = $mylp->get_next_item_id();
+    $myprevious           = $mylp->get_previous_item_id();
+    $myitemtype           = $mylpi->get_type();
+    $mylesson_mode        = $mylpi->get_lesson_mode();
+    $mycredit             = $mylpi->get_credit();
+    $mylaunch_data        = $mylpi->get_launch_data();
     $myinteractions_count = $mylpi->get_interactions_count();
-    $myobjectives_count = $mylpi->get_objectives_count();
-    $mycore_exit = $mylpi->get_core_exit();
+    $myobjectives_count   = $mylpi->get_objectives_count();
+    $mycore_exit          = $mylpi->get_core_exit();
 
     $return .=
         //"saved_lesson_status='not attempted';" .
@@ -236,7 +273,11 @@ function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_it
         //"lms_progress_bar_mode='".$myprogress_mode."';" .
         "olms.lms_view_id=".$view_id.";".
         "olms.lms_user_id=".$user_id.";".
+<<<<<<< HEAD
         "olms.next_item=".$new_item_id.";".// This one is very important to replace possible literal strings.
+=======
+        "olms.next_item=".$new_item_id.";". // This one is very important to replace possible literal strings.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         "olms.lms_next_item=".$mynext.";".
         "olms.lms_previous_item=".$myprevious.";".
         "olms.lms_item_type = '".$myitemtype."';".
@@ -257,10 +298,13 @@ function switch_item_details($lp_id, $user_id, $view_id, $current_item, $next_it
     $mylp->prerequisites_match(); // Check the prerequisites are all complete.
     if ($debug > 1) {
         error_log('Prereq_match() returned '.htmlentities($mylp->error), 0);
+<<<<<<< HEAD
         error_log($return);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
     $_SESSION['scorm_item_id'] = $new_item_id; // Save the new item ID for the exercise tool to use.
-    $_SESSION['lpobject'] = serialize($mylp);
+    $_SESSION['lpobject']      = serialize($mylp);
     return $return;
 }
 echo switch_item_details($_REQUEST['lid'], $_REQUEST['uid'], $_REQUEST['vid'], $_REQUEST['iid'], $_REQUEST['next']);

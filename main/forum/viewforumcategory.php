@@ -28,12 +28,28 @@ $language_file = 'forum';
 // Including the global initialization file.
 require_once '../inc/global.inc.php';
 
+<<<<<<< HEAD
 $htmlHeadXtra[] = '<script>
     $(document).ready(function(){
         $(\'.hide-me\').slideUp()
     });
     function hidecontent(content){
         $(content).slideToggle(\'normal\');
+=======
+$htmlHeadXtra[] = '<script type="text/javascript" language="javascript">
+    $(document).ready(function(){ $(\'.hide-me\').slideUp() });
+    function hidecontent(content){ $(content).slideToggle(\'normal\'); }
+    </script>';
+$htmlHeadXtra[] = '<script type="text/javascript">
+    function advanced_parameters() {
+        if (document.getElementById(\'options\').style.display == \'none\') {
+            document.getElementById(\'options\').style.display = \'block\';
+            document.getElementById(\'plus_minus\').innerHTML=\'&nbsp;'.Display::return_icon('div_hide.gif',get_lang('Hide'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedParameters').'\';
+        } else {
+            document.getElementById(\'options\').style.display = \'none\';
+            document.getElementById(\'plus_minus\').innerHTML=\'&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedParameters').'\';
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 </script>';
 
@@ -50,25 +66,21 @@ $nameTools = get_lang('ToolForum');
 require 'forumconfig.inc.php';
 require_once 'forumfunction.inc.php';
 
-
-/* MAIN DISPLAY SECTION */
-
 /* Header and Breadcrumbs */
-
+$gradebook = null;
 if (isset($_SESSION['gradebook'])) {
     $gradebook=	$_SESSION['gradebook'];
 }
 
 if (!empty($gradebook) && $gradebook == 'view') {
     $interbreadcrumb[] = array (
-            'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
-            'name' => get_lang('ToolGradebook')
-        );
+        'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
+        'name' => get_lang('ToolGradebook')
+    );
 }
 
 $current_forum_category = get_forum_categories($_GET['forumcategory']);
 $interbreadcrumb[] = array('url' => 'index.php?gradebook='.$gradebook.'&amp;search='.Security::remove_XSS(urlencode(isset($_GET['search'])?$_GET['search']:'')),'name' => get_lang('Forum'));
-
 
 if (!empty($_GET['action']) && !empty($_GET['content'])) {
     if ($_GET['action']=='add' && $_GET['content']=='forum' ) {
@@ -88,12 +100,11 @@ if (isset($_GET['origin'])) {
 if ($origin=='learnpath') {
     Display::display_reduced_header();
 } else {
-    Display :: display_header(null);
+    Display::display_header(null);
 }
 
 /* ACTIONS */
-
-$whatsnew_post_info = $_SESSION['whatsnew_post_info'];
+$whatsnew_post_info = isset($_SESSION['whatsnew_post_info']) ? $_SESSION['whatsnew_post_info'] : null;
 
 /* Is the user allowed here? */
 
@@ -104,7 +115,6 @@ if (!api_is_allowed_to_edit(false,true) AND ($current_forum_category && $current
 }
 
 /* Action Links */
-
 echo '<div class="actions">';
 echo '<span style="float:right;">'.search_link().'</span>';
 echo '<a href="index.php?gradebook='.$gradebook.'">'.Display::return_icon('back.png', get_lang('BackToForumOverview'), '', ICON_SIZE_MEDIUM).'</a>';
@@ -169,8 +179,6 @@ if ($action_forums != 'add') {
     } else {
         $session_displayed = '';
     }
-
-
     $forum_categories_list = '';
     echo '<thead>';
     echo '<tr><th class="forum_head" '.(api_is_allowed_to_edit(null, true) ? 'colspan="5"' : 'colspan="6"').'>';
@@ -198,9 +206,7 @@ if ($action_forums != 'add') {
     echo '<td>'.get_lang('LastPosts').'</td>';
     echo '<td>'.get_lang('Actions').'</td>';
     echo '</tr>';
-
     echo '</thead>';
-
 
     // The forums in this category.
     $forums_in_category = get_forums_in_category($forum_category['cat_id']);

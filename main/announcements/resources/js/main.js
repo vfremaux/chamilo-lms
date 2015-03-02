@@ -8,6 +8,35 @@ $(function() {
     $('.resizable-vertical').resizable({
         handles: "n, s"
     });
+
+    $('#send_to_all_users').click(function() {
+        var checked = $(this).attr('checked');
+
+        if (!checked) {
+            $('#selectedform option').each(function() {
+                var val = $(this).val();
+                var text = $(this).text();
+                if (val.substr(0 , 4) == 'USER') {
+                    $('#selectedform').find('[value="'+val+'"]').remove();
+                    $('#not_selected_form').append(new Option(text, val));
+                }
+            });
+        }
+
+        $('#not_selected_form option').each(function() {
+            var val = $(this).val();
+            var text = $(this).text();
+            if (val.substr(0 , 4) == 'USER') {
+                if (checked) {
+                    // Add
+                    $('#selectedform').append(new Option(text, val));
+                    $('#not_selected_form').find('[value="'+val+'"]').remove();
+                }
+            }
+        });
+
+
+    });
 });
 
 var Announcement = {};
@@ -114,9 +143,10 @@ function toggle_list_selector(name)
 }
 
 
+
 function toggle_sendto()
 {
-    var list = $('#recipient_list');
+    /*var list = $('#recipient_list');
     var overview = $('#recipient_overview');
     if(list.css('display') == 'none'){
         list.show();
@@ -129,9 +159,15 @@ function toggle_sendto()
     }
 
     var selected = $('#selectedform');
+<<<<<<< HEAD
     //var content = list_box_content(selected[0])
     //content = (content == '') ? lang.Everybody : content;
     //overview.text(content);
+=======
+    var content = list_box_content(selected[0])
+    content = (content == '') ? lang.Everybody : content;
+    overview.text(content);*/
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 function list_box_content(box)
@@ -298,5 +334,18 @@ function reverseAll(cbList)
 }
 
 
+<<<<<<< HEAD
 
+=======
+function plus_attachment() {
+    "use strict";
+    if (document.getElementById('options').style.display == 'none') {
+        document.getElementById('options').style.display = 'block';
+        document.getElementById('plus').innerHTML = '&nbsp;<img style="vertical-align:middle;" src="../img/div_hide.gif" alt="" />&nbsp;' + lang.AddAnAttachment;
+    } else {
+        document.getElementById('options').style.display = 'none';
+        document.getElementById('plus').innerHTML = '&nbsp;<img style="vertical-align:middle;" src="../img/div_show.gif" alt="" />&nbsp;' + lang.AddAnAttachment;
+    }
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 // End

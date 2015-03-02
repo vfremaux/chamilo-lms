@@ -180,7 +180,22 @@ class CourseRequestManager {
      * @param int/string $user_id
      * @return bool                     Returns TRUE on success or FALSE on failure.
      */
+<<<<<<< HEAD
     public static function update_course_request($id, $wanted_code, $title, $description, $category_code, $course_language, $objetives, $target_audience, $user_id, $exemplary_content) {
+=======
+    public static function update_course_request(
+        $id,
+        $wanted_code,
+        $title,
+        $description,
+        $category_code,
+        $course_language,
+        $objetives,
+        $target_audience,
+        $user_id,
+        $exemplary_content
+    ) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $id = (int)$id;
         $wanted_code = trim($wanted_code);
         $user_id = (int)$user_id;
@@ -194,7 +209,7 @@ class CourseRequestManager {
             return false;
         }
 
-        // Retrieve request's data
+        // Retrieve request data
         $course_request_info = self::get_course_request_info($id);
         if (!is_array($course_request_info)) {
             return false;
@@ -246,10 +261,23 @@ class CourseRequestManager {
                 tutor_name = "%s", visual_code = "%s", request_date = "%s",
                 objetives = "%s", target_audience = "%s", status = "%s", info = "%s", exemplary_content = "%s"
             WHERE id = '.$id, Database::get_main_table(TABLE_MAIN_COURSE_REQUEST),
-                Database::escape_string($code), Database::escape_string($user_id), Database::escape_string($directory), Database::escape_string($db_name),
-                Database::escape_string($course_language), Database::escape_string($title), Database::escape_string($description), Database::escape_string($category_code),
-                Database::escape_string($tutor_name), Database::escape_string($visual_code), Database::escape_string($request_date),
-                Database::escape_string($objetives), Database::escape_string($target_audience), Database::escape_string($status), Database::escape_string($info), Database::escape_string($exemplary_content));
+                Database::escape_string($code),
+                Database::escape_string($user_id),
+                Database::escape_string($directory),
+                Database::escape_string($db_name),
+                Database::escape_string($course_language),
+                Database::escape_string($title),
+                Database::escape_string($description),
+                Database::escape_string($category_code),
+                Database::escape_string($tutor_name),
+                Database::escape_string($visual_code),
+                Database::escape_string($request_date),
+                Database::escape_string($objetives),
+                Database::escape_string($target_audience),
+                Database::escape_string($status),
+                Database::escape_string($info),
+                Database::escape_string($exemplary_content)
+        );
         $result_sql = Database::query($sql);
 
         return $result_sql !== false;
@@ -321,7 +349,13 @@ class CourseRequestManager {
      * @param int/string $id              The id (an integer number) of the corresponding database record.
      * @return string/bool                Returns the code of the newly created course or FALSE on failure.
      */
+<<<<<<< HEAD
     public static function accept_course_request($id) {
+=======
+    public static function accept_course_request($id)
+    {
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $id = (int)$id;
 
         // Retrieve request's data
@@ -331,9 +365,10 @@ class CourseRequestManager {
         }
 
         // Make all the checks again before the new course creation.
-        if (CourseManager::course_code_exists($wanted_code)) {
+        /*if (CourseManager::course_code_exists($wanted_code)) {
             return false;
-        }
+        }*/
+
         $user_id = (int)$course_request_info['user_id'];
         if ($user_id <= 0) {
             return false;
@@ -348,12 +383,16 @@ class CourseRequestManager {
         $params = array();
 
         $params['title']                = $course_request_info['title'];
-        $params['category_code']        = $course_request_info['category_code'];
+        $params['course_category']        = $course_request_info['category_code'];
         $params['course_language']      = $course_request_info['course_language'];
         $params['exemplary_content']    = intval($course_request_info['exemplary_content']) > 0;
         $params['wanted_code']          = $course_request_info['code'];
         $params['user_id']              = $course_request_info['user_id'];
+<<<<<<< HEAD
         $params['tutor_name']           = api_get_person_name($user_info['firstname'], $user_info['lastname'], null, null, $course_language);
+=======
+        $params['tutor_name']           = api_get_person_name($user_info['firstname'], $user_info['lastname']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $course_info = CourseManager::create_course($params);
         if (!empty($course_info)) {
@@ -396,7 +435,8 @@ class CourseRequestManager {
      * @param int/string $id            The id (an integer number) of the corresponding database record.
      * @return bool                     Returns TRUE on success or FALSE on failure.
      */
-    public static function reject_course_request($id) {
+    public static function reject_course_request($id)
+    {
 
         $id = (int)$id;
 

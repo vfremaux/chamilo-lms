@@ -134,8 +134,11 @@ class Chat extends Model
                 }
             }
         }
+<<<<<<< HEAD
 
         //print_r($_SESSION['chatHistory']);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $sql = "UPDATE ".$this->table." SET recd = 1 WHERE to_user = '".$to_user_id."' AND recd = 0";
         Database::query($sql);
 
@@ -144,6 +147,7 @@ class Chat extends Model
         }
         echo json_encode(array('items' => $items));
     }
+
     /*
      * Returns an array of messages inside a chat session with a specific user
      * @param int The ID of the user with whom the current user is chatting

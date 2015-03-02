@@ -10,6 +10,10 @@
 /**
  * Code
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
 	CLASS UNIQUE_ANSWER
  *
@@ -23,7 +27,10 @@
 
 class UniqueAnswerNoOption extends Question
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	static $typePicture = 'mcuao.gif';
 	static $explanationLangVar = 'UniqueAnswerNoOption';
 
@@ -62,14 +69,15 @@ class UniqueAnswerNoOption extends Question
 		$feedback_title='';
 		$comment_title='';
 
-		if ($obj_ex->selectFeedbackType()==0) {
-			$comment_title = '<th>'.get_lang('Comment').'</th>';
-		} elseif ($obj_ex->selectFeedbackType()==1) {
+		if ($obj_ex->selectFeedbackType()==1) {
 			$editor_config['Width']  = '250';
 			$editor_config['Height'] = '110';
 			$comment_title = '<th width="500" >'.get_lang('Comment').'</th>';
 			$feedback_title = '<th width="350px" >'.get_lang('Scenario').'</th>';
 		}
+        else {
+            $comment_title = '<th>'.get_lang('Comment').'</th>';
+        }
 
 		$html='<table class="data_table">
 					<tr style="text-align: center;">
@@ -119,8 +127,12 @@ class UniqueAnswerNoOption extends Question
                 }
             }
             for ($k = 1 ; $k <= $nb_answers; ++$k) {
+<<<<<<< HEAD
                 $answer_id = $answer->getRealAnswerIdFromList($k);
                 if ($answer->position[$answer_id] != '666') {
+=======
+                if ($answer->position[$k] != '666') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $new_list[$count] = $count;
                     $count++;
                 }
@@ -136,6 +148,7 @@ class UniqueAnswerNoOption extends Question
         foreach ($new_list as $key) {
             $i = $key;
 			$form -> addElement ('html', '<tr>');
+<<<<<<< HEAD
             $answer_id = $answer->getRealAnswerIdFromList($i);
 
 			if (is_object($answer)) {
@@ -147,6 +160,18 @@ class UniqueAnswerNoOption extends Question
     				}
                     $answer_result = $answer->answer[$answer_id];
                     $weight_result = Text::float_format($answer->weighting[$answer_id], 1);
+=======
+
+			if (is_object($answer)) {
+			    if($answer->position[$i] == 666) {
+			        //we set nothing
+			    } else {
+    				if ($answer->correct[$i]) {
+    					$correct = $i;
+    				}
+                    $answer_result = $answer->answer[$i];
+                    $weight_result = float_format($answer->weighting[$i], 1);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     if ($nb_answers == $i) {
                         $weight_result = '0';
                     }
@@ -155,7 +180,11 @@ class UniqueAnswerNoOption extends Question
                     $defaults['comment['.$i.']'] = $answer->comment[$answer_id];
     				$defaults['weighting['.$i.']'] = $weight_result;
 
+<<<<<<< HEAD
                     $item_list = explode('@@', $answer->destination[$answer_id]);
+=======
+    				$item_list=explode('@@',$answer -> destination[$i]);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     				$try       = $item_list[0];
     				$lp        = $item_list[1];
@@ -189,6 +218,7 @@ class UniqueAnswerNoOption extends Question
             $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'weighting['.$i.']');
 
 
+<<<<<<< HEAD
 			$answer_number = $form->addElement('text', 'counter['.$i.']', null,'value="'.$i.'"');
 			$answer_number->freeze();
 
@@ -201,6 +231,16 @@ class UniqueAnswerNoOption extends Question
 			} elseif ($obj_ex->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_DIRECT) {
 
 			}
+=======
+			$answer_number=$form->addElement('text', 'counter['.$i.']', null,'value="'.$i.'"');
+			$answer_number->freeze();
+
+
+			$form->addElement('radio', 'correct', null, null, $i, 'class="checkbox" style="margin-left: 0em;"');
+			$form->addElement('html_editor', 'answer['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
+
+            $form->addElement('html_editor', 'comment['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			$form->addElement('text', 'weighting['.$i.']', null, array('class' => "span1", 'value' => '0'));
 			$form->addElement('html', '</tr>');
             $i++;
@@ -237,19 +277,26 @@ class UniqueAnswerNoOption extends Question
         $form->addRule('answer['.$i.']', get_lang('ThisFieldIsRequired'), 'required');
 
 
+<<<<<<< HEAD
         if ($obj_ex->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_END) {
             // feedback
             $form->addElement('html_editor', 'comment['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
         } elseif ($obj_ex->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_DIRECT) {
 
         }
+=======
+        $form->addElement('html_editor', 'comment['.$i.']', null, 'style="vertical-align:middle"', $editor_config);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         //$form->addElement('select', 'destination'.$i, get_lang('SelectQuestion').' : ',$select_question,'multiple');
 
         $form->addElement('text', 'weighting['.$i.']', null, array('class' => "span1", 'value' => '0', 'readonly' =>'readonly'));
         $form->addElement ('html', '</tr>');
 
+<<<<<<< HEAD
      //}
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 		$form -> addElement ('html', '</table>');
 		$form -> addElement ('html', '<br />');
@@ -265,7 +312,11 @@ class UniqueAnswerNoOption extends Question
                 //setting the save button here and not in the question class.php
                 $form->addElement('style_submit_button', 'lessAnswers', get_lang('LessAnswer'),'class="btn minus"');
                 $form->addElement('style_submit_button', 'moreAnswers', get_lang('PlusAnswer'),'class="btn plus"');
+<<<<<<< HEAD
                 $form->addElement('style_submit_button','submitQuestion',$this->submitText, 'class="'.$this->submitClass.'"');
+=======
+                $form->addElement('style_submit_button','submitQuestion',$text, 'class="'.$class.'"');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 			}
 		}
 		$renderer->setElementTemplate('{element}&nbsp;','submitQuestion');
@@ -396,22 +447,31 @@ class UniqueAnswerNoOption extends Question
         $this -> save();
 	}
 
+<<<<<<< HEAD
     /**
      * {@inheritdoc}
      */
 	function return_header($feedback_type = null, $counter = null, $score = null, $show_media = false, $hideTitle = 0)
     {
 	    $header = parent::return_header($feedback_type, $counter, $score, $show_media, $hideTitle);
+=======
+	function return_header($feedback_type = null, $counter = null, $score = null) {
+	    $header = parent::return_header($feedback_type, $counter, $score);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	    $header .= '<table class="'.$this->question_table_class .'">
 			<tr>
 				<th>'.get_lang("Choice").'</th>
 				<th>'. get_lang("ExpectedChoice").'</th>
 				<th>'. get_lang("Answer").'</th>';
+<<<<<<< HEAD
 				if ($feedback_type != EXERCISE_FEEDBACK_TYPE_EXAM) {
     				$header .= '<th>'.get_lang("Comment").'</th>';
 				} else {
 					$header .= '<th>&nbsp;</th>';
 				}
+=======
+        $header .= '<th>'.get_lang("Comment").'</th>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $header .= '</tr>';
         return $header;
 	}

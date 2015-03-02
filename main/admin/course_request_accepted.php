@@ -31,7 +31,6 @@ $course_validation_feature = api_get_setting('course_validation') == 'true';
 $delete_course_request = intval($_GET['delete_course_request']);
 $message = trim(Security::remove_XSS(stripslashes(urldecode($_GET['message']))));
 $is_error_message = !empty($_GET['is_error_message']);
-$keyword = Database::escape_string(trim($_GET['keyword']));
 
 if ($course_validation_feature) {
 
@@ -89,9 +88,14 @@ function get_number_of_requests() {
  * Get course data to display
  */
 function get_request_data($from, $number_of_items, $column, $direction) {
+<<<<<<< HEAD
     global $keyword;
     $course_request_table = Database :: get_main_table(TABLE_MAIN_COURSE_REQUEST);
 
+=======
+    $keyword = Database::escape_string(trim($_GET['keyword']));
+    $course_request_table = Database :: get_main_table(TABLE_MAIN_COURSE_REQUEST);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $sql = "SELECT id AS col0,
                    code AS col1,
                    title AS col2,

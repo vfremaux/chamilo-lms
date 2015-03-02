@@ -26,7 +26,13 @@ require_once 'answer.class.php';
 require_once '../inc/global.inc.php';
 $urlMainExercise = api_get_path(WEB_CODE_PATH).'exercice/';
 
+<<<<<<< HEAD
 if (empty($origin)) {
+=======
+require_once api_get_path(LIBRARY_PATH).'mail.lib.inc.php';
+
+if (empty($origin) ) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $origin = isset($_REQUEST['origin']) ? $_REQUEST['origin'] : null;
 }
 
@@ -193,7 +199,7 @@ if (!empty($track_exercise_info)) {
 	// if the results_disabled of the Quiz is 1 when block the script
 	$result_disabled		= $track_exercise_info['results_disabled'];
 
-	if (!(api_is_platform_admin() || api_is_course_admin()) ) {
+	if (!(api_is_platform_admin() || api_is_course_admin() || api_is_course_coach()) ) {
 		if ($result_disabled == 1) {
 			$show_results = false;
 			if ($origin != 'learnpath') {

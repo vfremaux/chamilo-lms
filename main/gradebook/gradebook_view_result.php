@@ -1,4 +1,5 @@
 <?php
+
 /* For licensing terms, see /license.txt */
 /**
  * Script
@@ -7,7 +8,6 @@
 /**
  * Init
  */
-
 $language_file[] = 'gradebook';
 
 require_once '../inc/global.inc.php';
@@ -21,7 +21,12 @@ require_once 'lib/results_data_generator.class.php';
 require_once 'lib/fe/resulttable.class.php';
 require_once 'lib/fe/exportgradebook.php';
 require_once 'lib/scoredisplay.class.php';
+<<<<<<< HEAD
 require_once api_get_path(SYS_CODE_PATH).'gradebook/lib/gradebook_functions.inc.php';
+=======
+require_once api_get_path(LIBRARY_PATH) . 'ezpdf/class.ezpdf.php';
+require_once api_get_path(SYS_CODE_PATH) . 'gradebook/lib/gradebook_functions.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 api_block_anonymous_users();
 
@@ -29,10 +34,15 @@ block_students();
 
 $interbreadcrumb[] = array(
     'url' => $_SESSION['gradebook_dest'],
+<<<<<<< HEAD
     'name' => get_lang(
         'Gradebook'
     )
 );
+=======
+    'name' => get_lang('Gradebook'
+        ));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 //load the evaluation & category
 $select_eval = Security::remove_XSS($_GET['selecteval']);
@@ -47,29 +57,49 @@ if ($eval[0]->get_category_id() < 0) {
     // if category id is negative, then the evaluation's origin is a link
     $link = LinkFactory :: get_evaluation_link($eval[0]->get_id());
     $currentcat = Category :: load($link->get_category_id());
+<<<<<<< HEAD
 } else {
     $currentcat = Category :: load($eval[0]->get_category_id());
 }
 //load the result with the evaluation id
 
 if (isset ($_GET['delete_mark'])) {
+=======
+} else
+    $currentcat = Category :: load($eval[0]->get_category_id());
+//load the result with the evaluation id
+
+if (isset($_GET['delete_mark'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $result = Result :: load($_GET['delete_mark']);
     if (!empty($result[0])) {
         $result[0]->delete();
     }
 }
 
+<<<<<<< HEAD
 if (isset ($_GET['selecteval'])) {
+=======
+if (isset($_GET['selecteval'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $allresults = Result :: load(null, null, $select_eval);
     $iscourse = $currentcat[0]->get_course_code() == null ? 1 : 0;
 }
 
+<<<<<<< HEAD
 if (isset ($_GET['editres'])) {
     $edit_res_xml = Security::remove_XSS($_GET['editres']);
     $select_eval_edit = Security::remove_XSS($_GET['selecteval']);
     $resultedit = Result :: load($edit_res_xml);
     $edit_res_form = new EvalForm(EvalForm :: TYPE_RESULT_EDIT, $eval[0], $resultedit[0], 'edit_result_form', null, api_get_self(
     ).'?editres='.$resultedit[0]->get_id().'&selecteval='.$select_eval_edit);
+=======
+if (isset($_GET['editres'])) {
+    $edit_res_xml = Security::remove_XSS($_GET['editres']);
+    $select_eval_edit = Security::remove_XSS($_GET['selecteval']);
+    $resultedit = Result :: load($edit_res_xml);
+    $edit_res_form = new EvalForm(EvalForm :: TYPE_RESULT_EDIT, $eval[0], $resultedit[0], 'edit_result_form', null, api_get_self() . '?editres=' . $resultedit[0]->get_id() . '&selecteval=' . $select_eval_edit);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if ($edit_res_form->validate()) {
 
         $values = $edit_res_form->exportValues();
@@ -79,6 +109,7 @@ if (isset ($_GET['editres'])) {
         $result->set_id($edit_res_xml);
         $result->set_user_id($values['hid_user_id']);
         $result->set_evaluation_id($select_eval_edit);
+<<<<<<< HEAD
         $row_value = isset($values['score']) ? (float)$values['score'] : 0;
         if ((!empty ($row_value)) || ($row_value == 0)) {
             $result->set_score(floatval(number_format($row_value, api_get_setting('gradebook_number_decimals'))));
@@ -86,10 +117,20 @@ if (isset ($_GET['editres'])) {
         $result->save();
         unset ($result);
         header('Location: gradebook_view_result.php?selecteval='.$select_eval_edit.'&editresmessage=');
+=======
+        $row_value = isset($values['score']) ? (float) $values['score'] : 0;
+        if ((!empty($row_value)) || ($row_value == 0)) {
+            $result->set_score(floatval(number_format($row_value, api_get_setting('gradebook_number_decimals'))));
+        }
+        $result->save();
+        unset($result);
+        header('Location: gradebook_view_result.php?selecteval=' . $select_eval_edit . '&editresmessage=');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         exit;
     }
 }
 
+<<<<<<< HEAD
 if (isset ($_GET['import'])) {
 
     $interbreadcrumb[] = array(
@@ -100,6 +141,12 @@ if (isset ($_GET['import'])) {
     );
     $import_result_form = new DataForm(DataForm :: TYPE_IMPORT, 'import_result_form', null, api_get_self(
     ).'?import=&selecteval='.Security::remove_XSS($_GET['selecteval']), '_blank', '');
+=======
+if (isset($_GET['import'])) {
+
+    $interbreadcrumb[] = array('url' => 'gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']), 'name' => get_lang('ViewResult'));
+    $import_result_form = new DataForm(DataForm :: TYPE_IMPORT, 'import_result_form', null, api_get_self() . '?import=&selecteval=' . Security::remove_XSS($_GET['selecteval']), '_blank', '');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if (!$import_result_form->validate()) {
         Display :: display_header(get_lang('Import'));
     }
@@ -107,7 +154,11 @@ if (isset ($_GET['import'])) {
     $eval[0]->check_lock_permissions();
 
     if ($_POST['formSent']) {
+<<<<<<< HEAD
         if (!empty ($_FILES['import_file']['name'])) {
+=======
+        if (!empty($_FILES['import_file']['name'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $values = $import_result_form->exportValues();
             $file_type = $_POST['file_type'];
             $file_name = $_FILES['import_file']['tmp_name'];
@@ -125,12 +176,17 @@ if (isset ($_GET['import'])) {
                 foreach ($allresults as $allresult) {
                     if (($importedresult['user_id'] == $allresult->get_user_id())) {
                         if ($importedresult['score'] != $allresult->get_score()) {
+<<<<<<< HEAD
                             if (!isset ($values['overwrite'])) {
                                 header(
                                     'Location: gradebook_view_result.php?selecteval='.Security::remove_XSS(
                                         $_GET['selecteval']
                                     ).'&import_score_error='.$importedresult['user_id']
                                 );
+=======
+                            if (!isset($values['overwrite'])) {
+                                header('Location: gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&import_score_error=' . $importedresult['user_id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                                 exit;
                                 break;
                             } else {
@@ -141,6 +197,7 @@ if (isset ($_GET['import'])) {
                         } else {
                             $added = '1';
                         }
+<<<<<<< HEAD
 
                     }
 
@@ -161,20 +218,37 @@ if (isset ($_GET['import'])) {
                                 $_GET['selecteval']
                             ).'&import_user_error='.$importedresult['user_id']
                         );
+=======
+                    }
+                }
+                if ($importedresult['user_id'] == null) {
+                    header('Location: gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&incorrectdata=');
+                    exit;
+                }
+                $userinfo = get_user_info_from_id($importedresult['user_id']);
+                if ($userinfo['lastname'] != $importedresult['lastname'] || $userinfo['firstname'] != $importedresult['firstname'] || $userinfo['official_code'] != $importedresult['official_code']) {
+                    if (!isset($values['ignoreerrors'])) {
+                        header('Location: gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&import_user_error=' . $importedresult['user_id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         exit;
                     }
                 }
                 if ($added != '1') {
                     if ($importedresult['score'] > $eval[0]->get_max()) {
+<<<<<<< HEAD
                         header(
                             'Location: gradebook_view_result.php?selecteval='.Security::remove_XSS(
                                 $_GET['selecteval']
                             ).'&overwritemax='
                         );
+=======
+                        header('Location: gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&overwritemax=');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         exit;
                     }
                     $result = new Result();
                     $result->set_user_id($importedresult['user_id']);
+<<<<<<< HEAD
                     if (!empty ($importedresult['score'])) {
                         $result->set_score(
                             floatval(
@@ -183,6 +257,12 @@ if (isset ($_GET['import'])) {
                         );
                     }
                     if (!empty ($importedresult['date'])) {
+=======
+                    if (!empty($importedresult['score'])) {
+                        $result->set_score(floatval(number_format($importedresult['score'], api_get_setting('gradebook_number_decimals'))));
+                    }
+                    if (!empty($importedresult['date'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         $result->set_date(api_get_utc_datetime($importedresult['date']));
                     } else {
                         $result->set_date(api_get_utc_datetime());
@@ -193,6 +273,7 @@ if (isset ($_GET['import'])) {
                 }
             }
         } else {
+<<<<<<< HEAD
             header(
                 'Location: '.api_get_self().'?import=&selecteval='.Security::remove_XSS(
                     $_GET['selecteval']
@@ -215,11 +296,26 @@ if (isset ($_GET['import'])) {
             exit;
         }
         header('Location: '.api_get_self().'?selecteval='.Security::remove_XSS($_GET['selecteval']).'&importok=');
+=======
+            header('Location: ' . api_get_self() . '?import=&selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&importnofile=');
+            exit;
+        }
+        if ($overwritescore != 0) {
+            header('Location: ' . api_get_self() . '?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&importoverwritescore=' . $overwritescore);
+            exit;
+        }
+        if ($nr_results_added == 0) {
+            header('Location: ' . api_get_self() . '?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&nothingadded=');
+            exit;
+        }
+        header('Location: ' . api_get_self() . '?selecteval=' . Security::remove_XSS($_GET['selecteval']) . '&importok=');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         exit;
     }
 }
 
 if (isset($_GET['export'])) {
+<<<<<<< HEAD
     $interbreadcrumb[] = array(
         'url' => 'gradebook_view_result.php?selecteval='.Security::remove_XSS(
             $_GET['selecteval']
@@ -229,6 +325,11 @@ if (isset($_GET['export'])) {
     $locked_status = $eval[0]->get_locked();
     $export_result_form = new DataForm(DataForm :: TYPE_EXPORT, 'export_result_form', null, api_get_self(
     ).'?export=&selecteval='.$_GET['selecteval'], '_blank', $locked_status);
+=======
+    $interbreadcrumb[] = array('url' => 'gradebook_view_result.php?selecteval=' . Security::remove_XSS($_GET['selecteval']), 'name' => get_lang('ViewResult'));
+    $locked_status = $eval[0]->get_locked();
+    $export_result_form = new DataForm(DataForm :: TYPE_EXPORT, 'export_result_form', null, api_get_self() . '?export=&selecteval=' . $_GET['selecteval'], '_blank', $locked_status);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if (!$export_result_form->validate()) {
         Display :: display_header(get_lang('Export'));
     }
@@ -236,7 +337,11 @@ if (isset($_GET['export'])) {
     if ($export_result_form->validate()) {
         $export = $export_result_form->exportValues();
         $file_type = $export['file_type'];
+<<<<<<< HEAD
         $filename = 'export_results_'.gmdate('Y-m-d_H-i-s');
+=======
+        $filename = 'export_results_' . gmdate('Y-m-d_H-i-s');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $results = Result :: load(null, null, Security::remove_XSS($_GET['selecteval']));
         $data = array(); //when file type is csv, add a header to the output file
         if ($file_type == 'csv') {
@@ -253,12 +358,21 @@ if (isset($_GET['export'])) {
         // export results to pdf file
         if ($file_type == 'pdf') {
             $number_decimals = api_get_setting('gradebook_number_decimals');
+<<<<<<< HEAD
             $datagen = new ResultsDataGenerator ($eval[0], $allresults);
 
             // set headers pdf
             !empty($_user['official_code']) ? $officialcode = $_user['official_code'].' - ' : '';
 
             $h1 = array(get_lang('Teacher'), $officialcode.$_user['firstName'].', '.$_user['lastName']);
+=======
+            $datagen = new ResultsDataGenerator($eval[0], $allresults);
+
+            // set headers pdf
+            !empty($_user['official_code']) ? $officialcode = $_user['official_code'] . ' - ' : '';
+
+            $h1 = array(get_lang('Teacher'), $officialcode . $_user['firstName'] . ', ' . $_user['lastName']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $h2 = array(get_lang('Score'), $eval[0]->get_max());
             $h3 = array(get_lang('Course'), $_course['name']);
             $h4 = array(get_lang('Weight'), $eval[0]->get_weight());
@@ -268,9 +382,15 @@ if (isset($_GET['export'])) {
             $header_pdf = array($h1, $h2, $h3, $h4, $h5, $h6);
 
             // set footer pdf
+<<<<<<< HEAD
             $f1 = '<hr />'.get_lang('Drh');
             $f2 = '<hr />'.get_lang('Teacher');
             $f3 = '<hr />'.get_lang('Date');
+=======
+            $f1 = '<hr />' . get_lang('Drh');
+            $f2 = '<hr />' . get_lang('Teacher');
+            $f3 = '<hr />' . get_lang('Date');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $footer_pdf = array($f1, $f2, $f3);
 
             // set title pdf
@@ -279,9 +399,15 @@ if (isset($_GET['export'])) {
             // set headers data table
             $head_ape_name = '';
             if (api_is_western_name_order()) {
+<<<<<<< HEAD
                 $head_ape_name = get_lang('FirstName').', '.get_lang('LastName');
             } else {
                 $head_ape_name = get_lang('LastName').', '.get_lang('FirstName');
+=======
+                $head_ape_name = get_lang('FirstName') . ', ' . get_lang('LastName');
+            } else {
+                $head_ape_name = get_lang('LastName') . ', ' . get_lang('FirstName');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
 
             $head_table = array(
@@ -316,15 +442,25 @@ if (isset($_GET['export'])) {
                 $result[] = $user_info['username'];
 
                 if (api_is_western_name_order()) {
+<<<<<<< HEAD
                     $result[] = $user_info['firstname'].', '.$user_info['lastname'];
                 } else {
                     $result[] = $user_info['lastname'].', '.$user_info['firstname'];
+=======
+                    $result[] = $user_info['firstname'] . ', ' . $user_info['lastname'];
+                } else {
+                    $result[] = $user_info['lastname'] . ', ' . $user_info['firstname'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 }
                 if ($number_decimals == null) {
                     if (empty($data['scoreletter']) && !is_numeric($data['score'])) {
                         $result[] = get_lang('DidNotTakeTheExam');
                     } else {
+<<<<<<< HEAD
                         $result[] = api_strtoupper(get_lang('Literal'.$data['scoreletter']));
+=======
+                        $result[] = api_strtoupper(get_lang('Literal' . $data['scoreletter']));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     }
                 } else {
                     if (empty($data['score']) && !is_numeric($data['score'])) {
@@ -343,7 +479,11 @@ if (isset($_GET['export'])) {
 
         // export results to xml or csv file
         foreach ($results as $result) {
+<<<<<<< HEAD
             $userinfo = api_get_user_info($result->get_user_id());
+=======
+            $userinfo = get_user_info_from_id($result->get_user_id());
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $data['username'] = $userinfo['username']; //$result->get_user_id();
             $data['official_code'] = $userinfo['official_code'];
             $data['lastname'] = $userinfo['lastname'];
@@ -365,6 +505,7 @@ if (isset($_GET['export'])) {
         }
     }
 }
+<<<<<<< HEAD
 if (isset ($_GET['resultdelete'])) {
     $result = Result :: load($_GET['resultdelete']);
     $result[0]->delete();
@@ -372,6 +513,15 @@ if (isset ($_GET['resultdelete'])) {
     exit;
 }
 if (isset ($_POST['action'])) {
+=======
+if (isset($_GET['resultdelete'])) {
+    $result = Result :: load($_GET['resultdelete']);
+    $result[0]->delete();
+    header('Location: gradebook_view_result.php?deleteresult=&selecteval=' . Security::remove_XSS($_GET['selecteval']));
+    exit;
+}
+if (isset($_POST['action'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $number_of_selected_items = count($_POST['id']);
     if ($number_of_selected_items == '0') {
         Display :: display_warning_message(get_lang('NoItemsSelected'), false);
@@ -384,11 +534,15 @@ if (isset ($_POST['action'])) {
                     $result[0]->delete();
                     $number_of_deleted_results++;
                 }
+<<<<<<< HEAD
                 header(
                     'Location: gradebook_view_result.php?massdelete=&selecteval='.Security::remove_XSS(
                         $_GET['selecteval']
                     )
                 );
+=======
+                header('Location: gradebook_view_result.php?massdelete=&selecteval=' . Security::remove_XSS($_GET['selecteval']));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 exit;
                 break;
         }
@@ -396,8 +550,13 @@ if (isset ($_POST['action'])) {
 } // TODO - what if selecteval not set ?
 
 $addparams = array('selecteval' => $eval[0]->get_id());
+<<<<<<< HEAD
 if (isset ($_GET['print'])) {
     $datagen = new ResultsDataGenerator ($eval[0], $allresults);
+=======
+if (isset($_GET['print'])) {
+    $datagen = new ResultsDataGenerator($eval[0], $allresults);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if (api_sort_by_first_name()) {
         $data_array = $datagen->get_data(ResultsDataGenerator :: RDG_SORT_FIRSTNAME, 0, null, true);
     } else {
@@ -428,7 +587,11 @@ if (isset ($_GET['print'])) {
 }
 
 $htmlHeadXtra[] = '<script type="text/javascript">
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 function confirmationuser() {
     if (confirm("'.get_lang('DeleteUser').'?"))
     	{return true;}
@@ -443,6 +606,7 @@ function confirmationall () {
     	{return false;}
     }
 </script>';
+<<<<<<< HEAD
 if (isset ($_GET['deleteall'])) {
     $eval[0]->delete_results();
     header('Location: gradebook_view_result.php?allresdeleted=&selecteval='.Security::remove_XSS($_GET['selecteval']));
@@ -534,6 +698,90 @@ if ($file_type == null) { //show the result header
             echo $import_result_form->display();
         }
         if (isset ($edit_res_form)) {
+=======
+if (isset($_GET['deleteall'])) {
+    $eval[0]->delete_results();
+    header('Location: gradebook_view_result.php?allresdeleted=&selecteval=' . Security::remove_XSS($_GET['selecteval']));
+    exit;
+}
+if ((!isset($_GET['export'])) && (!isset($_GET['import']))) {
+    if (!isset($_GET['selectcat'])) {
+        $interbreadcrumb[] = array(
+            'url' => $_SESSION['gradebook_dest'] . '?selectcat=' . $currentcat[0]->get_id(),
+            'name' => get_lang('Details')
+        );
+    }
+    $interbreadcrumb[] = array('url' => 'gradebook_view_result.php' . '?selecteval=' . Security::remove_XSS($_GET['selecteval']), 'name' => get_lang('ViewResult'));
+    Display :: display_header('');
+}
+if (isset($_GET['addresultnostudents'])) {
+    Display :: display_warning_message(get_lang('AddResultNoStudents'), false);
+}
+
+if (isset($_GET['editresmessage'])) {
+    Display :: display_confirmation_message(get_lang('ResultEdited'), false);
+}
+
+if (isset($_GET['addresult'])) {
+    Display :: display_confirmation_message(get_lang('ResultAdded'), false);
+}
+
+if (isset($_GET['adduser'])) {
+    Display :: display_confirmation_message(get_lang('UserAdded'), false);
+}
+
+if (isset($_GET['deleteresult'])) {
+    Display :: display_confirmation_message(get_lang('ResultDeleted'), false);
+}
+
+if (isset($_GET['editallresults'])) {
+    Display :: display_confirmation_message(get_lang('AllResultsEdited'), false);
+}
+if (isset($_GET['importok'])) {
+    Display :: display_confirmation_message(get_lang('FileUploadComplete'), false);
+}
+if (isset($_GET['importnofile'])) {
+    Display :: display_warning_message(get_lang('ImportNoFile'), false);
+}
+if (isset($_GET['incorrectdata'])) {
+    Display :: display_warning_message(get_lang('IncorrectData'), false);
+}
+if (isset($_GET['nothingadded'])) {
+    Display :: display_warning_message(get_lang('ProblemUploadingFile'), false);
+}
+if (isset($_GET['massdelete'])) {
+    Display :: display_confirmation_message(get_lang('ResultsDeleted'), false);
+}
+if (isset($_GET['nouser'])) {
+    Display :: display_warning_message(get_lang('NoUser'), false);
+}
+if (isset($_GET['overwritemax'])) {
+    Display :: display_warning_message(get_lang('OverWriteMax'), false);
+}
+if (isset($_GET['importoverwritescore'])) {
+    Display :: display_confirmation_message(get_lang('ImportOverWriteScore') . ' ' . $_GET['importoverwritescore']);
+}
+if (isset($_GET['import_user_error'])) {
+    $userinfo = get_user_info_from_id($_GET['import_user_error']);
+    Display :: display_warning_message(get_lang('UserInfoDoesNotMatch') . ' ' . api_get_person_name($userinfo['firstname'], $userinfo['lastname']));
+}
+if (isset($_GET['allresdeleted'])) {
+    Display :: display_confirmation_message(get_lang('AllResultDeleted'));
+}
+if (isset($_GET['import_score_error'])) {
+    $userinfo = get_user_info_from_id($_GET['import_score_error']);
+    Display :: display_warning_message(get_lang('ScoreDoesNotMatch') . ' ' . api_get_person_name($userinfo['firstname'], $userinfo['lastname']));
+}
+if ($file_type == null) { //show the result header
+    if (isset($export_result_form) && !(isset($edit_res_form))) {
+        echo $export_result_form->display();
+        DisplayGradebook :: display_header_result($eval[0], $currentcat[0]->get_id(), 1);
+    } else {
+        if (isset($import_result_form)) {
+            echo $import_result_form->display();
+        }
+        if (isset($edit_res_form)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             echo $edit_res_form->toHtml();
         }
         DisplayGradebook :: display_header_result($eval[0], $currentcat[0]->get_id(), 1);

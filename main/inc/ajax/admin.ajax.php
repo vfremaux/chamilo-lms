@@ -4,6 +4,14 @@
  * Responses to AJAX calls
  */
 
+<<<<<<< HEAD
+=======
+// Language files that need to be included.
+$language_file = array('admin');
+require_once '../global.inc.php';
+require_once api_get_path(SYS_CODE_PATH).'admin/statistics/statistics.lib.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 api_protect_admin_script();
 
 $action = isset($_REQUEST['a']) ? $_REQUEST['a'] : null;
@@ -108,6 +116,9 @@ function check_system_version()
         $number_of_users = Statistics::count_users();
         $number_of_active_users = Statistics::count_users(null, null, null, true);
 
+        // The number of sessions
+        $number_of_sessions = Statistics::count_sessions();
+
         $data = array(
             'url' => api_get_path(WEB_PATH),
             'campus' => api_get_setting('siteName'),
@@ -116,6 +127,7 @@ function check_system_version()
             'numberofcourses' => $number_of_courses,
             'numberofusers' => $number_of_users,
             'numberofactiveusers' => $number_of_active_users,
+            'numberofsessions' => $number_of_sessions,
             //The donotlistcampus setting recovery should be improved to make
             // it true by default - this does not affect numbers counting
             'donotlistcampus' => api_get_setting('donotlistcampus'),
@@ -142,4 +154,59 @@ function check_system_version()
     }
     return $output;
 }
+<<<<<<< HEAD
 exit;
+=======
+
+/**
+ * Function to make an HTTP request through fsockopen (specialised for GET)
+ * Derived from Jeremy Saintot: http://www.php.net/manual/en/function.fsockopen.php#101872
+ * @param string IP or hostname
+ * @param int    Target port
+ * @param string URI (defaults to '/')
+ * @param array  GET data
+ * @param float  Timeout
+ * @param bool   Include HTTP Request headers?
+ * @param bool   Include HTTP Response headers?
+ */
+function _http_request($ip, $port = 80, $uri = '/', $getdata = array(), $timeout = 5, $req_hdr = false, $res_hdr = false)
+{
+    $verb = 'GET';
+    $ret = '';
+    $getdata_str = count($getdata) ? '?' : '';
+
+    foreach ($getdata as $k => $v) {
+                $getdata_str .= urlencode($k) .'='. urlencode($v) . '&';
+    }
+
+    $crlf = "\r\n";
+    $req = $verb .' '. $uri . $getdata_str .' HTTP/1.1' . $crlf;
+    $req .= 'Host: '. $ip . $crlf;
+    $req .= 'User-Agent: Mozilla/5.0 Firefox/3.6.12' . $crlf;
+    $req .= 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' . $crlf;
+    $req .= 'Accept-Language: en-us,en;q=0.5' . $crlf;
+    $req .= 'Accept-Encoding: deflate' . $crlf;
+    $req .= 'Accept-Charset: utf-8;q=0.7,*;q=0.7' . $crlf;
+
+    $req .= $crlf;
+
+    if ($req_hdr) {
+        $ret .= $req;
+    }
+    if (($fp = @fsockopen($ip, $port, $errno, $errstr, $timeout)) == false) {
+        return "Error $errno: $errstr\n";
+    }
+
+    stream_set_timeout($fp, $timeout);
+    $r = @fwrite($fp, $req);
+    $line = @fread($fp,512);
+    $ret .= $line;
+    fclose($fp);
+
+    if (!$res_hdr) {
+        $ret = substr($ret, strpos($ret, "\r\n\r\n") + 4);
+    }
+
+    return trim($ret);
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

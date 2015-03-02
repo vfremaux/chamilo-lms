@@ -16,6 +16,7 @@
 class Notification extends Model
 {
     public $table;
+<<<<<<< HEAD
     public $columns = array(
         'id',
         'dest_user_id',
@@ -27,6 +28,12 @@ class Notification extends Model
         'sent_at'
     );
     public $max_content_length = 254; //Max lenght of the notification.content field
+=======
+    public $columns = array('id', 'dest_user_id', 'dest_mail', 'title', 'content', 'send_freq', 'created_at', 'sent_at');
+
+    //Max length of the notification.content field
+    public $max_content_length = 254;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public $debug = false;
     public $type;
     public $admin_name;
@@ -82,32 +89,47 @@ class Notification extends Model
 
     /**
      *  Send the notifications
+<<<<<<< HEAD
      * @param int notification frequency
      */
     public function send($frec = NOTIFY_MESSAGE_DAILY)
+=======
+     *  @param int notification frequency
+     */
+    public function send($frequency = 8)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
-        $notifications = $this->find('all', array('where' => array('sent_at IS NULL AND send_freq = ?' => $frec)));
+        $notifications = $this->find('all', array('where' => array('sent_at IS NULL AND send_freq = ?' => $frequency)));
 
         if (!empty($notifications)) {
             foreach ($notifications as $item_to_send) {
+<<<<<<< HEAD
 
                 $this->set_sender_info($item_to_send['sender_id']);
 
                 //Sending email
+=======
+                // Sending email
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 api_mail_html(
                     $item_to_send['dest_mail'],
                     $item_to_send['dest_mail'],
                     Security::filter_terms($item_to_send['title']),
                     Security::filter_terms($item_to_send['content']),
+<<<<<<< HEAD
                     $this->sender_name,
                     $this->sender_email,
                     $this->extra_headers
+=======
+                    $this->admin_name,
+                    $this->admin_email
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 );
                 if ($this->debug) {
                     error_log('Sending message to: '.$item_to_send['dest_mail']);
                 }
 
-                //Updating
+                // Updating
                 $item_to_send['sent_at'] = api_get_utc_datetime();
                 $this->update($item_to_send);
                 if ($this->debug) {
@@ -187,8 +209,12 @@ class Notification extends Model
                     }
                 }
 
+<<<<<<< HEAD
                 $user_info = api_get_user_info($user_id);
                 //Extra field was deleted or removed? Use the default status
+=======
+                // Extra field was deleted or removed? Use the default status.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 if (empty($setting_info)) {
                     $user_setting = $default_status;
                 } else {
@@ -221,10 +247,14 @@ class Notification extends Model
                                     Security::filter_terms($content),
                                     $sender_info['complete_name'],
                                     $sender_info['email'],
+<<<<<<< HEAD
                                     $extra_headers,
                                     array(),
                                     null,
                                     $text_content
+=======
+                                    $extra_headers
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                                 );
                             } else {
                                 api_mail_html(
@@ -232,11 +262,16 @@ class Notification extends Model
                                     $user_info['mail'],
                                     Security::filter_terms($title),
                                     Security::filter_terms($content),
+<<<<<<< HEAD
                                     $sender_info['complete_name'],
                                     $sender_info['email'],
                                     array(),
                                     null,
                                     $text_content
+=======
+                                    $this->admin_name,
+                                    $this->admin_email
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                                 );
                             }
                         }
@@ -258,9 +293,15 @@ class Notification extends Model
 
     /**
      * Formats the content in order to add the welcome message, the notification preference, etc
+<<<<<<< HEAD
      * @param    string    the content
      * @param    array    result of api_get_user_info() or UserGroup->get()
      * @todo create new templates based in Twig
+=======
+     * @param   string 	the content
+     * @param   array	result of api_get_user_info() or GroupPortalManager:get_group_data()
+     * @return string
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * */
     public function format_content($content, $sender_info)
     {

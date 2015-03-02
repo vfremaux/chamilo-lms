@@ -1,14 +1,22 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
+<<<<<<< HEAD
  *    Exercise list: This script shows the list of exercises for administrators and students.
  * @package chamilo.exercise
  * @author hubert.borderiou
+=======
+ *	Exercise list: This script shows the list of exercises for administrators and students.
+ *	@package chamilo.exercise
+ *	@author hubert.borderiou
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
  *
  */
 /**
  * Code
  */
+use ChamiloSession as Session;
+
 // name of the language file that needs to be included
 $language_file = array('exercice');
 
@@ -23,7 +31,6 @@ $htmlHeadXtra[] = api_get_jqgrid_js();
 
 // Access control
 api_protect_course_script(true, false, true);
-
 
 // including additional libraries
 require_once 'exercise.class.php';
@@ -50,9 +57,6 @@ $course_id = api_get_course_int_id();
 $hotpotatoes_path = isset($_REQUEST['path']) ? $_REQUEST['path'] : null;
 $filter_user = isset($_REQUEST['filter_by_user']) ? intval($_REQUEST['filter_by_user']) : null;
 
-$locked = api_resource_is_locked_by_gradebook($exercise_id, LINK_EXERCISE);
-
-
 if (empty($hotpotatoes_path)) {
     api_not_allowed();
 }
@@ -65,6 +69,10 @@ if (!empty($_REQUEST['path'])) {
     $parameters['path'] = Security::remove_XSS($_REQUEST['path']);
 }
 
+<<<<<<< HEAD
+=======
+$origin = isset($origin) ? $origin : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (!empty($_REQUEST['export_report']) && $_REQUEST['export_report'] == '1') {
     if (api_is_platform_admin() || api_is_course_admin() || api_is_course_tutor() || api_is_course_coach()) {
@@ -74,6 +82,7 @@ if (!empty($_REQUEST['export_report']) && $_REQUEST['export_report'] == '1') {
         }
 
         require_once 'hotpotatoes_exercise_result.class.php';
+<<<<<<< HEAD
         // @todo make xls export work
 //        switch ($_GET['export_format']) {
 //            case 'xls' :
@@ -88,10 +97,16 @@ if (!empty($_REQUEST['export_report']) && $_REQUEST['export_report'] == '1') {
         exit;
 //                break;
 //        }
+=======
+        $export = new HotpotatoesExerciseResult();
+        $export->exportCompleteReportCSV($documentPath, $hotpotatoes_path);
+        exit;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     } else {
         api_not_allowed(true);
     }
 }
+<<<<<<< HEAD
 
 //Send student email @todo move this code in a class, library
 //if ($_REQUEST['comments'] == 'update' && ($is_allowedToEdit || $is_tutor) && $_GET['exeid']== strval(intval($_GET['exeid']))) {
@@ -219,6 +234,14 @@ if ($is_allowedToEdit && $origin != 'learnpath') {
         $actions .= '<a id="export_opener" href="'.api_get_self().'?export_report=1&path='.Security::remove_XSS(
             $hotpotatoes_path
         ).' ">'.Display::return_icon('save.png', get_lang('Export'), '', ICON_SIZE_MEDIUM).'</a>';
+=======
+$actions = null;
+if ($is_allowedToEdit && $origin != 'learnpath') {
+    // the form
+    if (api_is_platform_admin() || api_is_course_admin() || api_is_course_tutor() || api_is_course_coach()) {
+        //$actions .= '<a href="admin.php?exerciseId='.intval($_GET['exerciseId']).'">' . Display :: return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).'</a>';
+        $actions .= '<a id="export_opener" href="'.api_get_self().'?export_report=1&path='.Security::remove_XSS($hotpotatoes_path).' ">'.Display::return_icon('save.png',   get_lang('Export'),'',ICON_SIZE_MEDIUM).'</a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 } else {
     $actions .= '<a href="exercice.php">'.Display :: return_icon(
@@ -228,6 +251,22 @@ if ($is_allowedToEdit && $origin != 'learnpath') {
         ICON_SIZE_MEDIUM
     ).'</a>';
 }
+
+if ($is_allowedToEdit) {
+    $action = isset($_GET['action']) ? $_GET['action'] : null;
+    switch ($action) {
+        case 'delete':
+            $fileToDelete = isset($_GET['id']) ? $_GET['id'] : null;
+            deleteAttempt($fileToDelete);
+            Session::write('message', Display::return_message(get_lang('ItemDeleted')));
+            $url = api_get_self().'?'.api_get_cidreq().'&path='.$hotpotatoes_path;
+            header("Location: $url");
+            exit;
+            break;
+
+    }
+}
+
 
 //Deleting an attempt
 //if ( ($is_allowedToEdit || $is_tutor || api_is_coach()) && $_GET['delete'] == 'delete' && !empty ($_GET['did']) && $locked == false) {
@@ -241,20 +280,29 @@ if ($is_allowedToEdit && $origin != 'learnpath') {
 //        exit;
 //    }
 //}
+$nameTools = get_lang('Results');
 
 if ($is_allowedToEdit || $is_tutor) {
     $nameTools = get_lang('StudentScore');
+<<<<<<< HEAD
     $interbreadcrumb[] = array("url" => "exercice.php?gradebook=$gradebook", "name" => get_lang('Exercices'));
+=======
+    $interbreadcrumb[] = array("url" => "exercice.php","name" => get_lang('Exercices'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $objExerciseTmp = new Exercise();
-    if ($objExerciseTmp->read($exercise_id)) {
+    /*if ($objExerciseTmp->read($exercise_id)) {
         $interbreadcrumb[] = array("url" => "admin.php?exerciseId=".$exercise_id, "name" => $objExerciseTmp->name);
-    }
+    }*/
 } else {
+<<<<<<< HEAD
     $interbreadcrumb[] = array("url" => "exercice.php?gradebook=$gradebook", "name" => get_lang('Exercices'));
+=======
+    $interbreadcrumb[] = array("url" => "exercice.php","name" => get_lang('Exercices'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $objExerciseTmp = new Exercise();
-    if ($objExerciseTmp->read($exercise_id)) {
+    /*if ($objExerciseTmp->read($exercise_id)) {
         $nameTools = get_lang('Results').': '.$objExerciseTmp->name;
-    }
+    }*/
 }
 
 Display :: display_header($nameTools);
@@ -316,14 +364,18 @@ if ($is_allowedToEdit) {
 
 echo $actions;
 
+<<<<<<< HEAD
 $url = api_get_path(
     WEB_AJAX_PATH
 ).'model.ajax.php?a=get_hotpotatoes_exercise_results&path='.$hotpotatoes_path.'&filter_by_user='.$filter_user;
 
 //$activeurl = '?sidx=session_active';
+=======
+$url = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_hotpotatoes_exercise_results&path='.$hotpotatoes_path.'&filter_by_user='.$filter_user;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $action_links = '';
 
-//Generating group list
+// Generating group list
 
 $group_list = GroupManager::get_group_list();
 $group_parameters = array('group_all:'.get_lang('All'), 'group_none:'.get_lang('None'));
@@ -336,8 +388,12 @@ if (!empty($group_parameters)) {
 }
 
 if ($is_allowedToEdit || $is_tutor) {
+<<<<<<< HEAD
 
     //The order is important you need to check the the $column variable in the model.ajax.php file
+=======
+    // The order is important you need to check the the $column variable in the model.ajax.php file
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $columns = array(
         get_lang('FirstName'),
         get_lang('LastName'),
@@ -348,6 +404,7 @@ if ($is_allowedToEdit || $is_tutor) {
         get_lang('Actions')
     );
 
+<<<<<<< HEAD
     //Column config
     // @todo fix search firstname/lastname that doesn't work. rmove search for the moment
     $column_model = array(
@@ -372,6 +429,18 @@ if ($is_allowedToEdit || $is_tutor) {
         array('name' => 'exe_date', 'index' => 'exe_date', 'width' => '60', 'align' => 'left', 'search' => 'false'),
         array('name' => 'score', 'index' => 'exe_result', 'width' => '50', 'align' => 'left', 'search' => 'false'),
         array('name' => 'actions', 'index' => 'actions', 'width' => '60', 'align' => 'left', 'search' => 'false')
+=======
+  //Column config
+  // @todo fix search firstname/lastname that doesn't work. rmove search for the moment
+	$column_model   = array(
+        array('name'=>'firstname',      'index'=>'firstname',		'width'=>'50',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'lastname',		    'index'=>'lastname',		'width'=>'50',   'align'=>'left', 'formatter'=>'action_formatter', 'search' => 'false'),
+        array('name'=>'login',          'hidden'=>'true',       'index'=>'username',        'width'=>'40',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'group_name',		  'index'=>'group_id',    'width'=>'40',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'exe_date',		    'index'=>'exe_date',		'width'=>'60',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'score',			    'index'=>'exe_result',	'width'=>'50',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'actions',        'index'=>'actions',     'width'=>'60',  'align'=>'left', 'search' => 'false')
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     );
 
     $action_links = '
@@ -386,6 +455,7 @@ if ($is_allowedToEdit || $is_tutor) {
     }';
 } else {
     //The order is important you need to check the the $column variable in the model.ajax.php file
+<<<<<<< HEAD
     $columns = array(get_lang('StartDate'), get_lang('Score'), get_lang('Actions'));
 
     //Column config
@@ -394,6 +464,20 @@ if ($is_allowedToEdit || $is_tutor) {
         array('name' => 'exe_date', 'index' => 'exe_date', 'width' => '60', 'align' => 'left', 'search' => 'false'),
         array('name' => 'score', 'index' => 'exe_result', 'width' => '50', 'align' => 'left', 'search' => 'false'),
         array('name' => 'actions', 'index' => 'actions', 'width' => '60', 'align' => 'left', 'search' => 'false')
+=======
+    $columns = array(
+        get_lang('StartDate'),
+        get_lang('Score'),
+        get_lang('Actions')
+    );
+
+    //Column config
+    // @todo fix search firstname/lastname that doesn't work. rmove search for the moment
+    $column_model  = array(
+        array('name'=>'exe_date',		    'index'=>'exe_date',		'width'=>'60',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'score',			    'index'=>'exe_result',	'width'=>'50',   'align'=>'left', 'search' => 'false'),
+        array('name'=>'actions',        'index'=>'actions',     'width'=>'60',  'align'=>'left', 'search' => 'false')
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     );
 }
 
@@ -402,11 +486,9 @@ $extra_params['autowidth'] = 'true';
 
 //height auto
 $extra_params['height'] = 'auto';
-//$extra_params['excel'] = 'excel';
-//$extra_params['rowList'] = array(20, 50, 100, 500, 1000, 2000, 5000, 10000);
-
 ?>
 <script>
+<<<<<<< HEAD
 
     function setSearchSelect(columnName) {
         $("#results").jqGrid('setColProp', columnName,
@@ -421,6 +503,21 @@ $extra_params['height'] = 'auto';
                     }
                 });
     }
+=======
+function setSearchSelect(columnName) {
+    $("#results").jqGrid('setColProp', columnName,
+    {
+       searchoptions:{
+            dataInit:function(el){
+                $("option[value='1']",el).attr("selected", "selected");
+                setTimeout(function(){
+                    $(el).trigger('change');
+                },1000);
+            }
+        }
+    });
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     function exportExcel() {
         var mya = new Array();
@@ -449,8 +546,13 @@ $extra_params['height'] = 'auto';
         form.submit();
     }
 
+<<<<<<< HEAD
     $(function () {
     <?php
+=======
+$(function() {
+<?php
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     echo Display::grid_js('results', $url, $columns, $column_model, $extra_params, array(), $action_links, true);
 
     if ($is_allowedToEdit || $is_tutor) {
@@ -487,5 +589,8 @@ $extra_params['height'] = 'auto';
 </form>
 <?php
 
+$showMessage = Session::read('message');
+Session::erase('message');
+echo isset($showMessage) ? $showMessage : null;
 echo Display::grid_html('results');
 Display :: display_footer();

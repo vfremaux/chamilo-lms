@@ -1,11 +1,21 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
+<<<<<<< HEAD
  * CLASS Matching
+=======
+ * Code
+ */
+/**
+ *
+ *  Class Matching
+ *  Matching questions type class
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
  *
  *    This class allows to instantiate an object of type MULTIPLE_ANSWER (MULTIPLE CHOICE, MULTIPLE ANSWER),
  *    extending the class question
  *
+<<<<<<< HEAD
  * @author Eric Marguin
  * @package chamilo.exercise
  **/
@@ -16,6 +26,10 @@
 /**
  * Matching questions type class
  * @package chamilo.exercise
+=======
+ *	@author Eric Marguin
+ *	@package chamilo.exercise
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
  */
 class Matching extends Question
 {
@@ -113,6 +127,7 @@ class Matching extends Question
 						</th>
 					</tr>';
 
+<<<<<<< HEAD
         $form->addElement('label', get_lang('MakeCorrespond').'<br /> '.Display::return_icon('fill_field.png'), $html);
 
         if ($nb_matches < 1) {
@@ -164,6 +179,44 @@ class Matching extends Question
 
         // DISPLAY OPTIONS
         $html = '<table class="data_table">
+=======
+		$form -> addElement ('label', get_lang('MakeCorrespond').'<br /> <img src="../img/fill_field.png">', $html);
+
+		if ($nb_matches < 1) {
+			$nb_matches = 1;
+			Display::display_normal_message(get_lang('YouHaveToCreateAtLeastOneAnswer'));
+		}
+
+		for($i = 1 ; $i <= $nb_matches ; ++$i) {
+			$form -> addElement ('html', '<tr><td>');
+			$group = array();
+			$puce = $form->createElement('text', null,null,'value="'.$i.'"');
+			$puce->freeze();
+			$group[] = $puce;
+
+			$group[] = $form->createElement('text', 'answer['.$i.']',null, 'size="60" style="margin-left: 0em;"');
+			$group[] = $form->createElement('select', 'matches['.$i.']',null,$a_matches);
+			$group[] = $form->createElement('text', 'weighting['.$i.']',null, array('class' => 'span1', 'value' => 10));
+			$form -> addGroup($group, null, null, '</td><td>');
+			$form -> addElement ('html', '</td></tr>');
+		}
+
+		$form -> addElement ('html', '</table></div></div>');
+		$group = array();
+
+		if ($navigator_info['name']=='Internet Explorer' &&  $navigator_info['version']=='6') {
+			$group[] = $form->createElement('submit', 'lessMatches', get_lang('DelElem'),'class="btn minus"');
+			$group[] = $form->createElement('submit', 'moreMatches', get_lang('AddElem'),'class="btn plus"');
+		} else {
+            $group[] = $form->createElement('style_submit_button', 'moreMatches', get_lang('AddElem'),'class="btn plus"');
+			$group[] = $form->createElement('style_submit_button', 'lessMatches', get_lang('DelElem'),'class="btn minus"');
+		}
+
+		$form -> addGroup($group);
+
+		// DISPLAY OPTIONS
+		$html='<table class="data_table">
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 					<tr style="text-align: center;">
 						<th width="10px">
 							'.get_lang('Number').'
@@ -201,6 +254,7 @@ class Matching extends Question
             $group[] = $form->createElement('submit', 'moreOptions', get_lang('AddElem'), 'class="plus"');
         } else {
             // setting the save button here and not in the question class.php
+<<<<<<< HEAD
             $group[] = $form->createElement('style_submit_button', 'lessOptions', get_lang('DelElem'), 'class="minus"');
             $group[] = $form->createElement('style_submit_button', 'moreOptions', get_lang('AddElem'), ' class="plus"');
             $group[] = $form->createElement('style_submit_button', 'submitQuestion', $this->submitText, 'class="'.$this->submitClass.'"');
@@ -267,6 +321,72 @@ class Matching extends Question
                     <th>'.get_lang('CorrespondsTo').'</th>
                   </tr>';
         }
+=======
+            $group[] = $form->createElement('submit','submitQuestion',$text, 'class="'.$class.'"');
+            $group[] = $form->createElement('submit', 'lessOptions', get_lang('DelElem'),'class="minus"');
+            $group[] = $form->createElement('submit', 'moreOptions',get_lang('AddElem'),'class="plus"');
+		} else {
+            // setting the save button here and not in the question class.php
+            $group[] = $form->createElement('style_submit_button', 'lessOptions', get_lang('DelElem'),'class="minus"');
+            $group[] = $form->createElement('style_submit_button', 'moreOptions',get_lang('AddElem'),' class="plus"');
+            $group[] = $form->createElement('style_submit_button','submitQuestion',$text, 'class="'.$class.'"');
+		}
+
+		$form -> addGroup($group);
+
+		if (!empty($this -> id)) {
+			$form -> setDefaults($defaults);
+		} else {
+			if ($this -> isContent == 1) {
+				$form -> setDefaults($defaults);
+			}
+		}
+
+		$form->setConstants(array('nb_matches' => $nb_matches,'nb_options' => $nb_options));
+	}
+
+
+	/**
+	 * abstract function which creates the form to create / edit the answers of the question
+	 * @param the formvalidator instance
+	 */
+	function processAnswersCreation($form) {
+
+		$nb_matches = $form -> getSubmitValue('nb_matches');
+		$nb_options = $form -> getSubmitValue('nb_options');
+		$this -> weighting = 0;
+		$objAnswer = new Answer($this->id);
+
+		$position = 0;
+
+		// insert the options
+		for($i=1 ; $i<=$nb_options; ++$i) {
+			$position++;
+			$option = $form -> getSubmitValue('option['.$i.']');
+			$objAnswer->createAnswer($option, 0, '', 0, $position);
+		}
+
+		// insert the answers
+		for($i=1 ; $i<=$nb_matches ; ++$i) {
+			$position++;
+			$answer = $form -> getSubmitValue('answer['.$i.']');
+			$matches = $form -> getSubmitValue('matches['.$i.']');
+			$weighting = $form -> getSubmitValue('weighting['.$i.']');
+			$this -> weighting += $weighting;
+			$objAnswer->createAnswer($answer,$matches,'',$weighting,$position);
+		}
+		$objAnswer->save();
+		$this->save();
+	}
+
+	function return_header($feedback_type = null, $counter = null, $score = null) {
+	    $header = parent::return_header($feedback_type, $counter, $score);
+        $header .= '<table class="'.$this->question_table_class .'">';
+        $header .= '<tr>
+                <th>'.get_lang('ElementList').'</th>
+                <th>'.get_lang('CorrespondsTo').'</th>
+              </tr>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         return $header;
     }
 }

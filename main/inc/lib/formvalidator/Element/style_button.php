@@ -138,6 +138,7 @@ class HTML_QuickForm_stylebutton extends HTML_QuickForm_element
         if ($this->_flagFrozen) {
             return $this->getFrozenHtml();
         } else {
+<<<<<<< HEAD
             // Adding the btn class
             if (isset($this->_attributes['class'])) {
                 $this->_attributes['class'] = 'btn '.$this->_attributes['class'];
@@ -153,6 +154,15 @@ class HTML_QuickForm_stylebutton extends HTML_QuickForm_element
                 $this->_attributes['class'] = 'btn btn-danger';
                 $addIcon = '<i class="fa fa-minus-circle fa-lg"></i> ';
             }
+=======
+            //Adding the btn class
+            if (isset($this->_attributes['class'])) {
+                $this->_attributes['class'] = 'btn '.$this->_attributes['class'];
+            }
+            return $this->_getTabs().'<button ' . $this->_getAttrString($this->_attributes) . ' >'.$this->getValue() .'</button>';
+        }
+    } //end func toHtml
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             if (strpos($this->_attributes['class'], 'plus')) {
                 $this->_attributes['class'] = 'btn btn-success';
@@ -217,4 +227,8 @@ class HTML_QuickForm_stylebutton extends HTML_QuickForm_element
             return parent::exportValue($submitValues, $assoc);
         }
     }
+<<<<<<< HEAD
 }
+=======
+} // end class HTML_QuickForm_element
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

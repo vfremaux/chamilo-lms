@@ -3,29 +3,36 @@
 
 /**
  * This tool allows platform admins to create courses by uploading a CSV file
- * Copyright (c) 2010 Chamilo Association
- * Copyright (c) 2008 Dokeos SPRL
  * Copyright (c) 2005 Bart Mollet <bart.mollet@hogent.be>
- * @todo Add some language variables to Chamilo Translation Application
  * @package chamilo.admin
  */
 
 /**
  * Validates imported data.
  */
+<<<<<<< HEAD
 function validate_data($courses) {
     global $purification_option_for_usernames;
 
     // Ensure the prefix + database name do not get over 40 characters.
     $maxlength = 40;
 
+=======
+function validate_data($courses)
+{
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $errors = array ();
     $coursecodes = array ();
     foreach ($courses as $index => $course) {
         $course['line'] = $index +1;
         // 1. Check whether mandatory fields are set.
+<<<<<<< HEAD
         $mandatory_fields = array ('Code', 'Title', 'CourseCategory', 'Teacher');
         foreach ($mandatory_fields as $key => $field) {
+=======
+        $mandatory_fields = array ('Code', 'Title', 'CourseCategory');
+        foreach ($mandatory_fields as $field) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if (!isset($course[$field]) || strlen($course[$field]) == 0) {
                 $course['error'] = get_lang($field.'Mandatory');
                 $errors[] = $course;
@@ -37,6 +44,7 @@ function validate_data($courses) {
             if (isset($coursecodes[$course['Code']])) {
                 $course['error'] = get_lang('CodeTwiceInFile');
                 $errors[] = $course;
+<<<<<<< HEAD
             }
             // 2.2 Check course code length.
             elseif (api_strlen($course['Code']) > $maxlength) {
@@ -49,6 +57,12 @@ function validate_data($courses) {
                 $sql = "SELECT * FROM $course_table WHERE code = '".Database::escape_string($course['Code'])."'";
                 $res = Database::query($sql);
                 if (Database::num_rows($res) > 0) {
+=======
+            } else {
+                // 2.2 Check whether course code has been occupied.
+                $courseInfo = api_get_course_info($course['Code']);
+                if (!empty($courseInfo)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $course['error'] = get_lang('CodeExists');
                     $errors[] = $course;
                 }
@@ -75,10 +89,9 @@ function validate_data($courses) {
 
         // 4. Check whether course category exists.
         if (isset($course['CourseCategory']) && strlen($course['CourseCategory']) != 0) {
-            $category_table = Database :: get_main_table(TABLE_MAIN_CATEGORY);
-            $sql = "SELECT * FROM $category_table WHERE code = '".Database::escape_string($course['CourseCategory'])."'";
-            $res = Database::query($sql);
-            if (Database::num_rows($res) == 0) {
+            require_once api_get_path(LIBRARY_PATH).'course_category.lib.php';
+            $categoryInfo = getCategory($course['CourseCategory']);
+            if (empty($categoryInfo)) {
                 //@todo this is so bad even all lang variables are wrong ...
                 $course['error'] = get_lang('UnkownCategoryCourseCode').' ('.$course['CourseCategory'].')';
                 $errors[] = $course;
@@ -100,16 +113,11 @@ function getTeacherListInArray($teachers)
  * Saves imported data.
  * @param array   List of courses
  */
-function save_data($courses) {
-    global $purification_option_for_usernames;
-
-    $user_table = Database::get_main_table(TABLE_MAIN_USER);
+function save_data($courses)
+{
     $msg = '';
-
-    foreach ($courses as $index => $course) {
+    foreach ($courses as $course) {
         $course_language = api_get_valid_language($course['Language']);
-        $username = '';
-
         $teachers = getTeacherListInArray($course['Teacher']);
         $teacherList = array();
         $creatorId = api_get_user_id();
@@ -139,7 +147,6 @@ function save_data($courses) {
                     CourseManager::add_user_to_course($teacher['user_id'], $course_info['code'], COURSEMANAGER);
                 }
             }
-
             $msg .= '<a href="'.api_get_path(WEB_COURSE_PATH).$course_info['directory'].'/">
                     '.$course_info['title'].'</a> '.get_lang('Created').'<br />';
         }
@@ -155,8 +162,14 @@ function save_data($courses) {
  * @param string $file Path to the CSV-file
  * @return array All course-information read from the file
  */
+<<<<<<< HEAD
 function parse_csv_data($file) {
     $courses = Import :: csv_to_array($file);
+=======
+function parse_csv_data($file)
+{
+    $courses = Import::csv_to_array($file);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     return $courses;
 }
 

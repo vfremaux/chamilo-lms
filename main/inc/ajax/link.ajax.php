@@ -14,9 +14,14 @@ switch ($action) {
     case 'check_url':
         if (api_is_allowed_to_edit(null, true)) {
             $url = $_REQUEST['url'];
+<<<<<<< HEAD
 
             //Check if curl is available
             if  (!in_array('curl', get_loaded_extensions())) {
+=======
+            // Check if curl is available.
+            if (!in_array('curl', get_loaded_extensions())) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 echo '';
                 exit;
             }

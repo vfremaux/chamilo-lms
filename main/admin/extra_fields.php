@@ -118,11 +118,19 @@ switch ($action) {
         // The validation or display
         if ($form->validate()) {
             //if ($check) {
+<<<<<<< HEAD
             $values = $form->exportValues();
             $res    = $obj->save($values);
             if ($res) {
                 Display::display_confirmation_message(get_lang('ItemAdded'));
             }
+=======
+                $values = $form->exportValues();
+                $res    = $obj->save($values);
+                if ($res) {
+                    Display::display_confirmation_message(get_lang('ItemAdded'));
+                }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             //}
             $obj->display();
         } else {
@@ -142,9 +150,15 @@ switch ($action) {
         // The validation or display
         if ($form->validate()) {
             //if ($check) {
+<<<<<<< HEAD
             $values = $form->exportValues();
             $res    = $obj->update($values);
             Display::display_confirmation_message(sprintf(get_lang('ItemUpdated'), $values['field_variable']), false);
+=======
+                $values = $form->exportValues();
+                $res    = $obj->update($values);
+                Display::display_confirmation_message(sprintf(get_lang('ItemUpdated'), $values['field_variable']), false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             //}
             $obj->display();
         } else {
@@ -159,10 +173,17 @@ switch ($action) {
     case 'delete':
         // Action handling: delete
         //if ($check) {
+<<<<<<< HEAD
         $res = $obj->delete($_GET['id']);
         if ($res) {
             Display::display_confirmation_message(get_lang('ItemDeleted'));
         }
+=======
+            $res = $obj->delete($_GET['id']);
+            if ($res) {
+                Display::display_confirmation_message(get_lang('ItemDeleted'));
+            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         //}
         $obj->display();
         break;
@@ -196,6 +217,11 @@ CREATE TABLE IF NOT EXISTS lp_field_options (
     option_display_text varchar(64),
     option_order int,
     tms	DATETIME NOT NULL default '0000-00-00 00:00:00',
+<<<<<<< HEAD
+=======
+    priority VARCHAR(255),
+    priority_message VARCHAR(255),
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     PRIMARY KEY (id)
 );
 DROP TABLE IF EXISTS lp_field_values;

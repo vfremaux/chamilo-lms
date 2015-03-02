@@ -59,8 +59,13 @@ class ZombieManager
                                              WHERE a.login_user_id = user.user_id
                                              ) AND
                         access.login_date <= '$ceiling' AND
+<<<<<<< HEAD
                         user.user_id = access.login_user_id AND
                         url.login_user_id = user.user_id AND url.access_url_id=$current_url_id";
+=======
+                        user.user_id = access.login_user_id AND 
+                        url.user_id = user.user_id AND url.access_url_id=$current_url_id";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         } else {
             $sql .= " FROM $user_table as user, $login_table as access
                       WHERE

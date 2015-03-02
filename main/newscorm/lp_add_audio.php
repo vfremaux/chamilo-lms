@@ -18,9 +18,13 @@ require_once 'resourcelinker.inc.php';
 
 $is_allowed_to_edit = api_is_allowed_to_edit(null, true);
 
-$isStudentView  = (int) $_REQUEST['isStudentView'];
+$isStudentView  = isset($_REQUEST['isStudentView']) ? (int) $_REQUEST['isStudentView'] : null;
 $learnpath_id   = (int) $_REQUEST['lp_id'];
+<<<<<<< HEAD
 $submit			= $_POST['submit_button'];
+=======
+$submit			= isset($_POST['submit_button']) ? $_POST['submit_button'] : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $type = isset($_GET['type']) ? $_GET['type'] : null;
 $action = isset($_GET['action']) ? $_GET['action'] : null;
@@ -77,13 +81,18 @@ if (empty($lp_item_id)) {
 }
 
 $lp_item = new learnpathItem($lp_item_id);
+<<<<<<< HEAD
 /** @var Template $tpl */
 $tpl = $app['template'];
 
+=======
+$tpl = new Template(null);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form = new FormValidator('add_audio', 'post', api_get_self().'?action=add_audio&id='.$lp_item_id, null, array('enctype' => 'multipart/form-data'));
 $suredel = trim(get_lang('AreYouSureToDelete'));
 
 $lpPathInfo = $_SESSION['oLP']->generate_lp_folder(api_get_course_info());
+<<<<<<< HEAD
 
 $file = null;
 if (isset($lp_item->audio) && !empty($lp_item->audio)) {
@@ -124,12 +133,49 @@ $tpl->assign('lp_dir', api_remove_trailing_slash($lpPathInfo['dir']));
 $voiceContent = $tpl->fetch('default/learnpath/record_voice.tpl');
 
 $form->addElement('html', $voiceContent);
+=======
+
+$file = null;
+if (isset($lp_item->audio) && !empty($lp_item->audio)) {
+    $file = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/audio/'.$lp_item->audio;
+    $urlFile = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/audio/'.$lp_item->audio;
+
+    if (!file_exists($file)) {
+        $file = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document'.$lpPathInfo['dir'].$lp_item->audio;
+        $urlFile = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document'.$lpPathInfo['dir'].$lp_item->audio;
+    }
+}
+
+$page = $_SESSION['oLP']->build_action_menu(true);
+$page .= '<div class="row-fluid" style="overflow:hidden">';
+$page .= '<div id="lp_sidebar" class="span4">';
+$page .= $_SESSION['oLP']->return_new_tree(null, true);
+
+// Show the template list.
+$page .= '</div>';
+
+$recordVoiceForm = Display::page_subheader(get_lang('RecordYourVoice'));
+
+$page .= '<div id="doc_form" class="span8">';
+$tpl->assign('unique_file_id', api_get_unique_id());
+$tpl->assign('course_code', api_get_course_id());
+$tpl->assign('php_session_id', session_id());
+$tpl->assign('filename', $lp_item->get_title().'_nano.wav');
+$tpl->assign('enable_nanogong', api_get_setting('enable_nanogong') == 'true' ? 1 : 0);
+$tpl->assign('enable_wami', api_get_setting('enable_wami_record') == 'true' ? 1 : 0);
+$tpl->assign('cur_dir_path', '/audio');
+$tpl->assign('lp_item_id', $lp_item_id);
+$tpl->assign('lp_dir', api_remove_trailing_slash($lpPathInfo['dir']));
+$recordVoiceForm .= $tpl->fetch('default/learnpath/record_voice.tpl');
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->addElement('header', get_lang('UplUpload'));
 $form->addElement('html', $lp_item->get_title());
 $form->addElement('file', 'file', get_lang('AudioFile'), 'style="width: 250px"');
 if (!empty($file)) {
     $url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?lp_id='.$_SESSION['oLP']->get_id().'&action=add_audio&id='.$lp_item_id.'&delete_file=1&'.api_get_cidreq();
     $form->addElement('label', null, Display::url(get_lang('RemoveAudio'), $url, array('class' => 'btn btn-danger')));
+<<<<<<< HEAD
 }
 
 $form->addElement('hidden', 'id', $lp_item_id);
@@ -137,9 +183,11 @@ $form->addElement('hidden', 'id', $lp_item_id);
 if (!empty($file)) {
     $audioPlayer = '<div id="preview">'.Display::getMediaPlayer($file, array('url' => $urlFile))."</div>";
     $form->addElement('label', get_lang('Preview'), $audioPlayer);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
-$form->addElement('button', 'submit', get_lang('Edit'));
 
+<<<<<<< HEAD
 $course_info = api_get_course_info();
 $document_tree = DocumentManager::get_document_preview(
     $course_info,
@@ -154,7 +202,41 @@ $document_tree = DocumentManager::get_document_preview(
 $page .= $form->return_form();
 $page .= '<legend>'.get_lang('SelectAnAudioFileFromDocuments').'</legend>';
 $page .= $document_tree;
+=======
+$form->addElement('hidden', 'id', $lp_item_id);
+
+if (!empty($file)) {
+    $audioPlayer = '<div id="preview">'.Display::getMediaPlayer($file, array('url' => $urlFile))."</div>";
+    $form->addElement('label', get_lang('Preview'), $audioPlayer);
+}
+
+$form->addElement('button', 'submit', get_lang('Edit'));
+
+$courseInfo = api_get_course_info();
+$documentTree = DocumentManager::get_document_preview(
+    $courseInfo,
+    false,
+    null,
+    api_get_session_id(),
+    false,
+    '',
+    urlencode('lp_controller.php?action=add_audio&lp_id='.$_SESSION['oLP']->get_id().'&id='.$lp_item_id),
+    false,
+    true
+    //$folderId = false
+);
+
+$page .= $recordVoiceForm;
+$page .= $form->return_form();
+$page .= '<legend>'.get_lang('SelectAnAudioFileFromDocuments').'</legend>';
+$page .= $documentTree;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $page .= '</div>';
 $page .= '</div>';
 
 $tpl->assign('content', $page);
+<<<<<<< HEAD
+=======
+$content = $tpl->fetch('default/learnpath/lp_upload_audio.tpl');
+$tpl->display_one_col_template();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

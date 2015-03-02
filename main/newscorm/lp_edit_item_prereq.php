@@ -29,9 +29,15 @@ $tbl_lp = Database::get_course_table(TABLE_LP_MAIN);
 $tbl_lp_item = Database::get_course_table(TABLE_LP_ITEM);
 $tbl_lp_view = Database::get_course_table(TABLE_LP_VIEW);
 
+<<<<<<< HEAD
 $isStudentView = isset($_REQUEST['isStudentView']) ? $_REQUEST['isStudentView'] : null;
 $learnpath_id = isset($_REQUEST['lp_id']) ? $_REQUEST['lp_id'] : null;
 
+=======
+$isStudentView = isset($_REQUEST['isStudentView']) ? (int) $_REQUEST['isStudentView'] : null;
+$learnpath_id = isset($_REQUEST['lp_id']) ? (int) $_REQUEST['lp_id'] : null;
+$submit = isset($_POST['submit_button']) ? $_POST['submit_button'] : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 /* MAIN CODE */
 
@@ -45,9 +51,8 @@ if ((!$is_allowed_to_edit) || ($isStudentView)) {
 }
 $course_id = api_get_course_int_id();
 
-
-$sql_query = "SELECT * FROM $tbl_lp WHERE c_id = $course_id AND id = $learnpath_id";
-$result = Database::query($sql_query);
+$sql = "SELECT * FROM $tbl_lp WHERE c_id = $course_id AND id = $learnpath_id";
+$result = Database::query($sql);
 $therow = Database::fetch_array($result);
 
 /* SHOWING THE ADMIN TOOLS */
@@ -114,4 +119,9 @@ echo '<div class="span9">';
 echo $_SESSION['oLP']->display_manipulate($_GET['id'], null);
 echo $_SESSION['oLP']->display_item_prerequisites_form($_GET['id']);
 echo '</div>';
+<<<<<<< HEAD
 Display::display_footer();
+=======
+
+Display::display_footer();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

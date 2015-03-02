@@ -515,12 +515,21 @@ class ExtraFieldOption extends Model
         //echo  '<a href="../admin/index.php">'.Display::return_icon('back.png', get_lang('BackTo').' '.get_lang('PlatformAdmin'),'', ICON_SIZE_MEDIUM).'</a>';
         $field_id = isset($_REQUEST['field_id']) ? intval($_REQUEST['field_id']) : null;
         echo '<a href="'.api_get_self(
+<<<<<<< HEAD
             ).'?action=add&type='.$this->type.'&field_id='.$field_id.'">'.Display::return_icon(
                 'add_user_fields.png',
                 get_lang('Add'),
                 '',
                 ICON_SIZE_MEDIUM
             ).'</a>';
+=======
+        ).'?action=add&type='.$this->type.'&field_id='.$field_id.'">'.Display::return_icon(
+            'add_user_fields.png',
+            get_lang('Add'),
+            '',
+            ICON_SIZE_MEDIUM
+        ).'</a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         echo '</div>';
         echo Display::grid_html('extra_field_options');
     }

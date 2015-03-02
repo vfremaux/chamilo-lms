@@ -5,22 +5,36 @@
  * @package chamilo.exercise
  * @author Istvan Mandak
  */
+<<<<<<< HEAD
 /**
  * Included libraries
  */
 require_once '../inc/global.inc.php';
 
+=======
+require_once '../inc/global.inc.php';
+require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 require_once api_get_path(SYS_CODE_PATH).'exercice/hotpotatoes.lib.php';
 
 $time = time();
 $doc_url = str_replace(array('../', '\\', '\\0', '..'), array('', '', '', ''), urldecode($_GET['file']));
 $cid = api_get_course_id();
+<<<<<<< HEAD
 $document_path = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document';
 $document_web_path = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document';
 $origin = $_REQUEST['origin'];
 $learnpath_id = $_REQUEST['learnpath_id'];
 $learnpath_item_id = $_REQUEST['learnpath_item_id'];
 $time = isset($_REQUEST['time']) ? $_REQUEST['time'] : null ;
+=======
+$document_path      = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document';
+$document_web_path  = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document';
+$origin             = isset($_REQUEST['origin']) ? $_REQUEST['origin'] : null;
+$learnpath_id       = isset($_REQUEST['learnpath_id']) ? $_REQUEST['learnpath_id'] : null;
+$learnpath_item_id  = isset($_REQUEST['learnpath_item_id']) ? $_REQUEST['learnpath_item_id'] : null;
+$time               = isset($_REQUEST['time']) ? $_REQUEST['time'] : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $user_id = api_get_user_id();
 $full_file_path = $document_path.$doc_url;
@@ -28,6 +42,7 @@ FileManager::my_delete($full_file_path.$user_id.'.t.html');
 $content = ReadFileCont($full_file_path.$user_id.'.t.html');
 
 if ($content == '') {
+<<<<<<< HEAD
     $url = api_get_path(WEB_CODE_PATH)."exercice/savescores.php?origin=$origin&learnpath_id=$learnpath_id&learnpath_item_id=$learnpath_item_id&time=".Security::remove_XSS($time)."&test=".$doc_url."&uid=".$user_id."&cid=".$cid."&score='+Score";
 
     $content = ReadFileCont($full_file_path);
@@ -51,6 +66,28 @@ if ($content == '') {
             mySaveScore();
 
         //Code added - end
+=======
+	$content = ReadFileCont($full_file_path);
+    // Do not move this like:
+	$mit = "function Finish(){";
+	$js_content = "
+    // Code added - start
+    var SaveScoreVariable = 0;
+    function mySaveScore() {
+        if (SaveScoreVariable==0) {
+            SaveScoreVariable = 1;
+            if (C.ie) {
+                document.location.href = '".api_get_path(WEB_PATH)."main/exercice/savescores.php?origin=$origin&learnpath_id=$learnpath_id&learnpath_item_id=$learnpath_item_id&time=".Security::remove_XSS($time)."&test=".$doc_url."&uid=".$user_id."&cid=".$cid."&score='+Score;
+                //window.alert(Score);
+            } else {
+                window.location.href = '".api_get_path(WEB_PATH)."main/exercice/savescores.php?origin=$origin&learnpath_id=$learnpath_id&learnpath_item_id=$learnpath_item_id&time=".Security::remove_XSS($time)."&test=".$doc_url."&uid=".$user_id."&cid=".$cid."&score='+Score;
+            }
+        }
+    }
+    function Finish() {
+        mySaveScore();
+    // Code added - end
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     ";
 
     $newcontent = str_replace($mit, $js_content, $content);
@@ -70,15 +107,23 @@ $doc_url = GetFolderPath($doc_url).urlencode(basename($doc_url));
 
 $documentPath = api_get_path(SYS_COURSE_PATH).$_course['path']."/document";
 $my_file = Security::remove_XSS($_GET['file']);
+<<<<<<< HEAD
 $my_file = str_replace(array('../', '\\..', '\\0', '..\\'), array('', '', '', ''), urldecode($my_file));
 
 $title = GetQuizName($my_file, $documentPath);
 
 if ($title == '') {
+=======
+$my_file = str_replace(array('../', '\\..', '\\0', '..\\'), array('', '', '', ''),urldecode($my_file));
+
+$title = GetQuizName($my_file, $documentPath);
+if ($title =='') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $title = basename($my_file);
 }
 $nameTools = $title;
 $noPHP_SELF = true;
+<<<<<<< HEAD
 if (isset($_SESSION['gradebook'])) {
     $gradebook = $_SESSION['gradebook'];
 }
@@ -89,6 +134,9 @@ if (!empty($gradebook) && $gradebook == 'view') {
         'name' => get_lang('ToolGradebook')
     );
 }
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $htmlHeadXtra[] = '
 <script>
     $(document).ready( function(){

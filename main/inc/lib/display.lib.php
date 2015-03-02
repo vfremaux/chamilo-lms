@@ -15,6 +15,7 @@
  *
  * @package chamilo.library
  */
+<<<<<<< HEAD
 class Display
 {
     /** The main template */
@@ -30,25 +31,122 @@ class Display
     public static function setUrlGenerator($urlGenerator)
     {
         self::$urlGenerator = $urlGenerator;
+=======
+/**
+ * Code
+ */
+/**
+ * Display class
+ * contains several public functions dealing with the display of
+ * table data, messages, help topics, ...
+ *
+ * @package chamilo.library
+ */
+
+class Display
+{
+    /* The main template*/
+    public static $global_template;
+    public static $preview_style = null;
+
+    public function __construct()
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public static function toolList()
+    {
+        return array(
+            'group',
+            'work',
+            'glossary',
+            'forum',
+            'course_description',
+            'gradebook',
+            'attendance',
+            'course_progress',
+            'notebook'
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
      * Displays the page header
      * @param string The name of the page (will be showed in the page title)
      * @param string Optional help file name
+     * @param string $page_header
      */
+<<<<<<< HEAD
     public static function display_header($tool_name = '', $help = null, $page_header = null)
     {
         global $app;
         $app['classic_layout'] = true;
         $app['template']->setTitle($tool_name);
+=======
+    public static function display_header($tool_name ='', $help = null, $page_header = null)
+    {
+        $origin = api_get_origin();
+        $showHeader = true;
+        if (isset($origin) && $origin == 'learnpath') {
+            $showHeader = false;
+        }
+        self::$global_template = new Template($tool_name, $showHeader, $showHeader);
+
+        // Fixing tools with any help it takes xxx part of main/xxx/index.php
+        if (empty($help)) {
+            $currentURL = api_get_self();
+            preg_match('/main\/([^*\/]+)/', $currentURL, $matches);
+            $toolList = self::toolList();
+            if (!empty($matches)) {
+
+                foreach ($matches as $match) {
+                    if (in_array($match, $toolList)) {
+                        $help = explode('_', $match);
+                        $help = array_map('ucfirst', $help);
+                        $help = implode('', $help);
+                        break;
+                    }
+                }
+            }
+        }
+
+        self::$global_template->set_help($help);
+
+        if (!empty(self::$preview_style)) {
+            self::$global_template->preview_theme = self::$preview_style;
+            self::$global_template->set_css_files();
+            self::$global_template->set_js_files();
+        }
+        if (!empty($page_header)) {
+            self::$global_template->assign('header', $page_header);
+        }
+        echo self::$global_template->show_header_template();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
      * Display the page footer
      */
+<<<<<<< HEAD
     public static function display_footer()
     {
+=======
+    public static function display_reduced_header()
+    {
+        global $show_learnpath, $tool_name;
+        self::$global_template = new Template($tool_name, false, false, $show_learnpath);
+        echo self::$global_template ->show_header_template();
+    }
+
+    public static function display_no_header()
+    {
+        global $tool_name, $show_learnpath;
+        $disable_js_and_css_files = true;
+        self::$global_template = new Template($tool_name, false, false, $show_learnpath);
+        //echo self::$global_template->show_header_template();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -395,12 +493,23 @@ class Display
         $form_actions = array(),
         $visibility_options = true,
         $sort_data = true,
+<<<<<<< HEAD
         $grid_class = array()
     ) {
         global $origin;
         $column                 = 0;
         $default_items_per_page = isset($paging_options['per_page']) ? $paging_options['per_page'] : 20;
         $table                  = new SortableTableFromArray($content, $column, $default_items_per_page, $name);
+=======
+        $grid_class = array(),
+        $elementCount = 0
+    ) {
+        $column =  0;
+        $default_items_per_page = isset($paging_options['per_page']) ? $paging_options['per_page'] : 20;
+
+        $table = new SortableTableFromArray($content, $column, $default_items_per_page, $name);
+        $table->total_number_of_items = intval($elementCount);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (is_array($query_vars)) {
             $table->set_additional_parameters($query_vars);
         }
@@ -482,9 +591,19 @@ class Display
      * @param bool    Filter (true) or not (false)
      * @return void
      */
+<<<<<<< HEAD
     public static function display_normal_message($message, $filter = true)
     {
         echo self::return_message($message, 'normal', $filter);
+=======
+    public static function display_normal_message($message, $filter = true, $returnValue = false) {
+    	$message = self::return_message($message, 'normal', $filter);
+        if ($returnValue) {
+            return $message;
+        } else {
+            echo $message;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -492,9 +611,20 @@ class Display
      * This can also be used for instance with the hint in the exercises
      *
      */
+<<<<<<< HEAD
     public static function display_warning_message($message, $filter = true)
     {
         echo self::return_message($message, 'warning', $filter);
+=======
+    public static function display_warning_message($message, $filter = true, $returnValue = false)
+    {
+        $message = self::return_message($message, 'warning', $filter);
+        if ($returnValue) {
+            return $message;
+        } else {
+            echo $message;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -502,9 +632,20 @@ class Display
      * @param bool    Filter (true) or not (false)
      * @return void
      */
+<<<<<<< HEAD
     public static function display_confirmation_message($message, $filter = true)
     {
         echo self::return_message($message, 'confirm', $filter);
+=======
+    public static function display_confirmation_message ($message, $filter = true, $returnValue = false)
+    {
+        $message = self::return_message($message, 'confirm', $filter);
+        if ($returnValue) {
+            return $message;
+        } else {
+            echo $message;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -514,12 +655,31 @@ class Display
      * @param bool    Filter (true) or not (false)
      * @return void
      */
+<<<<<<< HEAD
     public static function display_error_message($message, $filter = true)
     {
         echo self::return_message($message, 'error', $filter);
     }
 
     public static function return_message_and_translate($message, $type = 'normal', $filter = true)
+=======
+    public static function display_error_message ($message, $filter = true, $returnValue = false)
+    {
+        $message = self::return_message($message, 'error', $filter);
+        if ($returnValue) {
+            return $message;
+        } else {
+            echo $message;
+        }
+    }
+
+    /**
+     * @param string $message
+     * @param string $type
+     * @param bool $filter
+     */
+    public static function return_message_and_translate($message, $type='normal', $filter = true)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
         $message = get_lang($message);
         echo self::return_message($message, $type, $filter);
@@ -532,7 +692,11 @@ class Display
      * @param   bool    Whether to XSS-filter or not
      * @return  string  Message wrapped into an HTML div
      */
+<<<<<<< HEAD
     public static function return_message($message, $type = 'normal', $filter = true)
+=======
+    public static function return_message($message, $type='normal', $filter = true)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
         if ($filter) {
             $message = api_htmlentities(
@@ -542,6 +706,7 @@ class Display
             );
             //$message = Security::remove_XSS($message);
         }
+
         $class = "";
         switch ($type) {
             case 'warning':
@@ -570,7 +735,11 @@ class Display
      * @param string  optional, class from stylesheet
      * @return string encrypted mailto hyperlink
      */
+<<<<<<< HEAD
     public static function encrypted_mailto_link($email, $clickable_text = null, $style_class = '')
+=======
+    public static function encrypted_mailto_link ($email, $clickable_text = null, $style_class = '')
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
         if (is_null($clickable_text)) {
             $clickable_text = $email;
@@ -1092,6 +1261,7 @@ class Display
      */
     public static function grid_html($div_id)
     {
+<<<<<<< HEAD
         $table = self::tag('table', '', array('id' => $div_id));
         $table .= self::tag('div', '', array('id' => $div_id.'_pager'));
         return $table;
@@ -1102,6 +1272,23 @@ class Display
         $label     = self::span($label, array('class' => 'col-sm-2 control-label'));
         $form_item = self::div($form_item, array('class' => 'col-sm-10'));
         return self::div($label.$form_item, array('class' => 'form-group'));
+=======
+        $table  = self::tag('table','', array('id' => $div_id));
+        $table .= self::tag('div','', array('id' => $div_id.'_pager'));
+        return $table;
+    }
+
+    /**
+     * @param string $label
+     * @param string $form_item
+     * @return string
+     */
+    public static function form_row($label, $form_item)
+    {
+        $label = self::span($label, array('class' =>'control-label'));
+        $form_item = self::div($form_item, array('class' =>'controls'));
+        return self::div($label.$form_item, array('class'=>'control-group'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -1109,6 +1296,7 @@ class Display
      * This function need to be in the ready jquery function example --> $(function() { <?php echo Display::grid_js('grid' ...); ?> }
      * In order to work this function needs the Display::grid_html function with the same div id
      *
+<<<<<<< HEAD
      * @param   string  div id
      * @param   string  url where the jqgrid will ask for data (if datatype = json)
      * @param   array   Visible columns (you should use get_lang). An array in which we place the names of the columns.
@@ -1118,6 +1306,19 @@ class Display
      *                     For a full description of all valid values see colModel API. See the url above.
      * @param   array   extra parameters
      * @param   array   data that will be loaded
+=======
+     * @param   string  $div_id div id
+     * @param   string  $url url where the jqgrid will ask for data (if datatype = json)
+     * @param   array   $column_names Visible columns (you should use get_lang). An array in which we place the names of the columns.
+     * 					This is the text that appears in the head of the grid (Header layer).
+     * 					Example: colname   {name:'date',     index:'date',   width:120, align:'right'},
+     * @param   array   $column_model the column model :  Array which describes the parameters of the columns.This is the most important part of the grid.
+     * 					For a full description of all valid values see colModel API. See the url above.
+     * @param   array   $extra_params extra parameters
+     * @param   array   $data data that will be loaded
+     * @param	string	$formatter A string that will be appended to the JSON returned
+     * @param	bool	$fixed_width not implemented yet
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * @return  string  the js code
      *
      */
@@ -1129,24 +1330,42 @@ class Display
         $extra_params,
         $data = array(),
         $formatter = '',
+<<<<<<< HEAD
         $width_fix = false
+=======
+        $fixed_width = false
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     ) {
         $obj = new stdClass();
+        $obj->first = 'first';
 
         if (!empty($url)) {
+<<<<<<< HEAD
             $obj->url      = $url;
             $obj->datatype = 'json';
         } else {
             $obj->datatype = 'local';
+=======
+            $obj->url = $url;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         //$column_names = array_map("utf8_encode", $column_names);
+<<<<<<< HEAD
         $obj->colNames = $column_names;
         $obj->colModel = $column_model;
         $obj->pager    = '#'.$div_id.'_pager';
+=======
+
+        $obj->colNames      = $column_names;
+        $obj->colModel      = $column_model;
+        $obj->pager         = '#'.$div_id.'_pager';
+        $obj->datatype  = 'json';
+        $obj->viewrecords = 'true';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $all_value = 10000000;
 
-        //Default row quantity
+        // Default row quantity
         if (!isset($extra_params['rowList'])) {
             $extra_params['rowList'] = array(20, 50, 100, 500, 1000, $all_value);
             //$extra_params['rowList'] = array(20, 50, 100, 500, 1000, 2000, 5000, 10000);
@@ -1157,7 +1376,7 @@ class Display
             $obj->datatype = $extra_params['datatype'];
         }
 
-        //Row even odd style
+        // Row even odd style.
         $obj->altRows = true;
         if (!empty($extra_params['altRows'])) {
             $obj->altRows = $extra_params['altRows'];
@@ -1166,7 +1385,7 @@ class Display
         if (!empty($extra_params['sortname'])) {
             $obj->sortname = $extra_params['sortname'];
         }
-        //$obj->sortorder     = 'desc';
+
         if (!empty($extra_params['sortorder'])) {
             $obj->sortorder = $extra_params['sortorder'];
         }
@@ -1180,19 +1399,38 @@ class Display
             $obj->rowNum = $extra_params['rowNum'];
         }
 
+<<<<<<< HEAD
         $obj->viewrecords = 'true';
 
         if (!empty($extra_params['viewrecords'])) {
             $obj->viewrecords = $extra_params['viewrecords'];
+=======
+        if (!empty($extra_params['viewrecords'])) {
+            $obj->viewrecords   = $extra_params['viewrecords'];
         }
 
+        $beforeSelectRow = null;
+        if (isset($extra_params['beforeSelectRow'])) {
+            $beforeSelectRow = "beforeSelectRow: ".$extra_params['beforeSelectRow'].", ";
+            unset($extra_params['beforeSelectRow']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+        }
+
+        // Adding extra params
         if (!empty($extra_params)) {
             foreach ($extra_params as $key => $element) {
+<<<<<<< HEAD
                 $obj->$key = $element;
+=======
+                // the groupHeaders key gets a special treatment
+                if ($key != 'groupHeaders') {
+                    $obj->$key = $element;
+                }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
         }
 
-        //Adding static data
+        // Adding static data.
         if (!empty($data)) {
             $data_var = $div_id.'_data';
             $json .= ' var '.$data_var.' = '.json_encode($data).';';
@@ -1201,9 +1439,12 @@ class Display
             $json .= "\n";
         }
 
+        $obj->end = 'end';
+
         $json_encode = json_encode($obj);
 
         if (!empty($data)) {
+<<<<<<< HEAD
             //Converts the "data":"js_variable" to "data":js_variable othersiwe it will not work
             $json_encode = str_replace('"data":"'.$data_var.'"', '"data":'.$data_var.'', $json_encode);
         }
@@ -1238,60 +1479,64 @@ class Display
         );
         $json_encode = str_replace(':"false"', ':false', $json_encode);
         $json_encode = str_replace('"formatter":"action_formatter"', 'formatter:action_formatter', $json_encode);
-
-        if ($width_fix) {
-            if (is_numeric($width_fix)) {
-                $width_fix = intval($width_fix);
-            } else {
-                $width_fix = '150';
-            }
-            //see BT#2020
-            /*$json .= "$(window).bind('resize', function() {
-                $('#".$div_id."').setGridWidth($(window).width() - ".$width_fix.");
-            }).trigger('resize');";*/
+=======
+            //Converts the "data":"js_variable" to "data":js_variable,
+            // otherwise it will not work
+            $json_encode = str_replace('"data":"'.$data_var.'"', '"data":'.$data_var.'', $json_encode);
         }
 
-        //Creating the jqgrid element
-        $json .= '$("#'.$div_id.'").jqGrid(';
-        $json .= $json_encode;
-        $json .= ');';
+        // Fixing true/false js values that doesn't need the ""
+        $json_encode = str_replace(':"true"',':true',$json_encode);
+        // wrap_cell is not a valid jqgrid attributes is a hack to wrap a text
+        $json_encode = str_replace('"wrap_cell":true', 'cellattr : function(rowId, value, rowObject, colModel, arrData) { return \'class = "jqgrid_whitespace"\'; }', $json_encode);
+        $json_encode = str_replace(':"false"',':false',$json_encode);
+        $json_encode = str_replace('"formatter":"action_formatter"', 'formatter:action_formatter', $json_encode);
+        $json_encode = str_replace(array('{"first":"first",','"end":"end"}'), '', $json_encode);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
+        // Creating the jqgrid element.
+        $json .= '$("#'.$div_id.'").jqGrid({';
+        //$json .= $beforeSelectRow;
+
+        $json .= $json_encode;
+
+<<<<<<< HEAD
         $all_text = addslashes(get_lang('All'));
         $json .= '$("'.$obj->pager.' option[value='.$all_value.']").text("'.$all_text.'");';
         $json .= "\n";
 
         //Adding edit/delete icons
         $json .= $formatter;
+=======
+        $json .= '});';
+
+        // Grouping headers option
+        if (isset($extra_params['groupHeaders'])) {
+            $groups = '';
+            foreach ($extra_params['groupHeaders'] as $group) {
+                //{ "startColumnName" : "courses", "numberOfColumns" : 1, "titleText" : "Order Info" },
+                $groups .= '{ "startColumnName" : "' . $group['startColumnName'] . '", "numberOfColumns" : ' . $group['numberOfColumns'] . ', "titleText" : "' . $group['titleText']  . '" },';
+
+            }
+            $json .= '$("#'.$div_id.'").jqGrid("setGroupHeaders", {
+                "useColSpanStyle" : false,
+                "groupHeaders"    : [
+                    ' . $groups . '
+                ]
+            });';
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+
+        $all_text = addslashes(get_lang('All'));
+        $json .= '$("'.$obj->pager.' option[value='.$all_value.']").text("'.$all_text.'");';
+        $json.= "\n";
+        // Adding edit/delete icons.
+        $json.= $formatter;
 
         return $json;
-
-        /*
-        Real Example
-        $("#list_week").jqGrid({
-            url:'<?php echo api_get_path(WEB_AJAX_PATH).'course_home.ajax.php?a=session_courses_lp_by_week&session_id='.$session_id; ?>',
-            datatype: 'json',
-            colNames:['Week','Date','Course', 'LP'],
-            colModel :[
-              {name:'week',     index:'week',   width:120, align:'right'},
-              {name:'date',     index:'date',   width:120, align:'right'},
-              {name:'course',   index:'course', width:150},
-              {name:'lp',       index:'lp',     width:250}
-            ],
-            pager: '#pager3',
-            rowNum:100,
-             rowList:[10,20,30],
-            sortname: 'date',
-            sortorder: 'desc',
-            viewrecords: true,
-            grouping:true,
-            groupingView : {
-                groupField : ['week'],
-                groupColumnShow : [false],
-                groupText : ['<b>Week {0} - {1} Item(s)</b>']
-            }
-        });  */
     }
 
+<<<<<<< HEAD
     public static function table($headers, $rows, $attributes = array())
     {
 
@@ -1301,6 +1546,21 @@ class Display
         //require_once api_get_path(LIBRARY_PATH).'pear/HTML/Table.php';
         $table  = new HTML_Table($attributes);
         $row    = 0;
+=======
+    /**
+     * @param array $headers
+     * @param array $rows
+     * @param array $attributes
+     * @return string
+     */
+    public static function table($headers, $rows, $attributes = array()) {
+
+    	if (empty($attributes)) {
+    		$attributes['class'] = 'data_table';
+        }
+        $table = new HTML_Table($attributes);
+        $row = 0;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $column = 0;
 
         //Course headers
@@ -1337,6 +1597,7 @@ class Display
      */
     public static function show_notification($course_info)
     {
+<<<<<<< HEAD
         $t_track_e_access = Database::get_main_table(TABLE_STATISTIC_TRACK_E_LASTACCESS);
         $user_id          = api_get_user_id();
 
@@ -1345,15 +1606,34 @@ class Display
 
         $course_code = Database::escape_string($course_info['code']);
         $course_id   = $course_info['real_id'];
+=======
+        $t_track_e_access 	= Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_LASTACCESS);
+        $course_tool_table	= Database::get_course_table(TABLE_TOOL_LIST);
+        $tool_edit_table 	= Database::get_course_table(TABLE_ITEM_PROPERTY);
+        $course_code        = Database::escape_string($course_info['code']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
+        $user_id = api_get_user_id();
+        $course_id = $course_info['real_id'];
         $course_info['id_session'] = intval($course_info['id_session']);
+
         // Get the user's last access dates to all tools of this course
+<<<<<<< HEAD
         //$sqlLastTrackInCourse = "SELECT * FROM $t_track_e_access USE INDEX (c_id, access_user_id)
         $sqlLastTrackInCourse = "SELECT * FROM $t_track_e_access
                                  WHERE  c_id = ".$course_id." AND
                                         access_user_id = '$user_id' AND
                                         access_session_id ='".$course_info['id_session']."'";
         $resLastTrackInCourse = Database::query($sqlLastTrackInCourse);
+=======
+        $sql = "SELECT *
+                FROM $t_track_e_access USE INDEX (access_cours_code, access_user_id)
+                WHERE
+                    access_cours_code = '".$course_code."' AND
+                    access_user_id = '$user_id' AND
+                    access_session_id ='".$course_info['id_session']."'";
+        $resLastTrackInCourse = Database::query($sql);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $oldestTrackDate = $oldestTrackDateOrig = '3000-01-01 00:00:00';
         while ($lastTrackInCourse = Database::fetch_array($resLastTrackInCourse)) {
@@ -1362,6 +1642,7 @@ class Display
                 $oldestTrackDate = $lastTrackInCourse['access_date'];
             }
         }
+
         if ($oldestTrackDate == $oldestTrackDateOrig) {
             //if there was no connexion to the course ever, then take the
             // course creation date as a reference
@@ -1377,6 +1658,7 @@ class Display
         }
 
         // Get the last edits of all tools of this course.
+<<<<<<< HEAD
         $sql = "SELECT tet.*, tet.lastedit_date last_date, tet.tool tool, tet.ref ref, ".
             " tet.lastedit_type type, tet.to_group_id group_id, ".
             " ctt.image image, ctt.link link ".
@@ -1388,6 +1670,28 @@ class Display
             " AND ctt.visibility = '1' ".
             " AND tet.lastedit_user_id != $user_id AND tet.id_session = '".$course_info['id_session']."' ".
             " ORDER BY tet.lastedit_date";
+=======
+        $sql = "SELECT
+                    tet.*,
+                    tet.lastedit_date last_date,
+                    tet.tool tool,
+                    tet.ref ref,
+                    tet.lastedit_type type,
+                    tet.to_group_id group_id,
+                    ctt.image image,
+                    ctt.link link
+                FROM $tool_edit_table tet, $course_tool_table ctt
+                WHERE
+                    tet.c_id = $course_id AND
+                    ctt.c_id = $course_id AND
+                    tet.lastedit_date > '$oldestTrackDate' ".
+                    // Special hack for work tool, which is called student_publication in c_tool and work in c_item_property :-/ BT#7104
+                    " AND (ctt.name = tet.tool OR (ctt.name = 'student_publication' AND tet.tool = 'work')) ".
+                    " AND ctt.visibility = '1' ".
+                    " AND tet.lastedit_user_id != $user_id AND tet.id_session = '".$course_info['id_session']."'
+                 ORDER BY tet.lastedit_date";
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $res = Database::query($sql);
         // Get the group_id's with user membership.
         $group_ids     = GroupManager :: get_group_ids($course_info['real_id'], $user_id);
@@ -1397,6 +1701,7 @@ class Display
         while ($res && ($item_property = Database::fetch_array($res))) {
             // First thing to check is if the user never entered the tool
             // or if his last visit was earlier than the last modification.
+<<<<<<< HEAD
             if ((!isset ($lastTrackInCourseDate[$item_property['tool']])
                 || $lastTrackInCourseDate[$item_property['tool']] < $item_property['lastedit_date'])
                 // Drop the tool elements that are part of a group that the
@@ -1409,6 +1714,20 @@ class Display
                 )
                 )
                 // Take only what's visible or invisible but where the user is a teacher or where the visibility is unset.
+=======
+            if ((!isset($lastTrackInCourseDate[$item_property['tool']])
+                 || $lastTrackInCourseDate[$item_property['tool']] < $item_property['lastedit_date'])
+                // Drop the tool elements that are part of a group that the
+                // user is not part of.
+                && ((in_array($item_property['to_group_id'], $group_ids)
+                // Drop the dropbox, notebook and chat tools (we don't care)
+                && ($item_property['tool'] != TOOL_DROPBOX
+                      && $item_property['tool'] != TOOL_NOTEBOOK
+                      && $item_property['tool'] != TOOL_CHAT)
+                   )
+                  )
+                // Take only what's visible or "invisible but where the user is a teacher" or where the visibility is unset.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 && ($item_property['visibility'] == '1'
                     || ($course_info['status'] == '1' && $item_property['visibility'] == '0')
                     || !isset($item_property['visibility']))
@@ -1438,6 +1757,12 @@ class Display
                     if (!learnpath::is_lp_visible_for_student($item_property['ref'], $user_id, $course_code)) {
                         continue;
                     }
+<<<<<<< HEAD
+=======
+                }
+                if ($item_property['tool'] == 'work' && $item_property['type'] == 'DirectoryCreated') {
+                    $item_property['lastedit_type'] = 'WorkAdded';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 }
                 $notifications[$item_property['tool']] = $item_property;
             }
@@ -1558,6 +1883,87 @@ class Display
     } // End function display_digest
 
     /**
+<<<<<<< HEAD
+=======
+     * Get the session box details as an array
+     * @param int       Session ID
+     * @return array    Empty array or session array ['title'=>'...','category'=>'','dates'=>'...','coach'=>'...','active'=>true/false,'session_category_id'=>int]
+     */
+    public static function get_session_title_box($session_id)
+    {
+        global $nosession;
+
+        if (!$nosession) {
+            global $now, $date_start, $date_end;
+        }
+
+        $output = array();
+        if (!$nosession) {
+            $main_user_table        = Database :: get_main_table(TABLE_MAIN_USER);
+            $tbl_session            = Database :: get_main_table(TABLE_MAIN_SESSION);
+            $active = false;
+            // Request for the name of the general coach
+            $sql ='SELECT tu.lastname, tu.firstname, ts.*
+                    FROM '.$tbl_session.' ts  LEFT JOIN '.$main_user_table .' tu ON ts.id_coach = tu.user_id
+                    WHERE ts.id = '.intval($session_id);
+            $rs = Database::query($sql);
+            $session_info = Database::store_result($rs, 'ASSOC');
+            $session_info = $session_info[0];
+
+            $session = array();
+            $session['title'] = $session_info['name'];
+            $session['coach'] = '';
+            $session['dates'] =  '';
+
+            if ($session_info['date_end'] == '0000-00-00' && $session_info['date_start'] == '0000-00-00') {
+                if (api_get_setting('show_session_coach') === 'true') {
+                    $session['coach'] = get_lang('GeneralCoach').': '.api_get_person_name($session_info['firstname'], $session_info['lastname']);
+                }
+                $active = true;
+            } else {
+                $start = $stop = false;
+                $start_buffer = $stop_buffer = '';
+                if ($session_info['date_start'] == '0000-00-00') {
+                    $session_info['date_start'] = '';
+                } else {
+                    $start = true;
+                    $start_buffer = $session_info['date_start'];
+                    $session_info['date_start'] = get_lang('From').' '.$session_info['date_start'];
+                }
+                if ($session_info['date_end'] == '0000-00-00') {
+                    $session_info['date_end'] = '';
+                } else {
+                    $stop = true;
+                    $stop_buffer = $session_info['date_end'];
+                    $session_info['date_end'] = get_lang('Until').' '.$session_info['date_end'];
+                }
+                if ($start && $stop) {
+                    $session['dates'] = Display::tag('i', sprintf(get_lang('FromDateXToDateY'), $start_buffer, $stop_buffer));
+                } else {
+                    $session['dates'] = Display::tag('i', $session_info['date_start'].' '.$session_info['date_end']);
+                }
+
+                if ( api_get_setting('show_session_coach') === 'true' ) {
+                    $session['coach'] = get_lang('GeneralCoach').': '.api_get_person_name($session_info['firstname'], $session_info['lastname']);
+                }
+                $active = ($date_start <= $now && $date_end >= $now);
+            }
+            $session['active'] = $active;
+            $session['session_category_id'] = $session_info['session_category_id'];
+
+            if (array_key_exists('show_description', $session_info)) {
+                if (!empty($session_info['show_description'])) {
+                    $session['description'] = $session_info['description'];
+                }
+            }
+
+            $output = $session;
+        }
+        return $output;
+    }
+
+    /**
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Return the five star HTML
      *
      * @param  string  id of the rating ul element
@@ -1620,8 +2026,12 @@ class Display
         return 'data_table';
     }
 
+<<<<<<< HEAD
     public static function page_header($title, $second_title = null, $size = 'h1')
     {
+=======
+    public static function page_header($title, $second_title = null, $size = 'h2') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $title = Security::remove_XSS($title);
         if (!empty($second_title)) {
             $second_title = Security::remove_XSS($second_title);
@@ -1883,8 +2293,12 @@ class Display
     /**
      * @todo use twig
      */
+<<<<<<< HEAD
     public static function group_button($title, $elements)
     {
+=======
+    public static function group_button($title, $elements) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $html = '<div class="btn-toolbar">
             <div class="btn-group">
             <button class="btn dropdown-toggle" data-toggle="dropdown">'.$title.' <span class="caret"></span></button>
@@ -2140,4 +2554,45 @@ class Display
 
         return $html;
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * @param string $file
+     * @param array $params
+     * @return null|string
+     */
+    public static function getMediaPlayer($file, $params = array())
+    {
+        $fileInfo = pathinfo($file);
+
+        switch ($fileInfo['extension']) {
+            case 'wav':
+                if (isset($params['url'])) {
+                    return DocumentManager::readNanogongFile($params['url']);
+                }
+                break;
+            case 'mp3':
+            case 'webm':
+                $autoplay = null;
+                if (isset($params['autoplay']) && $params['autoplay'] == 'true') {
+                    $autoplay = 'autoplay';
+                }
+                $width = isset($params['width']) ? 'width="'.$params['width'].'"' : null;
+                $id = isset($params['id']) ? $params['id'] : $fileInfo['basename'];
+                $class = isset($params['class']) ? ' class="'.$params['class'].'"' : null;
+
+                $html = '<audio id="'.$id.'" '.$class.' controls '.$autoplay.' '.$width.' src="'.$params['url'].'" >';
+                $html .= '<object width="'.$width.'" height="50" type="application/x-shockwave-flash" data="'.api_get_path(WEB_LIBRARY_PATH).'javascript/mediaelement/flashmediaelement.swf">
+                            <param name="movie" value="'.api_get_path(WEB_LIBRARY_PATH).'javascript/mediaelement/flashmediaelement.swf" />
+                            <param name="flashvars" value="controls=true&file='.$params['url'].'" />
+                          </object>';
+                $html .= '</audio>';
+                return $html;
+                break;
+        }
+
+        return null;
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

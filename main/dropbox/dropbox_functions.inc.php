@@ -80,8 +80,14 @@ function handle_multiple_actions()
     }
 
     // STEP 3C: moving
+<<<<<<< HEAD
     if (strstr($_POST['action'], 'move_')) {
             // check move_received_n or move_sent_n command
+=======
+
+    if (strstr($_POST['action'], 'move_')) {
+        // check move_received_n or move_sent_n command
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (strstr($_POST['action'], 'received')) {
               $part = 'received';
               $to_cat_id = str_replace('move_received_', '', $_POST['action']);
@@ -90,9 +96,16 @@ function handle_multiple_actions()
               $to_cat_id = str_replace('move_sent_', '', $_POST['action']);
         }
 
+<<<<<<< HEAD
         foreach ($checked_file_ids as $key => $value) {
             store_move($value, $to_cat_id, $part);
         }
+=======
+        foreach ($checked_file_ids as $value) {
+            store_move($value, $to_cat_id, $part);
+        }
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         return get_lang('FilesMoved');
     }
 
@@ -626,8 +639,15 @@ function getLoginFromId($id)
 */
 function isCourseMember($user_id)
 {
+<<<<<<< HEAD
     $courseId = api_get_course_int_id();
 	return CourseManager::is_user_subscribed_in_course($user_id, $courseId, true);
+=======
+    $_course = api_get_course_info();
+	$course_code = $_course['code'];
+	$is_course_member = CourseManager::is_user_subscribed_in_course($user_id, $course_code, true);
+	return $is_course_member;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 /**
@@ -807,7 +827,11 @@ function store_add_dropbox()
 		return get_lang('TheFileIsNotUploaded');
 	}
 
+<<<<<<< HEAD
     $upload_ok = FileManager::process_uploaded_file($_FILES['file'], true);
+=======
+    $upload_ok = process_uploaded_file($_FILES['file'], true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if (!$upload_ok) {
         return null;
@@ -818,7 +842,11 @@ function store_add_dropbox()
 	// Replace dangerous characters
 	$dropbox_filename = api_replace_dangerous_char($dropbox_filename);
 	// Transform any .php file in .phps fo security
+<<<<<<< HEAD
 	$dropbox_filename = FileManager::php2phps($dropbox_filename);
+=======
+	$dropbox_filename = php2phps($dropbox_filename);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	//filter extension
     if (!FileManager::filter_extension($dropbox_filename)) {
@@ -1032,8 +1060,8 @@ function store_feedback()
 }
 
 /**
-* This function downloads all the files of the inputarray into one zip
-* @param $array an array containing all the ids of the files that have to be downloaded.
+* This function downloads all the files of the input array into one zip
+* @param array $fileList containing all the ids of the files that have to be downloaded.
 * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 * @todo consider removing the check if the user has received or sent this file (zip download of a folder already sufficiently checks for this).
 * @todo integrate some cleanup function that removes zip files that are older than 2 days
@@ -1042,34 +1070,73 @@ function store_feedback()
 * @author Julio Montoya  Addin c_id support
 * @version march 2006
 */
+<<<<<<< HEAD
 function zip_download($array) {
 	$_course = api_get_course_info();
     $dropbox_cnf = getDropboxConf();
 
     $course_id = api_get_course_int_id();
 	$array = array_map('intval', $array);
+=======
+function zip_download($fileList)
+{
+	$_course = api_get_course_info();
+    $dropbox_cnf = getDropboxConf();
+    $course_id = api_get_course_int_id();
+    $fileList = array_map('intval', $fileList);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	// note: we also have to add the check if the user has received or sent this file.
 	$sql = "SELECT DISTINCT file.filename, file.title, file.author, file.description
-			FROM ".$dropbox_cnf['tbl_file']." file INNER JOIN ".$dropbox_cnf['tbl_person']." person
+			FROM ".$dropbox_cnf['tbl_file']." file
+			INNER JOIN ".$dropbox_cnf['tbl_person']." person
             ON (person.file_id=file.id AND file.c_id = $course_id AND person.c_id = $course_id)
             INNER JOIN ".$dropbox_cnf['tbl_post']." post
             ON (post.file_id = file.id AND post.c_id = $course_id AND file.c_id = $course_id)
+<<<<<<< HEAD
 			WHERE   file.id IN (".implode(', ',$array).") AND
                     file.id = person.file_id AND
                     (person.user_id = '".api_get_user_id()."' OR post.dest_user_id = '".api_get_user_id()."' ) ";
+=======
+			WHERE
+			    file.id IN (".implode(', ', $fileList).") AND
+                file.id = person.file_id AND
+                (
+                    person.user_id = '".api_get_user_id()."' OR
+                    post.dest_user_id = '".api_get_user_id()."'
+                ) ";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	$result = Database::query($sql);
+
 	$files = array();
 	while ($row = Database::fetch_array($result)) {
-		$files[$row['filename']] = array('filename' => $row['filename'],'title' => $row['title'], 'author' => $row['author'], 'description' => $row['description']);
+		$files[$row['filename']] = array(
+            'filename' => $row['filename'],
+            'title' => $row['title'],
+            'author' => $row['author'],
+            'description' => $row['description']
+        );
 	}
 
 	// Step 3: create the zip file and add all the files to it
 	$temp_zip_file = api_get_path(SYS_ARCHIVE_PATH).api_get_unique_id().".zip";
+<<<<<<< HEAD
 	$zip_folder = new PclZip($temp_zip_file);
 	foreach ($files as $value) {
 		$zip_folder->add(api_get_path(SYS_COURSE_PATH).$_course['path'].'/dropbox/'.$value['filename'], PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_CB_PRE_ADD, 'my_pre_add_callback');
+=======
+    Session::write('dropbox_files_to_download', $files);
+	$zip = new PclZip($temp_zip_file);
+	foreach ($files as $value) {
+        $zip->add(
+            api_get_path(SYS_COURSE_PATH).$_course['path'].'/dropbox/'.$value['filename'],
+            PCLZIP_OPT_REMOVE_ALL_PATH,
+            PCLZIP_CB_PRE_ADD,
+            'my_pre_add_callback'
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	}
+    Session::erase('dropbox_files_to_download');
 	$name = 'dropbox-'.api_get_utc_datetime().'.zip';
 	DocumentManager::file_send_for_download($temp_zip_file, true, $name);
 	@unlink($temp_zip_file);
@@ -1078,18 +1145,18 @@ function zip_download($array) {
 
 /**
 * This is a callback function to decrypt the files in the zip file to their normal filename (as stored in the database)
-* @param $p_event a variable of PCLZip
-* @param $p_header a variable of PCLZip
+* @param array $p_event a variable of PCLZip
+* @param array $p_header a variable of PCLZip
 *
 * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University
 * @version march 2006
 */
-function my_pre_add_callback($p_event, &$p_header) {
-	global $files;
+function my_pre_add_callback($p_event, &$p_header)
+{
+    $files = Session::read('dropbox_files_to_download');
 	$p_header['stored_filename'] = $files[$p_header['stored_filename']]['title'];
 	return 1;
 }
-
 
 /**
  * @desc Generates the contents of a html file that gives an overview of all the files in the zip file.
@@ -1175,7 +1242,7 @@ function get_total_number_feedback($file_id = '') {
 */
 function check_number_feedback($key, $array) {
 	if (is_array($array)) {
-		if (key_exists($key, $array)) {
+		if (array_key_exists($key, $array)) {
 			return $array[$key];
 		} else {
 			return 0;
@@ -1201,7 +1268,11 @@ function get_last_tool_access($tool, $course_code = '', $user_id='')
 {
 	// The default values of the parameters
 	if (empty($course_code)) {
+<<<<<<< HEAD
         $course_code = api_get_course_int_id();
+=======
+        $course_code = api_get_course_id();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	}
 	if (empty($user_id)) {
 		$user_id = api_get_user_id();
@@ -1213,7 +1284,11 @@ function get_last_tool_access($tool, $course_code = '', $user_id='')
 	$sql = "SELECT access_date FROM $table_last_access
 	        WHERE
 	            access_user_id='".Database::escape_string($user_id)."' AND
+<<<<<<< HEAD
 	            c_id ='".Database::escape_string($course_code)."' AND
+=======
+	            access_cours_code='".Database::escape_string($course_code)."' AND
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	            access_tool='".Database::escape_string($tool)."'
 				ORDER BY access_date DESC
 				LIMIT 1";

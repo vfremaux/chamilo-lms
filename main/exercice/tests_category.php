@@ -1,5 +1,4 @@
 <?php
-
 /* For licensing terms, see /license.txt */
 
 /**
@@ -33,12 +32,19 @@ $htmlHeadXtra[] = '
 		document.getElementById(in_id).style.backgroundColor="#AAFFB0";
 		if (confirm(in_txt)) {
 			return true;
-		}
-		else {
+		} else {
 			document.getElementById(in_id).style.backgroundColor = oldbgcolor;
 			return false;
 		}
 	}
+<<<<<<< HEAD
+=======
+</script>';
+
+// name of the language file that needs to be included
+$language_file = 'exercice';
+$nameTools = "";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     function check() {
         $("#parent_id option:selected").each(function() {
@@ -67,6 +73,7 @@ $htmlHeadXtra[] = '
         });
     }
 
+<<<<<<< HEAD
     $(function() {
         $("#parent_id").fcbkcomplete({
             json_url: "'.$url.'&a=search_category_parent",
@@ -82,6 +89,14 @@ $htmlHeadXtra[] = '
         });
     });
 </script>';
+=======
+if (!api_is_allowed_to_edit()) {
+    api_not_allowed(true);
+}
+$category = new Testcategory();
+$courseId = api_get_course_int_id();
+$sessionId = api_get_session_id();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // Breadcrumbs
 $interbreadcrumb[] = array("url" => "exercice.php", "name" => get_lang('Exercices'));
@@ -89,22 +104,36 @@ Display::display_header(get_lang('Category'));
 
 // Action handling: add, edit and remove
 if (isset($_GET['action']) && $_GET['action'] == 'addcategory') {
+<<<<<<< HEAD
     add_category_form($_GET['action'], $type);
 } else if (isset($_GET['action']) && $_GET['action'] == 'addcategoryglobal') {
     add_category_form($_GET['action'], $type);
+=======
+    add_category_form($_GET['action']);
+    display_add_category();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else if (isset($_GET['action']) && $_GET['action'] == 'editcategory') {
     edit_category_form($_GET['action'], $type);
 } else if (isset($_GET['action']) && $_GET['action'] == 'deletecategory') {
+<<<<<<< HEAD
     delete_category_form($_GET['action'], $type);
 } else {
     display_add_category($type);
     display_categories($type);
+=======
+    delete_category_form($_GET['action']);
+    display_add_category();
+} else {
+    display_add_category();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
+echo $category->displayCategories($courseId, $sessionId);
 
 Display::display_footer();
 
 // FUNCTIONS
 // form to edit a category
+<<<<<<< HEAD
 function edit_category_form($in_action, $type = 'simple') {
     $in_action = Security::remove_XSS($in_action);
     if (isset($_GET['category_id']) && is_numeric($_GET['category_id'])) {
@@ -116,6 +145,37 @@ function edit_category_form($in_action, $type = 'simple') {
         $form = new FormValidator('note', 'post', api_get_self().'?'.api_get_cidreq().'&action='.$in_action.'&category_id='.$category_id."&type=".$type);
 
         $objcat->getForm($form, 'edit');
+=======
+/**
+ * @todo move to testcategory.class.php
+ * @param string $in_action
+ */
+function edit_category_form($in_action) {
+    $in_action = Security::remove_XSS($in_action);
+    if (isset($_GET['category_id']) && is_numeric($_GET['category_id'])) {
+        $category_id = Security::remove_XSS($_GET['category_id']);
+        $objcat = new Testcategory($category_id);
+
+        // initiate the object
+        $form = new FormValidator('note', 'post', api_get_self() . '?action=' . $in_action . '&category_id=' . $category_id);
+
+        // settting the form elements
+        $form->addElement('header', get_lang('EditCategory'));
+        $form->addElement('hidden', 'category_id');
+        $form->addElement('text', 'category_name', get_lang('CategoryName'), array('size' => '95'));
+        $form->add_html_editor('category_description', get_lang('CategoryDescription'), false, false, array('ToolbarSet' => 'test_category', 'Width' => '90%', 'Height' => '200'));
+        $form->addElement('style_submit_button', 'SubmitNote', get_lang('ModifyCategory'), 'class="add"');
+
+        // setting the defaults
+        $defaults = array();
+        $defaults["category_id"] = $objcat->id;
+        $defaults["category_name"] = $objcat->name;
+        $defaults["category_description"] = $objcat->description;
+        $form->setDefaults($defaults);
+
+        // setting the rules
+        $form->addRule('category_name', get_lang('ThisFieldIsRequired'), 'required');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         // The validation or display
         if ($form->validate()) {
@@ -135,15 +195,21 @@ function edit_category_form($in_action, $type = 'simple') {
                 }
             }
             Security::clear_token();
+<<<<<<< HEAD
             display_add_category($type);
             display_categories($type);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         } else {
             display_goback($type);
             $token = Security::get_token();
             $form->addElement('hidden', 'sec_token');
             $form->setConstants(array('sec_token' => $token));
             $form->display();
+<<<<<<< HEAD
             display_categories($type);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     } else {
         Display::display_error_message(get_lang('CannotEditCategory'));
@@ -151,24 +217,25 @@ function edit_category_form($in_action, $type = 'simple') {
 }
 
 // process to delete a category
+<<<<<<< HEAD
 function delete_category_form($in_action, $type = 'simple')
 {
     $in_action = Security::remove_XSS($in_action);
+=======
+function delete_category_form($in_action) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if (isset($_GET['category_id']) && is_numeric($_GET['category_id'])) {
         $category_id = Security::remove_XSS($_GET['category_id']);
         $catobject = new Testcategory($category_id);
-        if ($catobject->getCategoryQuestionsNumber() == 0) {
-            if ($catobject->removeCategory()) {
-                Display::display_confirmation_message(get_lang('DeleteCategoryDone'));
-            } else {
-                Display::display_error_message(get_lang('CannotDeleteCategoryError'));
-            }
+        if ($catobject->removeCategory()) {
+            Display::display_confirmation_message(get_lang('DeleteCategoryDone'));
         } else {
-            Display::display_error_message(get_lang('CannotDeleteCategory'));
+            Display::display_error_message(get_lang('CannotDeleteCategoryError'));
         }
     } else {
         Display::display_error_message(get_lang('CannotDeleteCategoryError'));
     }
+<<<<<<< HEAD
     display_add_category($type);
     display_categories($type);
 }
@@ -179,6 +246,19 @@ function add_category_form($in_action, $type = 'simple')
     $in_action = Security::remove_XSS($in_action);
     // Initiate the object
     $form = new FormValidator('note', 'post', api_get_self().'?'.api_get_cidreq().'&action='.$in_action."&type=".$type);
+=======
+}
+
+/**
+ * form to add a category
+ * @todo move to testcategory.class.php
+ * @param string $in_action
+ */
+function add_category_form($in_action) {
+    $in_action = Security::remove_XSS($in_action);
+    // initiate the object
+    $form = new FormValidator('note', 'post', api_get_self() . '?action=' . $in_action);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     // Setting the form elements
     $form->addElement('header', get_lang('AddACategory'));
     $form->addElement('text', 'category_name', get_lang('CategoryName'), array('class' => 'span6'));
@@ -202,8 +282,11 @@ function add_category_form($in_action, $type = 'simple')
             }
         }
         Security::clear_token();
+<<<<<<< HEAD
         display_add_category($type);
         display_categories($type);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     } else {
         display_goback($type);
         $token = Security::get_token();
@@ -232,6 +315,7 @@ function display_add_category($type) {
     }
 }
 
+<<<<<<< HEAD
 // Display category list
 
 function display_categories($type = 'simple') {
@@ -312,6 +396,8 @@ function display_categories($type = 'simple') {
     return true;
 }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 // display goback to category list page link
 function display_goback($type) {
     $type = Security::remove_XSS($type);
@@ -319,6 +405,7 @@ function display_goback($type) {
     echo '<a href="'.api_get_self().'?type='.$type.'">'.Display::return_icon('back.png', get_lang('BackToCategoryList'), array(), 32).'</a>';
     echo '</div>';
 }
+<<<<<<< HEAD
 
 // To allowed " in javascript dialog box without bad surprises
 // replace " with two '
@@ -328,3 +415,5 @@ function protectJSDialogQuote($in_txt) {
     $res = str_replace('"', "\'\'", $res); // super astuce pour afficher les " dans les boite de dialogue
     return $res;
 }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

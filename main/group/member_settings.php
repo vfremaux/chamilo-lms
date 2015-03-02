@@ -126,9 +126,15 @@ if (!empty($complete_user_list)) {
 }
 
 // Group members
+<<<<<<< HEAD
 $group_member_list = GroupManager :: get_subscribed_users($current_group['id']);
 
 $selected_users = array();
+=======
+$group_member_list = GroupManager::get_subscribed_users($current_group['id']);
+
+$selected_users = array ();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if (!empty($group_member_list)) {
     foreach ($group_member_list as $index => $user) {
         $selected_users[] = $user['user_id'];
@@ -194,7 +200,11 @@ if (!empty($_GET['keyword']) && !empty($_GET['submit'])) {
     echo '<br/>'.get_lang('SearchResultsFor').' <span style="font-style: italic ;"> '.$keyword_name.' </span><br>';
 }
 
+<<<<<<< HEAD
 Display :: display_header($nameTools, 'Group');
+=======
+Display::display_header($nameTools, 'Group');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 //@todo fix this
 if (isset($_GET['show_message_warning'])) {

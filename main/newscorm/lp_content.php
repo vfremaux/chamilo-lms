@@ -21,7 +21,8 @@ if (empty($lp_controller_touched)) {
     if ($debug > 0) {
         error_log('New lp - In lp_content.php - Redirecting to lp_controller', 0);
     }
-    header('location: lp_controller.php?action=content&lp_id='.Security::remove_XSS($_REQUEST['lp_id']).'&item_id='.Security::remove_XSS($_REQUEST['item_id']));
+    header('location: lp_controller.php?action=content&lp_id='.Security::remove_XSS($_REQUEST['lp_id']).'&item_id='.Security::remove_XSS($_REQUEST['item_id']).'&'.api_get_cidreq());
+    exit;
 }
 $_SESSION['oLP']->error = '';
 $lp_type = $_SESSION['oLP']->get_type();
@@ -116,6 +117,9 @@ $_setting['show_navigation_menu'] = false;
 if ($debug > 0) {
     error_log('New LP - In lp_content.php - Loading '.$src, 0);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 header("Location: ".urldecode($src));
 exit;

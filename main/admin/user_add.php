@@ -34,6 +34,11 @@ $htmlHeadXtra[] = '
 
 $htmlHeadXtra[] = '
 <script>
+$("#status_select").ready(function() {
+    if ($(this).attr("value") != '.STUDENT.') {
+        $("#id_platform_admin").hide();
+    }
+});
 function enable_expiration_date() { //v2.0
 	document.user_add.radio_expiration_date[0].checked=false;
 	document.user_add.radio_expiration_date[1].checked=true;
@@ -135,7 +140,7 @@ $form->addRule('picture', get_lang('OnlyImagesAllowed').' ('.implode(',', $allow
 
 // Username
 if (api_get_setting('login_is_email') != 'true') {
-    $form->addElement('text', 'username', get_lang('LoginName'), array('id'=> 'username', 'maxlength' => USERNAME_MAX_LENGTH));
+    $form->addElement('text', 'username', get_lang('LoginName'), array('id'=> 'username', 'maxlength' => USERNAME_MAX_LENGTH, 'autocomplete' => 'off'));
     $form->addRule('username', get_lang('ThisFieldIsRequired'), 'required');
     $form->addRule('username', sprintf(get_lang('UsernameMaxXCharacters'), (string)USERNAME_MAX_LENGTH), 'maxlength', USERNAME_MAX_LENGTH);
     $form->addRule('username', get_lang('OnlyLettersAndNumbersAllowed'), 'username');
@@ -164,9 +169,15 @@ if (isset($extAuthSource) && count($extAuthSource) > 0) {
     	$group[] = $form->createElement('static', '', '', '<br />');
     }
 }
+
 $group[] = $form->createElement('radio', 'password_auto', get_lang('Password'), get_lang('AutoGeneratePassword').'<br />', 1);
 $group[] = $form->createElement('radio', 'password_auto', 'id="radio_user_password"', null, 0);
+<<<<<<< HEAD
 $group[] = $form->createElement('password', 'password', null, array('id'=> 'password', 'onkeydown' => 'javascript: password_switch_radio_button();'));
+=======
+$group[] = $form->createElement('password', 'password', null, array('id'=> 'password', 'autocomplete' => 'off', 'onkeydown' => 'javascript: password_switch_radio_button();'));
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->addGroup($group, 'password', get_lang('Password'), '');
 
 if (isset($_configuration['allow_strength_pass_checker']) && $_configuration['allow_strength_pass_checker']) {

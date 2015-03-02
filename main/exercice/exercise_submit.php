@@ -663,6 +663,7 @@ if ($time_control) {
 
 			// First we update the attempt to today
 			// How the expired time is changed into "track_e_exercices" table,then the last attempt for this student should be changed too,so
+<<<<<<< HEAD
             ExerciseLib::update_attempt_date($exercise_stat_info['exe_id'], $last_attempt_date);
 
 	        // Sessions that contain the expired time
@@ -671,6 +672,19 @@ if ($time_control) {
 	        if ($debug) {
                 error_log('7.11. Setting the $expiredTimeInSession: '.$expiredTimeInSession[$current_expired_time_key] );
             };
+=======
+	        $sql = "UPDATE $exercice_attemp_table SET
+	                tms = '".api_get_utc_datetime()."'
+	                WHERE
+	                    exe_id = '".$exercise_stat_info['exe_id']."' AND
+	                    tms = '".$last_attempt_date."' ";
+	        if ($debug) {error_log('7.10. $sql_track_e_exe2: '.$sql_track_e_exe); }
+	        Database::query($sql);
+
+	        //Sessions  that contain the expired time
+	        $_SESSION['expired_time'][$current_expired_time_key] = $clock_expired_time;
+	        if ($debug) {error_log('7.11. Setting the $_SESSION[expired_time]: '.$_SESSION['expired_time'][$current_expired_time_key] ); };
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     } else {
         if ($debug) error_log('7.3. $expiredTimeInSession[$current_expired_time_key]: '.$expiredTimeInSession[$current_expired_time_key]);
@@ -687,8 +701,12 @@ $time_left = api_strtotime($clock_expired_time,'UTC') - time();
  * The time control feature is enable here - this feature is enable for a jquery plugin called epiclock
  * for more details of how it works see this link : http://eric.garside.name/docs.html?p=epiclock
  */
+<<<<<<< HEAD
 if ($time_control) {
     //Sends the exercise form when the expired time is finished
+=======
+if ($time_control) { //Sends the exercise form when the expired time is finished
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	$htmlHeadXtra[] = $objExercise->show_time_control_js($time_left);
 }
 
@@ -743,8 +761,23 @@ if ($formSent && isset($_POST)) {
                     $choice = $exerciseResult[$questionId];
                     if (isset($exe_id)) {
                     	//Manage the question and answer attempts
+<<<<<<< HEAD
                         if ($debug) { error_log('8.3. manageAnswers exe_id: '.$exe_id.' - $questionId: '.$questionId.' Choice'.print_r($choice,1)); }
                     	$objExercise->manageAnswers($exe_id, $questionId, $choice,'exercise_show',$exerciseResultCoordinates, true, false,false);
+=======
+                        if ($debug) { error_log('8.3. manage_answer exe_id: '.$exe_id.' - $questionId: '.$questionId.' Choice'.print_r($choice,1)); }
+                    	$objExercise->manage_answer(
+                            $exe_id,
+                            $questionId,
+                            $choice,
+                            'exercise_show',
+                            $exerciseResultCoordinates,
+                            true,
+                            false,
+                            false,
+                            $objExercise->propagate_neg
+                        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     }
                     //END of saving and qualifying
                 }
@@ -763,8 +796,12 @@ if ($formSent && isset($_POST)) {
 
     // if all questions on one page OR if it is the last question (only for an exercise with one question per page)
 
+<<<<<<< HEAD
     if (($objExercise->type == ALL_ON_ONE_PAGE || $current_question >= $question_count)) {
 
+=======
+    if ($objExercise->type == ALL_ON_ONE_PAGE || $current_question >= $question_count) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (api_is_allowed_to_session_edit()) {
             // goes to the script that will show the result of the exercise
             if ($objExercise->type == ALL_ON_ONE_PAGE) {
@@ -772,9 +809,18 @@ if ($formSent && isset($_POST)) {
 
                 //We check if the user attempts before sending to the exercise_result.php
                 if ($objExercise->selectAttempts() > 0) {
-                    $attempt_count = get_attempt_count(api_get_user_id(), $exerciseId, $learnpath_id, $learnpath_item_id, $learnpath_item_view_id);
+                    $attempt_count = get_attempt_count(
+                        api_get_user_id(),
+                        $exerciseId,
+                        $learnpath_id,
+                        $learnpath_item_id,
+                        $learnpath_item_view_id
+                    );
                     if ($attempt_count >= $objExercise->selectAttempts()) {
-                        Display :: display_warning_message(sprintf(get_lang('ReachedMaxAttempts'), $exercise_title, $objExercise->selectAttempts()), false);
+                        Display :: display_warning_message(
+                            sprintf(get_lang('ReachedMaxAttempts'), $exercise_title, $objExercise->selectAttempts()),
+                            false
+                        );
                         if ($origin != 'learnpath') {
                             //so we are not in learnpath tool
                             echo '</div>'; //End glossary div
@@ -835,9 +881,22 @@ if ($question_count != 0) {
 
 	            //We check if the user attempts before sending to the exercise_result.php
 	            if ($objExercise->selectAttempts() > 0) {
+<<<<<<< HEAD
 	                $attempt_count = get_attempt_count(api_get_user_id(), $exerciseId, $learnpath_id, $learnpath_item_id, $learnpath_item_view_id);
+=======
+	                $attempt_count = get_attempt_count(
+                        api_get_user_id(),
+                        $exerciseId,
+                        $learnpath_id,
+                        $learnpath_item_id,
+                        $learnpath_item_view_id
+                    );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	                if ($attempt_count >= $objExercise->selectAttempts()) {
-	                    Display :: display_warning_message(sprintf(get_lang('ReachedMaxAttempts'), $exercise_title, $objExercise->selectAttempts()), false);
+	                    Display :: display_warning_message(
+                            sprintf(get_lang('ReachedMaxAttempts'), $exercise_title, $objExercise->selectAttempts()),
+                            false
+                        );
 	                    if ($origin != 'learnpath') {
 	                        //so we are not in learnpath tool
 	                        echo '</div>'; //End glossary div
@@ -1119,6 +1178,12 @@ if (!empty($error)) {
                 });
 
                 $(".no_remind_highlight").hide();
+
+				// if the users validates the form using return key, prevent form action and simulates click on validation button
+				$("#exercise_form").submit(function(){
+					$(".question-validate-btn").first().trigger("click");
+					return false;
+				});
     		});
 
 			function previous_question(question_num) {
@@ -1324,6 +1389,7 @@ if (!empty($error)) {
     if (isset($exercise_stat_info['questions_to_check']) && !empty($exercise_stat_info['questions_to_check'])) {
         $remind_list = explode(',', $exercise_stat_info['questions_to_check']);
     }
+<<<<<<< HEAD
     echo '<form id="exercise_form" method="post" action="'.api_get_path(WEB_PUBLIC_PATH).'main/exercice/exercise_submit.php?'.api_get_cidreq().'&autocomplete=off&gradebook='.$gradebook."&exerciseId=".$exerciseId .'" name="frm_exercise" '.$onsubmit.'>
      <input type="hidden" name="formSent"				value="1" />
      <input type="hidden" name="exerciseId" 			value="'.$exerciseId . '" />
@@ -1334,6 +1400,93 @@ if (!empty($error)) {
      <input type="hidden" name="learnpath_item_id" 		value="'.$learnpath_item_id . '" />
      <input type="hidden" name="learnpath_item_view_id" value="'.$learnpath_item_view_id . '" />';
     $objExercise->renderQuestionList($questionList, $current_question, $exerciseResult, $attempt_list, $remind_list);
+=======
+
+    foreach ($questionList as $questionId) {
+
+        // for sequential exercises
+        if ($objExercise->type == ONE_PER_PAGE) {
+            // if it is not the right question, goes to the next loop iteration
+            if ($current_question != $i) {
+                $i++;
+                continue;
+            } else {
+                if ($objExercise->feedback_type != EXERCISE_FEEDBACK_TYPE_DIRECT) {
+                    // if the user has already answered this question
+                    if (isset($exerciseResult[$questionId])) {
+                        // construction of the Question object
+                        $objQuestionTmp = Question::read($questionId);
+                        $questionName = $objQuestionTmp->selectTitle();
+                        // destruction of the Question object
+                        unset ($objQuestionTmp);
+                        Display :: display_normal_message(get_lang('AlreadyAnswered'));
+                        $i++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $user_choice = isset($attempt_list[$questionId]) ? $attempt_list[$questionId] : null;
+
+        $remind_highlight = '';
+
+        //Hides questions when reviewing a ALL_ON_ONE_PAGE exercise see #4542 no_remind_highlight class hide with jquery
+        if ($objExercise->type == ALL_ON_ONE_PAGE && isset($_GET['reminder']) && $_GET['reminder'] == 2) {
+            $remind_highlight = 'no_remind_highlight';
+        }
+
+        $exercise_actions  = '';
+        $is_remind_on = false;
+
+        $attributes = array('id' =>'remind_list['.$questionId.']');
+        if (in_array($questionId, $remind_list)) {
+        	$is_remind_on = true;
+        	$attributes['checked'] = 1;
+        	$remind_question = true;
+        	$remind_highlight = ' remind_highlight ';
+        }
+
+        //Showing the question
+
+        echo '<div id="question_div_'.$questionId.'" class="main_question '.$remind_highlight.'" >';
+
+	        // Shows the question and its answers
+	        showQuestion($questionId, false, $origin, $i, true, false, $user_choice, false);
+
+            //BUtton save and continue
+            switch ($objExercise->type) {
+				case ONE_PER_PAGE:
+                    $exercise_actions .= $objExercise->show_button($questionId, $current_question);
+                    break;
+                case ALL_ON_ONE_PAGE :
+                    $button  = '<a href="javascript://" class="btn" onclick="save_now(\''.$questionId.'\'); ">'.get_lang('SaveForNow').'</a>';
+                    $button .= '<span id="save_for_now_'.$questionId.'"></span>&nbsp;';
+                    $exercise_actions  .= Display::div($button, array('class'=>'exercise_save_now_button'));
+                    break;
+			}
+
+            //Checkbox review answers
+			if ($objExercise->review_answers) {
+				$remind_question_div = Display::tag('label', Display::input('checkbox', 'remind_list['.$questionId.']', '', $attributes).get_lang('ReviewQuestionLater'), array('class' => 'checkbox', 'for' =>'remind_list['.$questionId.']'));
+				$exercise_actions .= Display::div($remind_question_div, array('class'=>'exercise_save_now_button'));
+			}
+			echo Display::div($exercise_actions, array('class'=>'form-actions'));
+		echo '</div>';
+
+        $i++;
+        // for sequential exercises
+        if ($objExercise->type == ONE_PER_PAGE) {
+            // quits the loop
+            break;
+        }
+    }
+    // end foreach()
+    if ($objExercise->type == ALL_ON_ONE_PAGE) {
+    	$exercise_actions =  $objExercise->show_button($questionId, $current_question);
+    	echo Display::div($exercise_actions, array('class'=>'exercise_actions'));
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     echo '</form>';
     echo $objExercise->returnWarningHtml();
 }

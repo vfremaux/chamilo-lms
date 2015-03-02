@@ -15,11 +15,14 @@
  *
  * @package chamilo.library
  */
-class Export {
+class Export
+{
 
-	private function __construct() {
+	private function __construct()
+    {
 	}
 
+<<<<<<< HEAD
 	/**
      *
      * @deprecated use export_table_csv_utf8 instead
@@ -43,14 +46,41 @@ class Export {
 		DocumentManager :: file_send_for_download($file, true, $filename.'.csv');
 		return false;
 	}
+=======
+    /**
+    *
+    * @deprecated use export_table_csv_utf8 instead
+    */
+    public static function export_table_csv ($data, $filename = 'export')
+    {
+        $file = api_get_path(SYS_ARCHIVE_PATH).uniqid('').'.csv';
+        $handle = @fopen($file, 'a+');
+
+        if (is_array($data)) {
+            foreach ($data as $index => $row) {
+                $line = '';
+                if (is_array($row)) {
+                    foreach($row as $value) {
+                        $line .= '"'.str_replace('"', '""', $value).'";';
+                    }
+                }
+                @fwrite($handle, $line."\n");
+            }
+        }
+        @fclose($handle);
+        DocumentManager :: file_send_for_download($file, true, $filename.'.csv');
+        return false;
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	/**
 	 * Export tabular data to CSV-file
 	 * @param array $data
 	 * @param string $filename
 	 */
-	public static function export_table_csv_utf8 ($data, $filename = 'export') {
-        if(empty($data)){
+	public static function export_table_csv_utf8($data, $filename = 'export')
+    {
+        if(empty($data)) {
             return false;
         }
         $path = Chamilo::temp_file();
@@ -61,37 +91,70 @@ class Export {
             $file->put($row);
         }
 		$file->close();
-		DocumentManager :: file_send_for_download($path, true, $filename.'.csv');
+		DocumentManager::file_send_for_download($path, false, $filename.'.csv');
         unlink($path);
         exit;
-		return false;
 	}
 
-	/**
-	 * Export tabular data to XLS-file
-	 * @param array $data
-	 * @param string $filename
-	 */
-	public static function export_table_xls ($data, $filename = 'export') {
-		$file = api_get_path(SYS_ARCHIVE_PATH).uniqid('').'.xls';
-		$handle = @fopen($file, 'a+');
-		foreach ($data as $index => $row) {
-			@fwrite($handle, implode("\t", $row)."\n");
-		}
-		@fclose($handle);
-		DocumentManager :: file_send_for_download($file, true, $filename.'.xls');
-		return false;
+    /**
+     * Export tabular data to XLS-file
+     * @param array $data
+     * @param string $filename
+     */
+    public static function export_table_xls($data, $filename = 'export', $encoding = 'utf-8')
+    {
+        $file = api_get_path(SYS_ARCHIVE_PATH).uniqid('').'.xls';
+        $handle = fopen($file, 'a+');
+        $systemEncoding = api_get_system_encoding();
+        foreach ($data as $row) {
+            $string = implode("\t", $row);
+            if ($encoding != 'utf-8') {
+                $string = api_convert_encoding($string, $encoding, $systemEncoding);
+            }
+            fwrite($handle, $string."\n");
+        }
+        fclose($handle);
+        DocumentManager::file_send_for_download($file, false, $filename.'.xls');
 	}
 
-	/**
-	 * Export tabular data to XML-file
-	 * @param array  Simple array of data to put in XML
-	 * @param string Name of file to be given to the user
-     * @param string Name of common tag to place each line in
-     * @param string Name of the root element. A root element should always be given.
-     * @param string Encoding in which the data is provided
-	 */
-	public static function export_table_xml ($data, $filename = 'export', $item_tagname = 'item', $wrapper_tagname = null, $encoding = null) {
+    /**
+     * Export tabular data to XLS-file (as html table)
+     * @param array $data
+     * @param string $filename
+     */
+    public static function export_table_xls_html($data, $filename = 'export', $encoding = 'utf-8')
+    {
+        $file = api_get_path(SYS_ARCHIVE_PATH).uniqid('').'.xls';
+        $handle = fopen($file, 'a+');
+        $systemEncoding = api_get_system_encoding();
+        fwrite($handle, '<!DOCTYPE html><html><meta http-equiv="Content-Type" content="text/html" charset="utf-8" /><body><table>');
+        foreach ($data as $id => $row) {
+            foreach ($row as $id2 => $row2) {
+                $data[$id][$id2] = api_htmlentities($row2);
+            }
+        }
+        foreach ($data as $row) {
+            $string = implode("</td><td>", $row);
+            $string = '<tr><td>' . $string . '</td></tr>';
+            if ($encoding != 'utf-8') {
+                $string = api_convert_encoding($string, $encoding, $systemEncoding);
+            }
+            fwrite($handle, $string."\n");
+        }
+        fwrite($handle, '</table></body></html>');
+        fclose($handle);
+        DocumentManager::file_send_for_download($file, false, $filename.'.xls');
+    }
+    /**
+    * Export tabular data to XML-file
+    * @param array  Simple array of data to put in XML
+    * @param string Name of file to be given to the user
+    * @param string Name of common tag to place each line in
+    * @param string Name of the root element. A root element should always be given.
+    * @param string Encoding in which the data is provided
+    */
+	public static function export_table_xml ($data, $filename = 'export', $item_tagname = 'item', $wrapper_tagname = null, $encoding = null)
+    {
 		if (empty($encoding)) {
 			$encoding = api_get_system_encoding();
 		}
@@ -101,7 +164,7 @@ class Export {
 		if (!is_null($wrapper_tagname)) {
 			fwrite($handle, "\t".'<'.$wrapper_tagname.'>'."\n");
 		}
-		foreach ($data as $index => $row) {
+		foreach ($data as $row) {
 			fwrite($handle, '<'.$item_tagname.'>'."\n");
 			foreach ($row as $key => $value) {
 				fwrite($handle, "\t\t".'<'.$key.'>'.$value.'</'.$key.'>'."\n");
@@ -125,7 +188,8 @@ class Export {
      * @param string Encoding in which the data is provided
      * @return void  Prompts the user for a file download
      */
-    public static function export_complex_table_xml ($data, $filename = 'export', $wrapper_tagname, $encoding = 'ISO-8859-1') {
+    public static function export_complex_table_xml ($data, $filename = 'export', $wrapper_tagname, $encoding = 'ISO-8859-1')
+    {
         $file = api_get_path(SYS_ARCHIVE_PATH).'/'.uniqid('').'.xml';
         $handle = fopen($file, 'a+');
         fwrite($handle, '<?xml version="1.0" encoding="'.$encoding.'"?>'."\n");
@@ -149,10 +213,11 @@ class Export {
      * @param   int     Level of recursivity. Allows the XML to be finely presented
      * @return string   The XML string to be inserted into the root element
      */
-    public static function _export_complex_table_xml_helper ($data, $level = 1) {
+    public static function _export_complex_table_xml_helper ($data, $level = 1)
+    {
     	if (count($data)<1) { return '';}
         $string = '';
-        foreach ($data as $index => $row) {
+        foreach ($data as $row) {
             $string .= "\n".str_repeat("\t",$level).'<'.$row['name'].'>';
             if (is_array($row['value'])) {
             	$string .= self::_export_complex_table_xml_helper($row['value'],$level+1)."\n";
@@ -169,7 +234,12 @@ class Export {
      *
      * @param array table in array format to be read with the HTML_table class
      */
+<<<<<<< HEAD
     public static function export_table_pdf($data, $params = array()) {
+=======
+    public static function export_table_pdf($data, $params = array())
+    {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $table_html = self::convert_array_to_html($data, $params);
         $params['format'] = isset($params['format']) ? $params['format'] : 'A4';
         $params['orientation'] = isset($params['orientation']) ? $params['orientation'] : 'P';
@@ -178,7 +248,16 @@ class Export {
         $pdf->html_to_pdf_with_template($table_html);
     }
 
+<<<<<<< HEAD
     public static function export_html_to_pdf($html, $params = array()) {
+=======
+    /**
+     * @param string $html
+     * @param array $params
+     */
+    public static function export_html_to_pdf($html, $params = array())
+    {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $params['format'] = isset($params['format']) ? $params['format'] : 'A4';
         $params['orientation'] = isset($params['orientation']) ? $params['orientation'] : 'P';
 
@@ -186,7 +265,17 @@ class Export {
         $pdf->html_to_pdf_with_template($html);
     }
 
+<<<<<<< HEAD
     public static function convert_array_to_html($data, $params = array()) {
+=======
+    /**
+     * @param array $data
+     * @param array $params
+     * @return string
+     */
+    public static function convert_array_to_html($data, $params = array())
+    {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $headers = $data[0];
         unset($data[0]);
 

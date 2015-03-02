@@ -28,7 +28,7 @@ $this_section = SECTION_COURSES;
 
 // Notice for unauthorized people.
 api_protect_course_script(true);
-
+$sessionId = api_get_session_id();
 $exercise_id = isset($_REQUEST['exerciseId']) ? intval($_REQUEST['exerciseId']) : 0;
 
 $objExercise = new Exercise();
@@ -84,8 +84,9 @@ if ($origin != 'learnpath') {
 $html = '';
 $message = '';
 
-$is_allowed_to_edit = api_is_allowed_to_edit(null,true);
+$is_allowed_to_edit = api_is_allowed_to_edit(null, true);
 $edit_link = '';
+<<<<<<< HEAD
 if ($is_allowed_to_edit) {
     $url = api_get_path(WEB_CODE_PATH).'exercice/admin.php?'.api_get_cidreq().'&id_session='.api_get_session_id().'&exerciseId='.$objExercise->id;
 	$edit_link = Display::url(Display::return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL), $url);
@@ -93,6 +94,14 @@ if ($is_allowed_to_edit) {
 
 //Exercise name
 $html .= Display::page_subheader($objExercise->name.' '.$edit_link);
+=======
+if ($is_allowed_to_edit && $objExercise->sessionId == $sessionId) {
+	$edit_link = Display::url(Display::return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL), api_get_path(WEB_CODE_PATH).'exercice/admin.php?'.api_get_cidreq().'&id_session='.api_get_session_id().'&exerciseId='.$objExercise->id);
+}
+
+//Exercise name
+$html .= Display::page_header($objExercise->name.' '.$edit_link);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 //Exercise description
 if (!empty($objExercise->description)) {
@@ -110,10 +119,17 @@ if (isset($exercise_stat_info['exe_id'])) {
 }
 
 //1. Check if this is a new attempt or a previous
+$countNotFinished = isset($exercise_stat_info['num_exe']) ? $exercise_stat_info['num_exe'] : null;
 $label = get_lang('StartTest');
 
 if ($time_control && !empty($clock_expired_time) || !empty($attempt_list)) {
 	$label = get_lang('ContinueTest');
+}
+
+if ($countNotFinished >= $objExercise->selectAttempts() && !api_is_allowed_to_edit()) {
+    $message = Display::display_warning_message(sprintf(get_lang('ReachedMaxAttempts'),$objExercise->selectTitle(),$objExercise->selectAttempts()).' '.get_lang('YouTriedToResolveThisExerciseEarlier'));
+} elseif ($countNotFinished >= $objExercise->selectAttempts() && api_is_allowed_to_edit()) {
+    $message = Display::display_warning_message(get_lang('ReachedMaxAttemptsAdmin'));
 }
 
 if (!empty($attempt_list)) {
@@ -251,7 +267,7 @@ if ($time_control) {
 
 $html .=  $message;
 
-if (!empty($exercise_url_button)) {
+if (!empty($exercise_url_button) && ($countNotFinished == 0 || api_is_allowed_to_edit())) {
     $html .=  Display::div(Display::div($exercise_url_button, array('class'=>'exercise_overview_options span12')), array('class'=>' row'));
 }
 

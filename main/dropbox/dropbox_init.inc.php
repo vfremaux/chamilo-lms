@@ -128,7 +128,10 @@ require_once '../inc/global.inc.php';
 $is_allowed_in_course = api_is_allowed_in_course();
 $is_courseTutor = api_is_course_tutor();
 $is_courseAdmin = api_is_course_admin();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $current_course_tool  = TOOL_DROPBOX;
 
 // the dropbox configuration parameters
@@ -361,7 +364,11 @@ if ($view == 'sent' OR empty($view)) {
 
 if (isset($origin) && $origin == 'learnpath') {
     // if we come from the learning path we have to include the stylesheet and the required javascripts manually.
+<<<<<<< HEAD
     //echo '<link rel="stylesheet" type="text/css" href="', api_get_path(WEB_CODE_PATH), 'css/default.css">';
+=======
+    echo '<link rel="stylesheet" type="text/css" href="', api_get_path(WEB_CODE_PATH), 'css/default.css">';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     echo $javascript;
 } else {
     Display::display_header($nameTools, 'Dropbox');

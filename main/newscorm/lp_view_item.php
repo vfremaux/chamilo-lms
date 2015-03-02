@@ -20,6 +20,10 @@ require_once 'learnpath.class.php';
 require_once 'learnpathItem.class.php';
 require_once 'learnpath_functions.inc.php';
 require_once 'resourcelinker.inc.php';
+<<<<<<< HEAD
+=======
+require_once '../inc/global.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 api_protect_course_script();
 
@@ -31,7 +35,7 @@ if (isset($_GET['lp_item_id'])) {
         $oLP = unserialize($_SESSION['lpobject']);
     }
     if (is_object($oLP)) {
-       $src = $oLP->get_link('http', $lp_item_id);
+        $src = $oLP->get_link('http', $lp_item_id);
     }
 
     $url_info 		= parse_url($src);
@@ -39,9 +43,15 @@ if (isset($_GET['lp_item_id'])) {
 
     // The host must be the same.
     if ($url_info['host'] == $real_url_info['host']) {
+<<<<<<< HEAD
     	$url = Security::remove_XSS($src);
     	header("Location: ".$url);
     	exit;
+=======
+        $url = Security::remove_XSS($src);
+        header("Location: ".$url);
+        exit;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     } else {
         header("Location: blank.php?error=document_not_found");
         exit;
@@ -95,9 +105,9 @@ if (isset($_SESSION['gradebook'])) {
 
 if (!empty($gradebook) && $gradebook == 'view') {
     $interbreadcrumb[] = array (
-            'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
-            'name' => get_lang('ToolGradebook')
-        );
+        'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
+        'name' => get_lang('ToolGradebook')
+    );
 }
 
 $interbreadcrumb[] = array('url' => 'lp_controller.php?action=list', 'name' => get_lang('LearningPaths'));
@@ -111,7 +121,7 @@ if (isset($_SESSION['oLP']) && is_object($_SESSION['oLP'])) {
 }
 
 if ($mode == 'fullpage') {
-    Display::display_header(get_lang('Item'),'Path');
+    Display::display_header(get_lang('Item'), 'Path');
 }
 
 $suredel = trim(get_lang('AreYouSureToDelete'));
@@ -157,4 +167,8 @@ if (is_object($_SESSION['oLP'])) {
             echo $_SESSION['oLP']->display_item($id, null, false);
             break;
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

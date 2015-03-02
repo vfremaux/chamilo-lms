@@ -9,21 +9,18 @@
  *
  *	@package chamilo.work
  */
-
-session_cache_limiter('public');
 require_once '../inc/global.inc.php';
 require_once 'work.lib.php';
+<<<<<<< HEAD
 
 $current_course_tool  = TOOL_STUDENTPUBLICATION;
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
+$current_course_tool  = TOOL_STUDENTPUBLICATION;
 $this_section = SECTION_COURSES;
 
-// IMPORTANT to avoid caching of documents
-header('Expires: Wed, 01 Jan 1990 00:00:00 GMT');
-header('Cache-Control: public');
-header('Pragma: no-cache');
-
-//protection
+// Course protection
 api_protect_course_script(true);
 
 $id = intval($_GET['id']);
@@ -34,6 +31,7 @@ if (empty($course_info)) {
     api_not_allowed(true);
 }
 
+<<<<<<< HEAD
 $tbl_student_publication = Database::get_course_table(TABLE_STUDENT_PUBLICATION);
 
 if (!empty($course_info['real_id'])) {
@@ -96,4 +94,11 @@ if (!empty($course_info['real_id'])) {
 } else {
     api_not_allowed();
 }
+=======
+$result = downloadFile($id, $course_info);
+if ($result == false) {
+    api_not_allowed(true);
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 exit;

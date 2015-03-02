@@ -257,8 +257,15 @@ $app->match('/check-database', function () use ($app) {
     if ('POST' == $request->getMethod()) {
         $form->bind($request);
 
+<<<<<<< HEAD
         if ($form->isValid()) {
             $parameters = $form->getData();
+=======
+// Upgrading from any subversion of 1.6 is just like upgrading from 1.6.5
+$update_from_version_6 = array('1.6', '1.6.1', '1.6.2', '1.6.3', '1.6.4', '1.6.5');
+// Upgrading from any subversion of 1.8 avoids the additional step of upgrading from 1.6
+$update_from_version_8 = array('1.8', '1.8.2', '1.8.3', '1.8.4', '1.8.5', '1.8.6', '1.8.6.1', '1.8.6.2','1.8.7','1.8.7.1','1.8.8','1.8.8.2', '1.8.8.4', '1.8.8.6', '1.9.0', '1.9.2','1.9.4','1.9.6', '1.9.6.1');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             /** @var InstallCommand $command */
             $command = $app['console']->get('chamilo:install');
@@ -313,9 +320,81 @@ $app->match('/portal-settings', function () use ($app) {
     $command = $app['console']->get('chamilo:install');
     $builder = $app['form.factory']->createBuilder('form');
 
+<<<<<<< HEAD
     $data = $command->getPortalSettingsParams();
     $data['institution_url']['attributes']['data'] = str_replace('main/install/', '', $request->getUriForPath('/'));
     $permissionNewDir = $app['session']->get('permissions_for_new_directories');
+=======
+if (!isset($_GET['running'])) {
+
+	$dbHostForm		= 'localhost';
+	$dbUsernameForm = 'root';
+	$dbPassForm		= '';
+ 	$dbPrefixForm   = '';
+	$dbNameForm		= 'chamilo';
+
+	$dbStatsForm    = 'chamilo';
+	$dbScormForm    = 'chamilo';
+	$dbUserForm		= 'chamilo';
+
+	// Extract the path to append to the url if Chamilo is not installed on the web root directory.
+	$urlAppendPath  = api_remove_trailing_slash(api_get_path(REL_PATH));
+  	$urlForm 		= api_get_path(WEB_PATH);
+	$pathForm 		= api_get_path(SYS_PATH);
+
+        $emailForm = 'webmaster@localhost';
+        if (!empty($_SERVER['SERVER_ADMIN'])) {
+            $emailForm      = $_SERVER['SERVER_ADMIN'];
+        }
+	$email_parts = explode('@', $emailForm);
+	if (isset($email_parts[1]) && $email_parts[1] == 'localhost') {
+		$emailForm .= '.localdomain';
+	}
+	$adminLastName	= 'Doe';
+	$adminFirstName	= 'John';
+	$loginForm		= 'admin';
+	$passForm		= api_generate_password();
+
+	$campusForm		= 'My campus';
+	$educationForm	= 'Albert Einstein';
+	$adminPhoneForm	= '(000) 001 02 03';
+	$institutionForm    = 'My Organisation';
+	$institutionUrlForm = 'http://www.chamilo.org';
+	// TODO: A better choice to be tested:
+	//$languageForm	    = 'english';
+	$languageForm	    = api_get_interface_language();
+
+	$checkEmailByHashSent	= 0;
+	$ShowEmailnotcheckedToStudent = 1;
+	$userMailCanBeEmpty		= 1;
+	$allowSelfReg			= 1;
+	$allowSelfRegProf		= 1;
+	$enableTrackingForm		= 1;
+	$singleDbForm			= 0;
+	$encryptPassForm		= 'sha1';
+	$session_lifetime		= 360000;
+} else {
+	foreach ($_POST as $key => $val) {
+		$magic_quotes_gpc = ini_get('magic_quotes_gpc');
+		if (is_string($val)) {
+			if ($magic_quotes_gpc) {
+				$val = stripslashes($val);
+			}
+			$val = trim($val);
+			$_POST[$key] = $val;
+		} elseif (is_array($val)) {
+			foreach ($val as $key2 => $val2) {
+				if ($magic_quotes_gpc) {
+					$val2 = stripslashes($val2);
+				}
+				$val2 = trim($val2);
+				$_POST[$key][$key2] = $val2;
+			}
+		}
+		$GLOBALS[$key] = $_POST[$key];
+	}
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if ($permissionNewDir) {
         $data['permissions_for_new_directories']['attributes']['data'] = $permissionNewDir;
@@ -326,9 +405,144 @@ $app->match('/portal-settings', function () use ($app) {
         $data['permissions_for_new_files']['attributes']['data'] = $permissionNewFiles;
     }
 
+<<<<<<< HEAD
     foreach ($data as $key => $value) {
         $value['attributes'] = isset($value['attributes']) && is_array($value['attributes']) ? $value['attributes'] : array();
         $builder->add($key, $value['type'], $value['attributes']);
+=======
+				//document.getElementById('optional_param2').style.display = '';
+				if (document.getElementById('optional_param3')) {
+					document.getElementById('optional_param3').style.display = '';
+				}
+
+				//document.getElementById('optional_param5').style.display = '';
+				//document.getElementById('optional_param6').style.display = '';
+				init_visibility = 1;
+				document.getElementById('optionalparameters').innerHTML='<img style="vertical-align:middle;" src="../img/div_hide.gif" alt="" /> <?php echo get_lang('OptionalParameters', ''); ?>';
+			} else {
+				document.getElementById('optional_param1').style.display = 'none';
+				/*document.getElementById('optional_param2').style.display = 'none';
+				if (document.getElementById('optional_param3')) {
+					document.getElementById('optional_param3').style.display = 'none';
+				}
+				document.getElementById('optional_param4').style.display = 'none';
+				*/
+				document.getElementById('optional_param5').style.display = 'none';
+				//document.getElementById('optional_param6').style.display = 'none';
+				document.getElementById('optionalparameters').innerHTML='<img style="vertical-align:middle;" src="../img/div_show.gif" alt="" /> <?php echo get_lang('OptionalParameters', ''); ?>';
+				init_visibility = 0;
+			}
+			return false;
+		}
+
+        $(document).ready( function() {
+            $(".advanced_parameters").click(function() {
+                if ($("#id_contact_form").css("display") == "none") {
+                        $("#id_contact_form").css("display","block");
+                        $("#img_plus_and_minus").html('&nbsp;<img src="<?php echo api_get_path(WEB_IMG_PATH) ?>div_hide.gif" alt="<?php echo get_lang('Hide') ?>" title="<?php echo get_lang('Hide')?>" style ="vertical-align:middle" >&nbsp;<?php echo get_lang('ContactInformation') ?>');
+                } else {
+                        $("#id_contact_form").css("display","none");
+                        $("#img_plus_and_minus").html('&nbsp;<img src="<?php echo api_get_path(WEB_IMG_PATH) ?>div_show.gif" alt="<?php echo get_lang('Show') ?>" title="<?php echo get_lang('Show') ?>" style ="vertical-align:middle" >&nbsp;<?php echo get_lang('ContactInformation') ?>');
+                }
+            });
+        });
+
+        function send_contact_information() {
+            var data_post = "";
+            data_post += "person_name="+$("#person_name").val()+"&";
+            data_post += "person_email="+$("#person_email").val()+"&";
+            data_post += "company_name="+$("#company_name").val()+"&";
+            data_post += "company_activity="+$("#company_activity option:selected").val()+"&";
+            data_post += "person_role="+$("#person_role option:selected").val()+"&";
+            data_post += "company_country="+$("#country option:selected").val()+"&";
+            data_post += "company_city="+$("#company_city").val()+"&";
+            data_post += "language="+$("#language option:selected").val()+"&";
+            data_post += "financial_decision="+$("input[@name='financial_decision']:checked").val();
+
+            $.ajax({
+                    contentType: "application/x-www-form-urlencoded",
+                    beforeSend: function(objeto) {},
+                    type: "POST",
+                    url: "<?php echo api_get_path(WEB_AJAX_PATH) ?>install.ajax.php?a=send_contact_information",
+                    data: data_post,
+                    success: function(datos) {
+                        if (datos == 'required_field_error') {
+                            message = "<?php echo get_lang('FormHasErrorsPleaseComplete') ?>";
+                        } else if (datos == '1') {
+                            message = "<?php echo get_lang('ContactInformationHasBeenSent') ?>";
+                        } else {
+                            message = "<?php echo get_lang('Error').': '.get_lang('ContactInformationHasNotBeenSent') ?>";
+                        }
+                        alert(message);
+                    }
+            });
+        }
+    </script>
+	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo api_get_system_encoding(); ?>" />
+</head>
+<body dir="<?php echo api_get_text_direction(); ?>" class="install-chamilo">
+
+<div id="wrapper">
+<div id="main" class="container well-install">
+    <header>
+		<div class="row">
+            <div id="header_left" class="span4">
+                <div id="logo">
+                    <img src="../css/chamilo/images/header-logo.png" hspace="10" vspace="10" alt="Chamilo" />
+                </div>
+            </div>
+        </div>
+        <div class="navbar subnav">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="nav-collapse">
+                        <ul class="nav nav-pills">
+                            <li id="current" class="active">
+                                <a target="_top" href="index.php"><?php echo get_lang('Homepage'); ?></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</header>
+    <br />
+    
+    <?php 
+    echo '<div class="page-header"><h1>'.get_lang('ChamiloInstallation').' &ndash; '.get_lang('Version_').' '.$new_version.'</h1></div>';
+    ?>
+    <div class="row">
+        <div class="span3">
+            <div class="well">
+                <ol>
+                    <li <?php step_active('1'); ?>><?php echo get_lang('InstallationLanguage'); ?></li>
+                    <li <?php step_active('2'); ?>><?php echo get_lang('Requirements'); ?></li>
+                    <li <?php step_active('3'); ?>><?php echo get_lang('Licence'); ?></li>
+                    <li <?php step_active('4'); ?>><?php echo get_lang('DBSetting'); ?></li>
+                    <li <?php step_active('5'); ?>><?php echo get_lang('CfgSetting'); ?></li>
+                    <li <?php step_active('6'); ?>><?php echo get_lang('PrintOverview'); ?></li>
+                    <li <?php step_active('7'); ?>><?php echo get_lang('Installing'); ?></li>
+                </ol>
+            </div>
+            <div id="note">
+				<a class="btn" href="../../documentation/installation_guide.html" target="_blank">
+                    <?php echo get_lang('ReadTheInstallationGuide'); ?>
+                </a>
+			</div>
+        </div>
+        
+        <div class="span9">
+            
+<form class="form-horizontal" id="install_form" style="padding: 0px; margin: 0px;" method="post" action="<?php echo api_get_self(); ?>?running=1&amp;installType=<?php echo $installType; ?>&amp;updateFromConfigFile=<?php echo urlencode($updateFromConfigFile); ?>">
+<?php   
+
+    $instalation_type_label = '';
+    if ($installType == 'new'){
+        $instalation_type_label  = get_lang('NewInstallation');
+    }elseif ($installType == 'update') {
+        $update_from_version = isset($update_from_version) ? $update_from_version : null;
+        $instalation_type_label = get_lang('UpdateFromDokeosVersion').(is_array($update_from_version) ? implode('|', $update_from_version) : '');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     $builder->add('continue', 'submit', array('attr' => array('class' => 'btn')));
@@ -386,6 +600,7 @@ $app->match('/admin-settings', function () use ($app) {
 
             return $app->redirect($url);
         }
+<<<<<<< HEAD
     }
 
     return $app['twig']->render('settings.tpl', array('form' => $form->createView()));
@@ -418,6 +633,86 @@ $app->match('/resume', function () use ($app) {
              $url = $app['url_generator']->generate('installing');
 
              return $app->redirect($url);
+=======
+        
+        Log::notice("singledbForm: '$singleDbForm'");
+        
+		Database::query("SET storage_engine = MYISAM;");
+
+		if (version_compare($my_old_version, '1.8.7', '>=')) {
+			Database::query("SET SESSION character_set_server='utf8';");
+			Database::query("SET SESSION collation_server='utf8_general_ci';");
+			//Database::query("SET CHARACTER SET 'utf8';"); // See task #1802.
+			Database::query("SET NAMES 'utf8';");
+		}
+
+		switch ($my_old_version) {
+			case '1.6':
+			case '1.6.0':
+			case '1.6.1':
+			case '1.6.2':
+			case '1.6.3':
+			case '1.6.4':
+			case '1.6.5':
+				include 'update-db-1.6.x-1.8.0.inc.php';
+				include 'update-files-1.6.x-1.8.0.inc.php';
+				//intentionally no break to continue processing
+			case '1.8':
+			case '1.8.0':
+				include 'update-db-1.8.0-1.8.2.inc.php';
+				//intentionally no break to continue processing
+			case '1.8.2':
+				include 'update-db-1.8.2-1.8.3.inc.php';
+				//intentionally no break to continue processing
+			case '1.8.3':
+				include 'update-db-1.8.3-1.8.4.inc.php';
+				include 'update-files-1.8.3-1.8.4.inc.php';
+			case '1.8.4':
+				include 'update-db-1.8.4-1.8.5.inc.php';
+                include 'update-files-1.8.4-1.8.5.inc.php';
+			case '1.8.5':
+				include 'update-db-1.8.5-1.8.6.inc.php';
+                include 'update-files-1.8.5-1.8.6.inc.php';
+            case '1.8.6':
+                include 'update-db-1.8.6-1.8.6.1.inc.php';
+                include 'update-files-1.8.6-1.8.6.1.inc.php';
+            case '1.8.6.1':
+                include 'update-db-1.8.6.1-1.8.6.2.inc.php';
+                include 'update-files-1.8.6.1-1.8.6.2.inc.php';
+            case '1.8.6.2':
+                include 'update-db-1.8.6.2-1.8.7.inc.php';
+                include 'update-files-1.8.6.2-1.8.7.inc.php';
+                // After database conversion to UTF-8, new encoding initialization is necessary
+                // to be used for the next upgrade 1.8.7[.1] -> 1.8.8.
+                Database::query("SET SESSION character_set_server='utf8';");
+                Database::query("SET SESSION collation_server='utf8_general_ci';");
+                //Database::query("SET CHARACTER SET 'utf8';"); // See task #1802.
+                Database::query("SET NAMES 'utf8';");
+
+            case '1.8.7':
+            case '1.8.7.1':
+                include 'update-db-1.8.7-1.8.8.inc.php';
+                include 'update-files-1.8.7-1.8.8.inc.php';
+            case '1.8.8':
+            case '1.8.8.2':
+                //Only updates the configuration.inc.php with the new version
+                include 'update-configuration.inc.php';
+            case '1.8.8.4':
+            case '1.8.8.6':
+                include 'update-db-1.8.8-1.9.0.inc.php';
+                //include 'update-files-1.8.8-1.9.0.inc.php';
+                //Only updates the configuration.inc.php with the new version
+                include 'update-configuration.inc.php';
+
+                break;
+            case '1.9.0':
+            case '1.9.2':
+            case '1.9.4':
+            case '1.9.6':
+            case '1.9.6.1':
+            default:
+                break;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
 
         return $app['twig']->render(

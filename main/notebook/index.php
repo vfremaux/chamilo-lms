@@ -70,7 +70,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'addnote') {
 
 	// Initiate the object
 	$form = new FormValidator('note', 'post', api_get_self().'?action='.Security::remove_XSS($_GET['action']));
-	// Settting the form elements
+	// Setting the form elements
 	$form->addElement('header', '', get_lang('NoteAddNew'));
 	$form->addElement('text', 'note_title', get_lang('NoteTitle'), array('size' => '95', 'id' => 'note_title'));
 	//$form->applyFilter('note_title', 'html_filter');
@@ -116,7 +116,7 @@ elseif (isset($_GET['action']) && $_GET['action'] == 'editnote' && is_numeric($_
 
 	// Initialize the object
 	$form = new FormValidator('note', 'post', api_get_self().'?action='.Security::remove_XSS($_GET['action']).'&notebook_id='.Security::remove_XSS($_GET['notebook_id']));
-	// Settting the form elements
+	// Setting the form elements
 	$form->addElement('header', '', get_lang('ModifyNote'));
 	$form->addElement('hidden', 'notebook_id');
 	$form->addElement('text', 'note_title', get_lang('NoteTitle'), array('size' => '100'));

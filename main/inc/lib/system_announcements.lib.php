@@ -319,6 +319,7 @@ class SystemAnnouncementManager
 	 * @param int    Whether to send an e-mail to all users (1) or not (0)
 	 * @return mixed  insert_id on success, false on failure
 	 */
+<<<<<<< HEAD
 	public static function add_announcement(
         $title,
         $content,
@@ -331,6 +332,9 @@ class SystemAnnouncementManager
         $send_mail = 0,
         $add_to_calendar = false
     ) {
+=======
+	public static function add_announcement($title, $content, $date_start, $date_end, $visible_teacher = 0, $visible_student = 0, $visible_guest = 0, $lang = null, $send_mail = 0, $add_to_calendar = false, $sendEmailTest = false) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 		$original_content = $content;
 		$a_dateS = explode(' ',$date_start);
@@ -354,7 +358,10 @@ class SystemAnnouncementManager
 			Display :: display_normal_message(get_lang('InvalidEndDate'));
 			return false;
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		if (strlen(trim($title)) == 0) {
 			Display::display_normal_message(get_lang('InvalidTitle'));
 			return false;
@@ -381,9 +388,13 @@ class SystemAnnouncementManager
 		$sql = "INSERT INTO ".$db_table." (title,content,date_start,date_end,visible_teacher,visible_student,visible_guest, lang, access_url_id)
 				VALUES ('".$title."','".$content."','".$start."','".$end."','".$visible_teacher."','".$visible_student."','".$visible_guest."',".$langsql.", ".$current_access_url_id.")";
 
-		if ($send_mail==1) {
-			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang);
-		}
+        if ($sendEmailTest) {
+            SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang, true);
+        } else {
+            if ($send_mail == 1) {
+                SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang);
+            }
+        }
 		$res = Database::query($sql);
 		if ($res === false) {
 			Debug::log_s(mysql_error());
@@ -451,7 +462,7 @@ class SystemAnnouncementManager
 	 * @param array $date_end : end date of announcement (0 => day ; 1 => month ; 2 => year ; 3 => hour ; 4 => minute)
 	 * @return	bool	True on success, false on failure
 	 */
-	public static function update_announcement($id, $title, $content, $date_start, $date_end, $visible_teacher = 0, $visible_student = 0, $visible_guest = 0,$lang=null, $send_mail=0) {
+	public static function update_announcement($id, $title, $content, $date_start, $date_end, $visible_teacher = 0, $visible_student = 0, $visible_guest = 0,$lang=null, $send_mail=0, $sendEmailTest = false) {
 		$a_dateS = explode(' ',$date_start);
 		$a_arraySD = explode('-',$a_dateS[0]);
 		$a_arraySH = explode(':',$a_dateS[1]);
@@ -491,9 +502,13 @@ class SystemAnnouncementManager
 		$sql = "UPDATE ".$db_table." SET lang=$langsql,title='".$title."',content='".$content."',date_start='".$start."',date_end='".$end."', ";
 		$sql .= " visible_teacher = '".$visible_teacher."', visible_student = '".$visible_student."', visible_guest = '".$visible_guest."' , access_url_id = '".api_get_current_access_url_id()."'  WHERE id = ".$id;
 
-		if ($send_mail==1) {
-			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang);
-		}
+        if ($sendEmailTest) {
+            SystemAnnouncementManager::send_system_announcement_by_email($title, $content, null, null, $lang, $sendEmailTest);
+        } else {
+            if ($send_mail==1) {
+                SystemAnnouncementManager::send_system_announcement_by_email($title, $content, $visible_teacher, $visible_student, $lang);
+            }
+        }
 		$res = Database::query($sql);
 		if ($res === false) {
 			Debug::log_s(mysql_error());
@@ -568,19 +583,30 @@ class SystemAnnouncementManager
 	 * @param	string	Language (optional, considered for all languages if left empty)
      * @return  bool    True if the message was sent or there was no destination matching. False on database or e-mail sending error.
 	 */
+<<<<<<< HEAD
 	public static function send_system_announcement_by_email($title, $content, $teacher, $student, $language = null)
     {
+=======
+	public static function send_system_announcement_by_email($title, $content, $teacher, $student, $language = null, $sendEmailTest = false) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		global $charset;
 
+        $title = api_html_entity_decode(stripslashes($title), ENT_QUOTES, $charset);
+        $content = api_html_entity_decode(stripslashes(str_replace(array('\r\n', '\n', '\r'),'', $content)), ENT_QUOTES, $charset);
+
+        if ($sendEmailTest) {
+            MessageManager::send_message_simple(api_get_user_id(), $title, $content);
+            return true;
+        }
+
+        $user_table = Database :: get_main_table(TABLE_MAIN_USER);
         if (api_is_multiple_url_enabled()) {
             $current_access_url_id = api_get_current_access_url_id();
             $url_rel_user = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
             $url_condition = " INNER JOIN $url_rel_user uu ON uu.user_id = u.user_id ";
         }
 
-		$user_table = Database :: get_main_table(TABLE_MAIN_USER);
-
-		if ($teacher <> 0 AND $student == 0) {
+        if ($teacher <> 0 AND $student == 0) {
 			$sql = "SELECT DISTINCT u.user_id FROM $user_table u $url_condition WHERE status = '1' ";
 		}
 
@@ -600,7 +626,7 @@ class SystemAnnouncementManager
             $sql .= " AND access_url_id = '".$current_access_url_id."' ";
         }
 
-        //Sent to active users
+        // Sent to active users.
         $sql .= " AND email <>'' AND active = 1 ";
 
 		if ((empty($teacher) or $teacher == '0') AND  (empty($student) or $student == '0')) {
@@ -611,9 +637,6 @@ class SystemAnnouncementManager
 		if ($result === false) {
 			return false;
 		}
-
-        $title      = api_html_entity_decode(stripslashes($title), ENT_QUOTES, $charset);
-        $content    = api_html_entity_decode(stripslashes(str_replace(array('\r\n', '\n', '\r'),'', $content)), ENT_QUOTES, $charset);
 
         $message_sent = false;
 
@@ -718,6 +741,7 @@ class SystemAnnouncementManager
 		}
 		return $html;
 	}
+<<<<<<< HEAD
 
     /**
      * Displays announcements as an slideshow
@@ -739,4 +763,6 @@ class SystemAnnouncementManager
         }
         return $html;
     }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

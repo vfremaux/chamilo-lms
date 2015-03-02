@@ -66,7 +66,12 @@ $this_section = SECTION_COURSES;
 // Access control
 api_protect_course_script(true);
 
+<<<<<<< HEAD
 $is_allowedToEdit = api_is_allowed_to_edit(null, true);
+=======
+$is_allowedToEdit = api_is_allowed_to_edit(null,true);
+$sessionId = api_get_session_id();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (!$is_allowedToEdit) {
     api_not_allowed(true);
@@ -86,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+<<<<<<< HEAD
 // Get vars from GET
 if (empty($exerciseId)) {
     $exerciseId = isset($_GET['exerciseId']) ? intval($_GET['exerciseId']):'0';
@@ -112,15 +118,58 @@ if (empty($questionId)) {
 
 /* Cleaning all incomplete attempts of the admin/teacher to avoid weird problems
     when changing the exercise settings, number of questions, etc */
+=======
+if (empty($exerciseId)) {
+    $exerciseId = isset($_GET['exerciseId']) ? intval($_GET['exerciseId']):'0';
+}
+
+if (empty($newQuestion)) {
+    $newQuestion = isset($_GET['newQuestion']) ? $_GET['newQuestion'] : 0;
+}
+if (empty($modifyAnswers)) {
+    $modifyAnswers = isset($_GET['modifyAnswers']) ? $_GET['modifyAnswers'] : 0;
+}
+if (empty($editQuestion)) {
+    $editQuestion = isset($_GET['editQuestion']) ? $_GET['editQuestion'] : 0;
+}
+if (empty($modifyQuestion)) {
+    $modifyQuestion = isset($_GET['modifyQuestion']) ? $_GET['modifyQuestion'] : 0;
+}
+if (empty($deleteQuestion)) {
+    $deleteQuestion = isset($_GET['deleteQuestion']) ? $_GET['deleteQuestion'] : 0;
+}
+$clone_question = isset($_REQUEST['clone_question']) ? $_REQUEST['clone_question'] : 0;
+if (empty($questionId)) {
+    $questionId = isset($_SESSION['questionId']) ? $_SESSION['questionId'] : 0;
+}
+if (empty($modifyExercise)) {
+    $modifyExercise = isset($_GET['modifyExercise']) ? $_GET['modifyExercise'] : null;
+}
+
+$fromExercise = isset($fromExercise) ? $fromExercise : null;
+$cancelExercise = isset($cancelExercise) ? $cancelExercise : null;
+$cancelAnswers = isset($cancelAnswers) ? $cancelAnswers : null;
+$modifyIn = isset($modifyIn) ? $modifyIn : null;
+$cancelQuestion = isset($cancelQuestion) ? $cancelQuestion : null;
+
+// Cleaning all incomplete attempts of the admin/teacher to avoid weird problems when changing the exercise settings, number of questions, etc
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 delete_all_incomplete_attempts(api_get_user_id(), $exerciseId, api_get_course_int_id(), api_get_session_id());
 
+<<<<<<< HEAD
 /** @var Exercise $objExercise */
 $objExercise = Session::read('objExercise');
 /** @var Question $objQuestion */
 $objQuestion = Session::read('objQuestion');
 /** @var Answer $objAnswer */
 $objAnswer = Session::read('objAnswer');
+=======
+// get from session
+$objExercise = isset($_SESSION['objExercise']) ? $_SESSION['objExercise'] : null;
+$objQuestion = isset($_SESSION['objQuestion']) ? $_SESSION['objQuestion'] : null;
+$objAnswer   = isset($_SESSION['objAnswer']) ? $_SESSION['objAnswer'] : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // document path
 $documentPath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document';
@@ -143,6 +192,7 @@ $aType = array(
 // tables used in the exercise tool
 
 if (!empty($_GET['action']) && $_GET['action'] == 'exportqti2' && !empty($_GET['questionId'])) {
+<<<<<<< HEAD
     require_once 'export/qti2/qti2_export.php';
     $export = export_question($_GET['questionId'], true);
     $qid = (int)$_GET['questionId'];
@@ -181,11 +231,65 @@ if (!is_object($objExercise)) {
 
 if ($objExercise->fastEdition) {
     $htmlHeadXtra[] = api_get_jqgrid_js();
+=======
+	require_once 'export/qti2/qti2_export.php';
+	$export = export_question($_GET['questionId'],true);
+	$qid = (int)$_GET['questionId'];
+	$archive_path = api_get_path(SYS_ARCHIVE_PATH);
+	$temp_dir_short = uniqid();
+	$temp_zip_dir = $archive_path."/".$temp_dir_short;
+	if(!is_dir($temp_zip_dir)) mkdir($temp_zip_dir, api_get_permissions_for_new_directories());
+	$temp_zip_file = $temp_zip_dir."/".api_get_unique_id().".zip";
+	$temp_xml_file = $temp_zip_dir."/qti2export_".$qid.'.xml';
+	file_put_contents($temp_xml_file,$export);
+	$zip_folder=new PclZip($temp_zip_file);
+	$zip_folder->add($temp_xml_file, PCLZIP_OPT_REMOVE_ALL_PATH);
+	$name = 'qti2_export_'.$qid.'.zip';
+
+	DocumentManager::file_send_for_download($temp_zip_file,true,$name);
+	unlink($temp_zip_file);
+	unlink($temp_xml_file);
+	rmdir($temp_zip_dir);
+	//DocumentManager::string_send_for_download($export,true,'qti2export_q'.$_GET['questionId'].'.xml');
+	exit; //otherwise following clicks may become buggy
+}
+
+// Exercise object creation.
+if (!is_object($objExercise)) {
+	// construction of the Exercise object
+	$objExercise = new Exercise();
+
+	// creation of a new exercise if wrong or not specified exercise ID
+	if ($exerciseId) {
+	    $objExercise->read($exerciseId);
+	}
+	// saves the object into the session
+	Session::write('objExercise', $objExercise);
+}
+
+// Exercise can be edited in their course.
+if ($objExercise->sessionId != $sessionId) {
+    api_not_allowed(true);
+    /*header('Location: '.api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidreq());
+    exit;*/
+}
+
+// doesn't select the exercise ID if we come from the question pool
+if (!$fromExercise) {
+	// gets the right exercise ID, and if 0 creates a new exercise
+	if (!$exerciseId = $objExercise->selectId()) {
+		$modifyExercise='yes';
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $nbrQuestions = $objExercise->getQuestionCount();
 
+<<<<<<< HEAD
 // Initializes the Question object
+=======
+// Question object creation.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if ($editQuestion || $newQuestion || $modifyQuestion || $modifyAnswers) {
     if ($editQuestion || $newQuestion) {
 
@@ -214,10 +318,17 @@ if (!empty($cancelExercise)) {
         unset($modifyExercise);
     } else {
         // new exercise
+<<<<<<< HEAD
         // goes back to the exercise list
         header('Location: '.$urlMainExercise.'exercice.php');
         exit();
     }
+=======
+		// goes back to the exercise list
+		header('Location: '.api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidreq());
+		exit();
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 // if cancelling question creation/modification
@@ -235,9 +346,14 @@ if (!empty($cancelQuestion)) {
 }
 
 if (!empty($clone_question) && !empty($objExercise->id)) {
+<<<<<<< HEAD
 
     $old_question_obj = Question::read($clone_question, api_get_course_int_id());
     $old_question_obj->question = $old_question_obj->question.' - '.get_lang('Copy');
+=======
+	$old_question_obj = Question::read($clone_question);
+	$old_question_obj->question = $old_question_obj->question.' - '.get_lang('Copy');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $new_id = $old_question_obj->duplicate();
     $new_question_obj = Question::read($new_id, api_get_course_int_id());
@@ -261,12 +377,19 @@ if (!empty($cancelAnswers)) {
     $editQuestion = $modifyAnswers;
     unset($modifyAnswers);
 }
+<<<<<<< HEAD
 
 $nameTools = get_lang('ExerciseManagement');
 
 // modifies the query string that is used in the link of tool name
 if ($editQuestion || $modifyQuestion || $newQuestion || $modifyAnswers) {
     $nameTools = get_lang('QuestionManagement');
+=======
+$nameTools = null;
+// modifies the query string that is used in the link of tool name
+if ($editQuestion || $modifyQuestion || $newQuestion || $modifyAnswers) {
+	$nameTools = get_lang('QuestionManagement');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 if (isset($_SESSION['gradebook'])) {
@@ -287,6 +410,17 @@ if (isset($_GET['newQuestion']) || isset($_GET['editQuestion'])) {
     $interbreadcrumb[] = array("url" => "#", "name" => $objExercise->name);
 }
 
+<<<<<<< HEAD
+=======
+// shows a link to go back to the question pool
+if (!$exerciseId && $nameTools != get_lang('ExerciseManagement')){
+	$interbreadcrumb[]=array(
+        "url" => api_get_path(WEB_CODE_PATH)."exercice/question_pool.php?fromExercise=$fromExercise&".api_get_cidreq(),
+        "name" => get_lang('QuestionPool')
+    );
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 // if the question is duplicated, disable the link of tool name
 if (!empty($modifyIn) && $modifyIn == 'thisExercise') {
     if ($buttonBack) {
@@ -457,20 +591,26 @@ function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision)
 // -->
 </script>";
 
+<<<<<<< HEAD
 Display::display_header($nameTools, 'Exercise');
 
+=======
+Display::display_header($nameTools,'Exercise');
+/*
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if ($objExercise->exercise_was_added_in_lp) {
     if ($objExercise->force_edit_exercise_in_lp == true) {
         Display::display_warning_message(get_lang('ForceEditingExerciseInLPWarning'));
     } else {
         Display::display_warning_message(get_lang('EditingExerciseCauseProblemsInLP'));
     }
-}
+}*/
 
 // If we are in a test
 $inATest = isset($exerciseId) && $exerciseId > 0;
 if ($inATest) {
     echo '<div class="actions">';
+<<<<<<< HEAD
     if (isset($_GET['hotspotadmin']) || isset($_GET['newQuestion']) || isset($_GET['myid'])) {
         echo '<a href="'.$urlMainExercise.'admin.php?exerciseId='.$exerciseId.'">'.Display::return_icon(
             'back.png',
@@ -511,6 +651,26 @@ if ($inATest) {
         echo '<a href="'.$urlMainExercise.'exercise_admin.php?'.api_get_cidreq().'&modifyExercise=yes&exerciseId='.$objExercise->id.'">'.
             Display::return_icon('settings.png', get_lang('ModifyExercise'), '', ICON_SIZE_MEDIUM ).'</a>';
     }
+=======
+    if (isset($_GET['hotspotadmin']) || isset($_GET['newQuestion']) || isset($_GET['myid']))
+        echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/admin.php?exerciseId='.$exerciseId.'&'.api_get_cidReq().'">'.
+            Display::return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).'</a>';
+
+    if (!isset($_GET['hotspotadmin']) && !isset($_GET['newQuestion']) && !isset($_GET['myid']) &&  !isset($_GET['editQuestion'])) {
+        echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/exercice.php?'.api_get_cidReq().'">'.
+            Display::return_icon('back.png', get_lang('BackToExercisesList'),'',ICON_SIZE_MEDIUM).'</a>';
+    }
+    echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/overview.php?'.api_get_cidreq().'&exerciseId='.$objExercise->id.'&preview=1">'.
+        Display::return_icon('preview_view.png', get_lang('Preview'),'',ICON_SIZE_MEDIUM).'</a>';
+
+    echo Display::url(
+        Display::return_icon('test_results.png', get_lang('Results'),'',ICON_SIZE_MEDIUM),
+        api_get_path(WEB_CODE_PATH).'exercice/exercise_report.php?'.api_get_cidReq().'&exerciseId='.$objExercise->id
+    );
+
+    echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/exercise_admin.php?'.api_get_cidreq().'&modifyExercise=yes&exerciseId='.$objExercise->id.'">'.
+        Display::return_icon('settings.png', get_lang('ModifyExercise'),'',ICON_SIZE_MEDIUM).'</a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // @todo if you have 5000 questions this will slow down everything
     /*
@@ -525,12 +685,28 @@ if ($inATest) {
     }
     echo '<span style="float:right">'.sprintf(get_lang('XQuestionsWithTotalScoreY'), $objExercise->selectNbrQuestions(), $maxScoreAllQuestions ).'</span>';*/
     echo '</div>';
+<<<<<<< HEAD
 } else {
     // we are in create a new question from question pool not in a test
     echo '<div class="actions">';
     echo '<a href="'.$urlMainExercise.'admin.php?exerciseId='.$objExercise->id.'&'.api_get_cidreq().'">'.
           Display::return_icon('back.png', get_lang('GoBackToQuestionList'),'', ICON_SIZE_MEDIUM ).'</a>';
     echo '</div>';
+=======
+} else if (isset($_GET['newQuestion'])) {
+	// we are in create a new question from question pool not in a test
+	echo '<div class="actions">';
+	echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/admin.php?'.api_get_cidreq().'">'.
+        Display::return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).'</a>';
+	echo '</div>';
+} else {
+	// If we are in question_pool but not in an test, go back to question create in pool
+	echo '<div class="actions">';
+	echo '<a href="'.api_get_path(WEB_CODE_PATH).'exercice/question_pool.php?'.api_get_cidreq().'">'.
+        Display::return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).
+        '</a>';
+	echo '</div>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 
@@ -541,6 +717,7 @@ if (isset($_GET['message'])) {
 }
 
 if ($newQuestion || $editQuestion) {
+<<<<<<< HEAD
     // statement management
 
     if ($editQuestion) {
@@ -551,6 +728,17 @@ if ($newQuestion || $editQuestion) {
     echo '<input type="hidden" name="Type" value="'.$type.'" />';
     // Create/Edit question.
     require 'question_admin.inc.php';
+=======
+	// statement management
+	$type = isset($_REQUEST['answerType']) ? Security::remove_XSS($_REQUEST['answerType']) : null;
+	echo '<input type="hidden" name="Type" value="'.$type.'" />';
+
+    if ($newQuestion == 'yes') {
+        $objExercise->edit_exercise_in_lp = true;
+    }
+
+	require 'question_admin.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 if (isset($_GET['hotspotadmin'])) {
@@ -575,6 +763,13 @@ if (!$newQuestion && !$modifyQuestion && !$editQuestion && !isset($_GET['hotspot
     } else {
         require 'question_list_admin.inc.php';
     }
+}
+
+// if we are in question authoring, display warning to user is feedback not shown at the end of the test -ref #6619
+// this test to display only message in the question authoring page and not in the question list page too
+// if (is_object($objQuestion) && $objExercise->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_EXAM && ($newQuestion || $modifyQuestion || $editQuestion)) {
+if ($objExercise->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_EXAM) {
+    Display::display_normal_message(get_lang("TestFeedbackNotShown"));
 }
 
 Session::write('objExercise', $objExercise);

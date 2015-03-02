@@ -2,7 +2,13 @@
 /* For licensing terms, see /license.txt */
 
 // Name of the language file that needs to be included
+<<<<<<< HEAD
 
+=======
+$language_file = array('group', 'admin', 'registration');
+
+require_once '../inc/global.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $this_section = SECTION_COURSES;
 $current_course_tool  = TOOL_GROUP;
 

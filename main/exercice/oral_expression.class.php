@@ -1,17 +1,13 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
-*	File containing the FreeAnswer class.
-*	This class allows to instantiate an object of type FREE_ANSWER,
-*	extending the class question
-*	@package chamilo.exercise
-* 	@author Eric Marguin
-* 	@version $Id: admin.php 10680 2007-01-11 21:26:23Z pcool $
-*/
-/**
  * Code
  */
 /**
+ *  File containing the FreeAnswer class.
+ *	This class allows to instantiate an object of type FREE_ANSWER,
+ *	extending the class question
+ * 	@author Eric Marguin
  * @package chamilo.exercise
  */
 class OralExpression extends Question
@@ -57,12 +53,17 @@ class OralExpression extends Question
 		$this->save();
 	}
 
+<<<<<<< HEAD
     /**
      * {@inheritdoc}
      */
     function return_header($feedback_type = null, $counter = null, $score = null, $show_media = false, $hideTitle = 0)
     {
         $header = parent::return_header($feedback_type, $counter, $score, $show_media, $hideTitle);
+=======
+	function return_header($feedback_type = null, $counter = null, $score = null) {
+	    $header = parent::return_header($feedback_type, $counter, $score);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	    $header .= '<table class="'.$this->question_table_class.'">
 			<tr>
                 <th>&nbsp;</th>

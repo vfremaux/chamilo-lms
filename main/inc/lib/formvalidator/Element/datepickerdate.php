@@ -8,8 +8,13 @@ class HTML_QuickForm_datepickerdate extends HTML_QuickForm_date
 {
 	/**
 	 * Constructor
+     * @deprecated use class DatePicker
 	 */
+<<<<<<< HEAD
 	function HTML_QuickForm_datepickerdate($elementName = null, $elementLabel = null, $attributes = null)
+=======
+	public function HTML_QuickForm_datepickerdate($elementName = null, $elementLabel = null, $attributes = null)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
 		global $myMinYear, $myMaxYear;
 		$js_form_name = $attributes['form_name'];
@@ -20,24 +25,20 @@ class HTML_QuickForm_datepickerdate extends HTML_QuickForm_date
 		$this->_type = 'datepicker';
 		$popup_link = '<a href="javascript:openCalendar(\''.$js_form_name.'\',\''.$elementName.'\')"><img src="'.api_get_path(WEB_IMG_PATH).'calendar_select.gif" style="vertical-align:middle;" alt="Select Date" /></a>';
 		$special_chars = array ('D', 'l', 'd', 'M', 'F', 'm', 'y', 'H', 'a', 'A', 's', 'i', 'h', 'g', ' ');
-		foreach ($special_chars as $index => $char)
-		{
+		foreach ($special_chars as $char) {
 			$popup_link = str_replace($char, "\\".$char, $popup_link);
 		}
 		$lang_code = api_get_language_isocode();
 		// If translation not available in PEAR::HTML_QuickForm_date, add the Chamilo-translation
-		if(! array_key_exists($lang_code,$this->_locale))
-		{
+		if (! array_key_exists($lang_code,$this->_locale)) {
 			$this->_locale[$lang_code]['months_long'] = api_get_months_long();
 		}
 		$this->_options['format'] = 'dFY '.$popup_link;
 		$this->_options['minYear'] = date('Y')-5;
 		$this->_options['maxYear'] = date('Y')+10;
 		$this->_options['language'] = $lang_code;
-		//$this->_options['addEmptyOption'] = true;
-		//$this->_options['emptyOptionValue'] = 0;
-		//$this->_options['emptyOptionText'] = ' -- ';
 	}
+
 	/**
 	 * HTML code to display this datepicker
 	 */
@@ -52,9 +53,8 @@ class HTML_QuickForm_datepickerdate extends HTML_QuickForm_date
 	function getElementJS()
 	{
 		$js = '';
-		if(!defined('DATEPICKER_JAVASCRIPT_INCLUDED'))
-		{
-			define('DATEPICKER_JAVASCRIPT_INCLUDED',1);
+		if(!defined('DATEPICKER_JAVASCRIPT_INCLUDED')) {
+			define('DATEPICKER_JAVASCRIPT_INCLUDED', 1);
 			$js = "\n";
 			$js .= '<script src="';
 			$js .= api_get_path(WEB_CODE_PATH).'inc/lib/formvalidator/Element/';
@@ -63,6 +63,7 @@ class HTML_QuickForm_datepickerdate extends HTML_QuickForm_date
 		}
 		return $js;
 	}
+
 	/**
 	 * Export the date value in MySQL format
 	 * @return string YYYY-MM-DD HH:II:SS
@@ -87,4 +88,7 @@ class HTML_QuickForm_datepickerdate extends HTML_QuickForm_date
 		$this->_options[$name] = $value;
 	}
 }
+<<<<<<< HEAD
 ?>
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

@@ -9,7 +9,10 @@
 
 // protect a course script
 api_protect_course_script(true);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 // display categories
 $categories = array ();
 foreach ($default_description_titles as $id => $title) {

@@ -23,8 +23,18 @@ function handle_regions()
         // Add event to the system log.
         $user_id = api_get_user_id();
         $category = $_GET['category'];
+<<<<<<< HEAD
         api_set_setting_last_update();
         event_system(LOG_CONFIGURATION_SETTINGS_CHANGE, LOG_CONFIGURATION_SETTINGS_CATEGORY, $category, api_get_utc_datetime(), $user_id);
+=======
+        event_system(
+            LOG_CONFIGURATION_SETTINGS_CHANGE,
+            LOG_CONFIGURATION_SETTINGS_CATEGORY,
+            $category,
+            api_get_utc_datetime(),
+            $user_id
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         Display :: display_confirmation_message(get_lang('SettingsStored'));
     }
 
@@ -32,11 +42,12 @@ function handle_regions()
     $possible_plugins  = $plugin_obj->read_plugins_from_path();
     $installed_plugins = $plugin_obj->get_installed_plugins();
 
-    if (!empty($installed_plugins)) {
+    /*if (!empty($installed_plugins)) {
         $not_installed = array_diff($possible_plugins, $installed_plugins);
     } else {
         $not_installed = $possible_plugins;
-    }
+    }*/
+
     echo '<form name="plugins" method="post" action="'.api_get_self().'?category='.Security::remove_XSS($_GET['category']).'">';
     echo '<table class="data_table">';
     echo '<tr>';
@@ -56,7 +67,7 @@ function handle_regions()
         $plugin_region_list[$plugin_item] = $plugin_item;
     }
 
-    //Removing course tool
+    // Removing course tool
     unset($plugin_region_list['course_tool_plugin']);
 
     foreach ($installed_plugins as $plugin) {
@@ -193,6 +204,11 @@ function handle_plugins()
 */
 function handle_stylesheets()
 {
+<<<<<<< HEAD
+=======
+    global $_configuration;
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     // Current style.
     $currentStyle = api_get_setting('stylesheets');
 
@@ -258,7 +274,13 @@ function handle_stylesheets()
 
     $list_of_styles = array();
     $list_of_names  = array();
+<<<<<<< HEAD
     $selected = null;
+=======
+    $selected = '';
+    $dirpath = '';
+    $safe_style_dir = '';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $safe_style_dir = '';
     if ($handle = @opendir(api_get_path(SYS_CSS_PATH).'themes/')) {
@@ -272,11 +294,19 @@ function handle_stylesheets()
             if (is_dir($dirpath)) {
                 if ($style_dir != '.' && $style_dir != '..') {
                     if (isset($_POST['style']) && (isset($_POST['preview']) or isset($_POST['download'])) && $_POST['style'] == $style_dir) {
-                        $selected = $style_dir;
                         $safe_style_dir = $style_dir;
                     } else {
+<<<<<<< HEAD
                         if (!isset($_POST['style']) && ($currentStyle == $style_dir || ($style_dir == 'chamilo' && !$currentStyle))) {
                             $selected = $style_dir;
+=======
+                        if ($currentstyle == $style_dir || ($style_dir == 'chamilo' && !$currentstyle)) {
+                            if (isset($_POST['style'])) {
+                                $selected = Database::escape_string($_POST['style']);
+                            } else {
+                                $selected = $style_dir;
+                            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         }
                     }
                     $show_name = ucwords(str_replace('_', ' ', $style_dir));
@@ -288,18 +318,27 @@ function handle_stylesheets()
                 }
             }
         }
-        @closedir($handle);
+        closedir($handle);
     }
 
+<<<<<<< HEAD
     // Sort styles in alphabetical order
+=======
+    // Sort styles in alphabetical order.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     asort($list_of_names);
     $select_list = array();
     foreach ($list_of_names as $style_dir => $item) {
         $select_list[$style_dir] = strip_tags($list_of_styles[$style_dir]);
     }
 
+<<<<<<< HEAD
     $form_change->addElement('select', 'style', get_lang('NameStylesheet'), $select_list);
     $form_change->setDefaults(array('style' => $selected));
+=======
+    $styles = &$form_change->addElement('select', 'style', get_lang('NameStylesheet'), $select_list);
+    $styles->setSelected($selected);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if ($form_change->validate()) {
         // Submit stylesheets.
@@ -408,7 +447,8 @@ function upload_stylesheet($values, $picture)
                     $extraction_path = api_get_path(SYS_CSS_PATH).'themes/'.$style_name.'/';
                     for ($i = 0; $i < $num_files; $i++) {
                         $entry = $zip->getNameIndex($i);
-                        if (substr($entry, -1) == '/') continue;
+                        if (substr($entry, -1) == '/')
+                            continue;
 
                         $pos_slash = strpos($entry, '/');
                         $entry_without_first_dir = substr($entry, $pos_slash + 1);
@@ -446,7 +486,11 @@ function upload_stylesheet($values, $picture)
 }
 
 /**
+<<<<<<< HEAD
  *
+=======
+ * Store plugin regions.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
  */
 function store_regions()
 {
@@ -487,16 +531,20 @@ function store_regions()
 */
 function store_plugins()
 {
+<<<<<<< HEAD
     $plugin_obj = new AppPlugin();
+=======
+    $appPlugin = new AppPlugin();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // Get a list of all current 'Plugins' settings
-    $plugin_list = $plugin_obj->read_plugins_from_path();
+    $plugin_list = $appPlugin->read_plugins_from_path();
 
     $installed_plugins = array();
 
     foreach ($plugin_list as $plugin) {
         if (isset($_POST['plugin_'.$plugin])) {
-            $plugin_obj->install($plugin);
+            $appPlugin->install($plugin);
             $installed_plugins[] = $plugin;
         }
     }
@@ -506,8 +554,9 @@ function store_plugins()
     } else {
         $remove_plugins = $plugin_list;
     }
+
     foreach ($remove_plugins as $plugin) {
-        $plugin_obj->uninstall($plugin);
+        $appPlugin->uninstall($plugin);
     }
 }
 
@@ -533,7 +582,11 @@ function store_stylesheets()
  */
 function is_style($style)
 {
+<<<<<<< HEAD
     $dir = api_get_path(SYS_CSS_PATH).'themes/';
+=======
+    $dir = api_get_path(SYS_PATH).'main/css/';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $dirs = scandir($dir);
     $style = str_replace(array('/', '\\'), array('', ''), $style); // Avoid slashes or backslashes.
     if (in_array($style, $dirs) && is_dir($dir.$style)) {
@@ -709,9 +762,17 @@ function handle_search()
  * @version August 2008
  * @since Dokeos 1.8.6
  */
+<<<<<<< HEAD
 function handle_templates()
 {
     $action = isset($_GET['action']) ? $_GET['action'] : null;
+=======
+function handle_templates() {
+    /* Drive-by fix to avoid undefined var warnings, without repeating
+     * isset() combos all over the place. */
+    $action = isset($_GET['action']) ? $_GET['action'] : "invalid";
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if ($action != 'add') {
         echo '<div class="actions" style="margin-left: 1px;">';
         echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('new_template.png', get_lang('AddTemplate'),'',ICON_SIZE_MEDIUM).'</a>';
@@ -725,7 +786,6 @@ function handle_templates()
         $user_id = api_get_user_id();
         $category = $_GET['category'];
         event_system(LOG_CONFIGURATION_SETTINGS_CHANGE, LOG_CONFIGURATION_SETTINGS_CATEGORY, $category, api_get_utc_datetime(), $user_id);
-
     } else {
         if ($action == 'delete' && is_numeric($_GET['id'])) {
             delete_template($_GET['id']);
@@ -735,6 +795,7 @@ function handle_templates()
             $category = $_GET['category'];
             event_system(LOG_CONFIGURATION_SETTINGS_CHANGE, LOG_CONFIGURATION_SETTINGS_CATEGORY, $category, api_get_utc_datetime(), $user_id);
         }
+
         display_templates();
     }
 }
@@ -853,9 +914,10 @@ function image_filter($image) {
  */
 function add_edit_template() {
     // Initialize the object.
-    $form = new FormValidator('template', 'post', 'settings.php?category=Templates&action='.Security::remove_XSS($_GET['action']).'&id='.Security::remove_XSS($_GET['id']));
+    $id = isset($_GET['id']) ? '&id='.Security::remove_XSS($_GET['id']) : '';
+    $form = new FormValidator('template', 'post', 'settings.php?category=Templates&action='.Security::remove_XSS($_GET['action']).$id);
 
-    // Settting the form elements: the header.
+    // Setting the form elements: the header.
     if ($_GET['action'] == 'add') {
         $title = get_lang('AddTemplate');
     } else {
@@ -863,16 +925,16 @@ function add_edit_template() {
     }
     $form->addElement('header', $title);
 
-    // Settting the form elements: the title of the template.
+    // Setting the form elements: the title of the template.
     $form->add_textfield('title', get_lang('Title'), false);
 
-    // Settting the form elements: the content of the template (wysiwyg editor).
+    // Setting the form elements: the content of the template (wysiwyg editor).
     $form->addElement('html_editor', 'template_text', get_lang('Text'), null, array('ToolbarSet' => 'AdminTemplates', 'Width' => '100%', 'Height' => '400'));
 
-    // Settting the form elements: the form to upload an image to be used with the template.
+    // Setting the form elements: the form to upload an image to be used with the template.
     $form->addElement('file','template_image',get_lang('Image'),'');
 
-    // Settting the form elements: a little bit information about the template image.
+    // Setting the form elements: a little bit information about the template image.
     $form->addElement('static', 'file_comment', '', get_lang('TemplateImageComment100x70'));
 
     // Getting all the information of the template when editing a template.
@@ -902,7 +964,11 @@ function add_edit_template() {
         $form->setDefaults($defaults);
     }
     // Setting the form elements: the submit button.
+<<<<<<< HEAD
     $form->addElement('button' , 'submit', get_lang('Ok'));
+=======
+    $form->addElement('style_submit_button' , 'submit', get_lang('Ok') ,'class="save"');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // Setting the rules: the required fields.
     $form->addRule('title', get_lang('ThisFieldIsRequired'), 'required');
@@ -1287,7 +1353,7 @@ function generate_settings_form($settings, $settings_by_access_list, $settings_t
                 }
 
                 $form->addElement('file', 'pdf_export_watermark_path', get_lang('AddWaterMark'));
-                $allowed_picture_types = array ('jpg', 'jpeg', 'png', 'gif');
+                $allowed_picture_types = array('jpg', 'jpeg', 'png', 'gif');
                 $form->addRule('pdf_export_watermark_path', get_lang('OnlyImagesAllowed').' ('.implode(',', $allowed_picture_types).')', 'filetype', $allowed_picture_types);
 
                 break;
@@ -1309,7 +1375,7 @@ function generate_settings_form($settings, $settings_by_access_list, $settings_t
 }
 
 /**
- * Searchs a platform setting in all categories except from the Plugins category
+ * Searches a platform setting in all categories except from the Plugins category
  * @param string $search
  * @return array
  */

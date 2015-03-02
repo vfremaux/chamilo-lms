@@ -12,16 +12,21 @@
 $language_file = 'admin';
 $cidReset = true;
 require_once '../inc/global.inc.php';
+require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
+
 $this_section=SECTION_PLATFORM_ADMIN;
 
 api_protect_global_admin_script();
 
 if (!api_get_multiple_access_url()) {
-	header('Location: index.php');
-	exit;
+    header('Location: index.php');
+    exit;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form_sent = 0;
 $first_letter_course = '';
 $courses = array ();
@@ -38,9 +43,13 @@ $tool_name = get_lang('AddCoursesToURL');
 $interbreadcrumb[] = array ('url' => 'index.php', 'name' => get_lang('PlatformAdmin'));
 $interbreadcrumb[] = array ('url' => 'access_urls.php', 'name' => get_lang('MultipleAccessURLs'));
 
+<<<<<<< HEAD
 /*		MAIN CODE   */
 
 Display::display_header($tool_name);
+=======
+Display :: display_header($tool_name);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 echo '<div class="actions">';
 echo Display::url(
@@ -52,6 +61,7 @@ echo '</div>';
 api_display_tool_title($tool_name);
 
 if (isset($_POST['form_sent']) && $_POST['form_sent']) {
+<<<<<<< HEAD
 	$form_sent = $_POST['form_sent'];
 	$courses = is_array($_POST['course_list']) ? $_POST['course_list'] : array() ;
 	$url_list = is_array($_POST['url_list']) ? $_POST['url_list'] : array() ;
@@ -84,6 +94,37 @@ if(empty($first_letter_user)) {
 		$first_letter_user = 'A';
 	}
 	unset($result);
+=======
+    $form_sent = $_POST['form_sent'];
+    $courses = is_array($_POST['course_list']) ? $_POST['course_list'] : array() ;
+    $url_list = is_array($_POST['url_list']) ? $_POST['url_list'] : array() ;
+    $first_letter_course = $_POST['first_letter_course'];
+
+    foreach ($users as $key => $value) {
+        $users[$key] = intval($value);
+    }
+
+    if ($form_sent == 1) {
+        if (count($courses) == 0 || count($url_list) == 0) {
+            Display :: display_error_message(get_lang('AtLeastOneCourseAndOneURL'));
+        } else {
+            UrlManager::add_courses_to_urls($courses, $url_list);
+            Display :: display_confirmation_message(get_lang('CourseBelongURL'));
+        }
+    }
+}
+
+if (empty($first_letter_user)) {
+    $sql = "SELECT count(*) as num_courses FROM $tbl_course";
+    $result = Database::query($sql);
+    $num_row = Database::fetch_array($result);
+    if ($num_row['num_courses']>1000) {
+        //if there are too much num_courses to gracefully handle with the HTML select list,
+        // assign a default filter on users names
+        $first_letter_user = 'A';
+    }
+    unset($result);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $first_letter_course = Database::escape_string($first_letter_course);
@@ -125,6 +166,7 @@ unset($result);
    <tr>
     <td width="40%" align="center">
      <select name="course_list[]" multiple="multiple" size="20" style="width:400px;">
+<<<<<<< HEAD
 		<?php
 		foreach ($db_courses as $course) {
 			?>
@@ -132,6 +174,12 @@ unset($result);
 			<?php
 		}
 		?>
+=======
+		<?php foreach ($db_courses as $course) { ?>
+			<option value="<?php echo $course['code']; ?>" <?php if(in_array($course['code'],$courses)) echo 'selected="selected"'; ?>><?php echo $course['title'].' ('.$course['code'].')'; ?>
+            </option>
+        <?php } ?>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     </select>
    </td>
    <td width="20%" valign="middle" align="center">
@@ -139,17 +187,18 @@ unset($result);
    </td>
    <td width="40%" align="center">
     <select name="url_list[]" multiple="multiple" size="20" style="width:300px;">
-		<?php
-		foreach ($db_urls as $url_obj) {
-			?>
-			<option value="<?php echo $url_obj['id']; ?>" <?php if(in_array($url_obj['id'],$url_list)) echo 'selected="selected"'; ?>><?php echo $url_obj['url']; ?></option>
-			<?php
-		}
-		?>
+		<?php foreach ($db_urls as $url_obj) { ?>
+        <option value="<?php echo $url_obj['id']; ?>" <?php if(in_array($url_obj['id'],$url_list)) echo 'selected="selected"'; ?>><?php echo $url_obj['url']; ?>
+        </option>
+		<?php } ?>
     </select>
    </td>
   </tr>
  </table>
 </form>
 <?php
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 Display :: display_footer();

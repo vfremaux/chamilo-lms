@@ -339,6 +339,7 @@ class HTML_QuickForm_select extends HTML_QuickForm_element {
      */
     function addOptGroup($options, $label)
     {
+<<<<<<< HEAD
         foreach ($options as &$option) {
             $option[] = $this->addOption($option['text'], $option['value'], null, true);
         }
@@ -347,6 +348,13 @@ class HTML_QuickForm_select extends HTML_QuickForm_element {
 
     // }}}
     // {{{ loadArray()
+=======
+        foreach ($options as $option) {
+            $this->addOption($option['text'], $option['value'], $option, true);
+        }
+        $this->_optgroups[] = array('label' => $label, 'options' => $options);
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     /**
      * Loads the options from an associative array
@@ -520,6 +528,7 @@ class HTML_QuickForm_select extends HTML_QuickForm_element {
                 $attrString = $this->_getAttrString($this->_attributes);
                 $this->setName($myName);
             }
+
             $strHtml .= $tabs . '<select' . $attrString . ">\n";
 
             if (isset($this->_attributes['data-placeholder'])) {
@@ -534,6 +543,7 @@ class HTML_QuickForm_select extends HTML_QuickForm_element {
                 $strHtml .= $tabs . "\t<option" . $this->_getAttrString($option['attr']) . '>' .
                             $option['text'] . "</option>\n";
             }
+<<<<<<< HEAD
 
             foreach ($this->_optgroups as $optgroup) {
                 $strHtml .= $tabs . "\t<optgroup label=" . $optgroup['label'].">";
@@ -544,13 +554,21 @@ class HTML_QuickForm_select extends HTML_QuickForm_element {
                 }
 
                 $strHtml .= "</optgroup>\n";
+=======
+            foreach ($this->_optgroups as $optgroup) {
+                $strHtml .= $tabs . "<optgroup label=" . $optgroup['label'].">";
+                foreach ($optgroup['options'] as $option) {
+                    $text = $option['text'];
+                    unset($option['text']);
+                    $strHtml .= $tabs . " <option" . $this->_getAttrString($option) . '>' .$text . "</option>";
+                }
+                $strHtml .= "</optgroup>";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             return $strHtml . $tabs . '</select>';
         }
-    } //end func toHtml
+    }
 
-    // }}}
-    // {{{ getFrozenHtml()
 
     /**
      * Returns the value of field without HTML tags

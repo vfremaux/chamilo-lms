@@ -1,6 +1,9 @@
 <?php
 /* For licensing terms, see /license.txt */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 require_once '../global.inc.php';
 
 $timeline = new Timeline();

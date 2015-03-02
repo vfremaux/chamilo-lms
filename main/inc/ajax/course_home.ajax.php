@@ -5,9 +5,10 @@
  * Responses to AJAX calls
 */
 $action = $_GET['a'];
-$now    = time();
+$now = time();
 
 switch ($action) {
+<<<<<<< HEAD
     case 'set_visibility':
         $course_id = api_get_course_int_id();
         $courseInfo = api_get_course_info();
@@ -33,11 +34,31 @@ switch ($action) {
                     $new_image = str_replace('.png', '_na.png', $tool_info['custom_icon']);
                     $new_image = CourseHome::getCustomIconPath($courseInfo).$new_image;
                 }
+=======
+	case 'set_visibility':
+        require_once '../global.inc.php';
+        $course_id = api_get_course_int_id();
+        if (api_is_allowed_to_edit(null,true)) {
+            $tool_table = Database::get_course_table(TABLE_TOOL_LIST);
+            $tool_info = api_get_tool_information($_GET["id"]);
+            $tool_visibility   = $tool_info['visibility'];
+            $tool_image        = $tool_info['image'];
+            if (api_get_setting('homepage_view') != 'activity_big') {
+                $new_image        = Display::return_icon(str_replace('.gif','_na.gif',$tool_image), null, null, null, null, true);
+                $tool_image       = Display::return_icon($tool_image, null, null, null, null, true);
+            } else {
+                $tool_image        = $tool_info['image'];
+                $tool_image        = (substr($tool_info['image'], 0, strpos($tool_info['image'], '.'))).'.png';
+                $new_image         = str_replace('.png','_na.png',$tool_image);
+                $new_image         = api_get_path(WEB_IMG_PATH).'icons/64/'.$new_image;
+                $tool_image        = api_get_path(WEB_IMG_PATH).'icons/64/'.$tool_image;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
 
             $requested_image   = ($tool_visibility == 0 ) ? $tool_image : $new_image;
             $requested_clase   = ($tool_visibility == 0 ) ? 'visible' : 'invisible';
             $requested_message = ($tool_visibility == 0 ) ? 'is_active' : 'is_inactive';
+<<<<<<< HEAD
             $requested_view    = ($tool_visibility == 0 ) ? 'visible.gif' : 'invisible.gif';
             $requested_visible = ($tool_visibility == 0 ) ? 1 : 0;
 
@@ -107,6 +128,86 @@ switch ($action) {
      * @todo this functions need to belong to a class or a special wrapper to process the AJAX petitions from the jqgrid
      */
     case 'session_courses_lp_default':
+=======
+            $requested_view    = ($tool_visibility == 0 ) ? 'visible.png' : 'invisible.png';
+            $requested_visible = ($tool_visibility == 0 ) ? 1 : 0;
+
+            $requested_view    = ($tool_visibility == 0 ) ? 'visible.png' : 'invisible.png';
+            $requested_visible = ($tool_visibility == 0 ) ? 1 : 0;
+			//HIDE AND REACTIVATE TOOL
+            if ($_GET["id"] == strval(intval($_GET["id"]))) {
+
+				/* -- session condition for visibility
+				 if (!empty($session_id)) {
+					$sql = "select session_id FROM $tool_table WHERE id='".$_GET["id"]."' AND session_id = '$session_id'";
+					$rs = Database::query($sql);
+					if (Database::num_rows($rs) > 0) {
+			 			$sql="UPDATE $tool_table SET visibility=$requested_visible WHERE id='".$_GET["id"]."' AND session_id = '$session_id'";
+					} else {
+						$sql_select = "select * FROM $tool_table WHERE id='".$_GET["id"]."'";
+						$res_select = Database::query($sql_select);
+						$row_select = Database::fetch_array($res_select);
+						$sql = "INSERT INTO $tool_table(name,link,image,visibility,admin,address,added_tool,target,category,session_id)
+								VALUES('{$row_select['name']}','{$row_select['link']}','{$row_select['image']}','0','{$row_select['admin']}','{$row_select['address']}','{$row_select['added_tool']}','{$row_select['target']}','{$row_select['category']}','$session_id')";
+					}
+				} else $sql="UPDATE $tool_table SET visibility=$requested_visible WHERE id='".$_GET["id"]."'";
+				*/
+
+				$sql="UPDATE $tool_table SET visibility=$requested_visible WHERE c_id = $course_id AND id='".intval($_GET['id'])."'";
+				Database::query($sql);
+			}
+			$response_data = array(
+				'image'   => $requested_image,
+				'tclass'  => $requested_clase,
+				'message' => $requested_message,
+	      		'view'    => $requested_view
+			);
+			echo json_encode($response_data);
+        }
+        break;
+	case 'show_course_information' :
+		$language_file = array('course_description');
+		require_once '../global.inc.php';
+
+		// Get the name of the database course.
+		$tbl_course_description = Database::get_course_table(TABLE_COURSE_DESCRIPTION);
+		$course_info = api_get_course_info($_GET['code']);
+
+		if ($course_info['visibility'] != COURSE_VISIBILITY_OPEN_WORLD) {
+			if (api_is_anonymous()) {
+				exit;
+			}
+		}
+		echo Display::tag('h2', $course_info['name']);
+		echo '<br />';
+
+		$sql = "SELECT * FROM $tbl_course_description
+		        WHERE c_id = ".$course_info['real_id']." AND session_id = 0
+		        ORDER BY id";
+		$result = Database::query($sql);
+		if (Database::num_rows($result) > 0 ) {
+		    while ($description = Database::fetch_object($result)) {
+			    $descriptions[$description->id] = $description;
+		    }
+            // Function that displays the details of the course description in html.
+		    echo CourseManager::get_details_course_description_html(
+                $descriptions,
+                api_get_system_encoding(),
+                false
+            );
+		} else {
+		    echo get_lang('NoDescription');
+		}
+	    break;
+    case 'session_courses_lp_default':
+        /**
+         * @todo this functions need to belong to a class or a special
+         * wrapper to process the AJAX petitions from the jqgrid
+         */
+
+        require_once '../global.inc.php';
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $page  = intval($_REQUEST['page']);     //page
         $limit = intval($_REQUEST['rows']);     // quantity of rows
@@ -131,18 +232,19 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         if(!$sidx) $sidx = 1;
+=======
+        if (!$sidx) {
+            $sidx = 1;
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $start = $limit*$page - $limit;
         $course_list    = SessionManager::get_course_list_by_session_id($session_id);
         $count = 0;
 
         foreach ($course_list as $item) {
-            if (isset($course_id) && !empty($course_id)) {
-                if ($course_id != $item['id']) {
-                    continue;
-                }
-            }
             $list               = new LearnpathList(api_get_user_id(), $item['code'], $session_id);
             $flat_list          = $list->get_flat_list();
             $lps[$item['code']] = $flat_list;
@@ -193,7 +295,11 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         $temp = ArrayClass::msort($temp, $sidx, $sord);
+=======
+        $temp = msort($temp, $sidx, $sord);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $i =0;
         $response = new stdClass();
@@ -222,7 +328,16 @@ switch ($action) {
         $response->records = $count;
         echo json_encode($response);
         break;
+<<<<<<< HEAD
     case 'session_courses_lp_by_week':
+=======
+
+    case 'session_courses_lp_by_week':
+
+        require_once '../global.inc.php';
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $page  = intval($_REQUEST['page']);     //page
         $limit = intval($_REQUEST['rows']);     // quantity of rows
         $sidx  = $_REQUEST['sidx'];    //index to filter
@@ -260,16 +375,27 @@ switch ($action) {
                 }
             }
 
+<<<<<<< HEAD
             $list               = new LearnpathList(api_get_user_id(),$item['code'], $session_id, 'publicated_on DESC');
             $flat_list          = $list->get_flat_list();
             $lps[$item['code']] = $flat_list;
             $item['title'] = Display::url($item['title'],api_get_path(WEB_COURSE_PATH).$item['directory'].'/index.php?id_session='.$session_id,array('target'=>SESSION_LINK_TARGET));
+=======
+            $list = new LearnpathList(api_get_user_id(),$item['code'], $session_id, 'publicated_on DESC');
+            $flat_list = $list->get_flat_list();
+            $lps[$item['code']] = $flat_list;
+            $item['title'] = Display::url($item['title'],api_get_path(WEB_COURSE_PATH).$item['directory'].'/?id_session='.$session_id,array('target'=>SESSION_LINK_TARGET));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             foreach($flat_list as $lp_id => $lp_item) {
                 $temp[$count]['id']= $lp_id;
                 $lp_url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?cidReq='.$item['code'].'&id_session='.$session_id.'&lp_id='.$lp_id.'&action=view';
 
+<<<<<<< HEAD
                 $last_date = Tracking::get_last_connection_date_on_the_course(api_get_user_id(),$item['id'], $session_id, false);
+=======
+                $last_date = Tracking::get_last_connection_date_on_the_course(api_get_user_id(),$item['code'], $session_id, false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 if ($lp_item['modified_on'] == '0000-00-00 00:00:00' || empty($lp_item['modified_on'])) {
                     $lp_date = api_get_local_time($lp_item['created_on']);
                     $image = 'new.gif';
@@ -313,7 +439,11 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         $temp = ArrayClass::msort($temp, $sidx, $sord);
+=======
+        $temp = msort($temp, $sidx, $sord);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $response = new stdClass();
         $i =0;
@@ -333,7 +463,11 @@ switch ($action) {
         } else {
             $total_pages = 0;
         }
+<<<<<<< HEAD
         $response->total    = $total_pages;
+=======
+        $response->total = $total_pages;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if ($page > $total_pages) {
             $response->page = $total_pages;
         } else {
@@ -343,6 +477,12 @@ switch ($action) {
         echo json_encode($response);
         break;
     case 'session_courses_lp_by_course':
+<<<<<<< HEAD
+=======
+        require_once '../global.inc.php';
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $page  = intval($_REQUEST['page']);     //page
         $limit = intval($_REQUEST['rows']);     // quantity of rows
         $sidx  = $_REQUEST['sidx'];    //index to filter
@@ -366,10 +506,18 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         if(!$sidx) $sidx =1;
 
         $start = $limit*$page - $limit;
 
+=======
+        if (!$sidx) {
+            $sidx = 1;
+        }
+
+        $start = $limit*$page - $limit;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $course_list = SessionManager::get_course_list_by_session_id($session_id);
 
         $count = 0;
@@ -381,10 +529,20 @@ switch ($action) {
                 }
             }
 
+<<<<<<< HEAD
             $list               = new LearnpathList(api_get_user_id(),$item['code'],$session_id);
             $flat_list          = $list->get_flat_list();
             $lps[$item['code']] = $flat_list;
             $item['title']      = Display::url($item['title'],api_get_path(WEB_COURSE_PATH).$item['directory'].'/index.php?id_session='.$session_id, array('target'=>SESSION_LINK_TARGET));
+=======
+            $list = new LearnpathList(api_get_user_id(),$item['code'],$session_id);
+            $flat_list = $list->get_flat_list();
+            $lps[$item['code']] = $flat_list;
+            $item['title']      = Display::url(
+                $item['title'],
+                api_get_path(WEB_COURSE_PATH).$item['directory'].'/?id_session='.$session_id, array('target'=>SESSION_LINK_TARGET)
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             foreach($flat_list as $lp_id => $lp_item) {
                 $temp[$count]['id']= $lp_id;
                 $lp_url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?cidReq='.$item['code'].'&id_session='.$session_id.'&lp_id='.$lp_id.'&action=view';
@@ -418,7 +576,15 @@ switch ($action) {
                         continue;
                     }
                 }
+<<<<<<< HEAD
                 $temp[$count]['cell'] = array($date, $item['title'], Display::url($icons.' '.$lp_item['lp_name'], $lp_url, array('target'=>SESSION_LINK_TARGET)));
+=======
+                $temp[$count]['cell'] = array(
+                    $date,
+                    $item['title'],
+                    Display::url($icons.' '.$lp_item['lp_name'], $lp_url, array('target'=>SESSION_LINK_TARGET))
+                );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $temp[$count]['course'] = strip_tags($item['title']);
                 $temp[$count]['lp']     = $lp_item['lp_name'];
                 $temp[$count]['date']   = $lp_item['publicated_on'];
@@ -427,7 +593,11 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         $temp = ArrayClass::msort($temp, $sidx, $sord);
+=======
+        $temp = msort($temp, $sidx, $sord);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $response = new stdClass();
         $i =0;
@@ -442,6 +612,7 @@ switch ($action) {
             }
         }
 
+<<<<<<< HEAD
         if($count > 0 && $limit > 0) {
             $total_pages = ceil($count/$limit);
         } else {
@@ -450,6 +621,16 @@ switch ($action) {
         $response->total    = $total_pages;
         if ($page > $total_pages) {
             $response->page= $total_pages;
+=======
+        if ($count > 0 && $limit > 0) {
+            $total_pages = ceil($count / $limit);
+        } else {
+            $total_pages = 0;
+        }
+        $response->total = $total_pages;
+        if ($page > $total_pages) {
+            $response->page = $total_pages;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         } else {
             $response->page = $page;
         }

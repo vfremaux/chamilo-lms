@@ -3,7 +3,12 @@
 /**
  * Responses to AJAX calls
  */
+<<<<<<< HEAD
 $type = isset($_GET['type']) && in_array($_GET['type'], array('personal', 'course', 'admin')) ? $_GET['type'] : 'personal';
+=======
+
+$type = isset($_REQUEST['type']) && in_array($_REQUEST['type'], array('personal', 'course', 'admin')) ? $_REQUEST['type'] : 'personal';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if ($type == 'personal') {
     $cidReset = true; // fixes #5162
@@ -21,7 +26,11 @@ $user_id = api_get_user_id();
 $is_group_tutor = GroupManager::is_tutor_of_group($user_id, $group_id);
 
 $agenda = new Agenda();
+<<<<<<< HEAD
 $agenda->setType($type); //course,admin or personal
+=======
+$agenda->type = $type;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 switch ($action) {
     case 'add_event':
@@ -29,8 +38,20 @@ switch ($action) {
             break;
         }
         $add_as_announcement = isset($_REQUEST['add_as_annonuncement']) ? $_REQUEST['add_as_annonuncement'] : null;
+<<<<<<< HEAD
         $usersToSend = isset($_REQUEST['users_to_send']) ? $_REQUEST['users_to_send'] : null;
         echo $agenda->add_event($_REQUEST['start'], $_REQUEST['end'], $_REQUEST['all_day'], $_REQUEST['view'], $_REQUEST['title'], $_REQUEST['content'], $usersToSend, $add_as_announcement);
+=======
+        echo $agenda->add_event(
+            $_REQUEST['start'],
+            $_REQUEST['end'],
+            $_REQUEST['all_day'],
+            $_REQUEST['title'],
+            $_REQUEST['content'],
+            $_REQUEST['users_to_send'],
+            $add_as_announcement
+        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         break;
     case 'edit_event':
         if (!api_is_allowed_to_edit(null, true) && $type == 'course') {
@@ -38,7 +59,14 @@ switch ($action) {
         }
         $id_list = explode('_', $_REQUEST['id']);
         $id = $id_list[1];
-        $agenda->edit_event($id, $_REQUEST['start'], $_REQUEST['end'], $_REQUEST['all_day'], $_REQUEST['view'], $_REQUEST['title'], $_REQUEST['content']);
+        $agenda->edit_event(
+            $id,
+            $_REQUEST['start'],
+            $_REQUEST['end'],
+            $_REQUEST['all_day'],
+            $_REQUEST['title'],
+            $_REQUEST['content']
+        );
         break;
     case 'delete_event':
         if (!api_is_allowed_to_edit(null, true) && $type == 'course') {
@@ -46,7 +74,8 @@ switch ($action) {
         }
         $id_list = explode('_', $_REQUEST['id']);
         $id = $id_list[1];
-        $agenda->delete_event($id);
+        $deleteAllEventsFromSerie = isset($_REQUEST['delete_all_events']) ? true : false;
+        $agenda->delete_event($id, $deleteAllEventsFromSerie);
         break;
     case 'resize_event':
         if (!api_is_allowed_to_edit(null, true) && $type == 'course') {
@@ -69,6 +98,7 @@ switch ($action) {
         $agenda->move_event($id, $day_delta, $minute_delta);
         break;
     case 'get_events':
+<<<<<<< HEAD
         $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
         if (substr($user_id, 0, 1) == 'G') {
             $length = strlen($user_id);
@@ -80,6 +110,22 @@ switch ($action) {
             api_get_course_int_id(),
             $group_id ,
             $user_id
+=======
+        $filter = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
+        $result = $agenda->parseAgendaFilter($filter);
+        $groupId = current($result['groups']);
+        $userId = current($result['users']);
+
+        $start = isset($_REQUEST['start']) ? $_REQUEST['start'] : null;
+        $end = isset($_REQUEST['end']) ? $_REQUEST['end'] : null;
+
+        $events = $agenda->get_events(
+            $start,
+            $end,
+            api_get_course_int_id(),
+            $groupId,
+            $userId
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         );
         echo $events;
         break;
@@ -99,16 +145,16 @@ switch ($action) {
                 $my_course_list = array();
             }
             $today = getdate();
-            $year = (!empty($_GET['year']) ? (int) $_GET['year'] : NULL);
-            if ($year == NULL) {
+            $year = (!empty($_GET['year']) ? (int) $_GET['year'] : null);
+            if ($year == null) {
                 $year = $today['year'];
             }
-            $month = (!empty($_GET['month']) ? (int) $_GET['month'] : NULL);
-            if ($month == NULL) {
+            $month = (!empty($_GET['month']) ? (int) $_GET['month'] : null);
+            if ($month == null) {
                 $month = $today['mon'];
             }
-            $day = (!empty($_GET['day']) ? (int) $_GET['day'] : NULL);
-            if ($day == NULL) {
+            $day = (!empty($_GET['day']) ? (int) $_GET['day'] : null);
+            if ($day == null) {
                 $day = $today['mday'];
             }
             $monthName = $MonthsLong[$month - 1];

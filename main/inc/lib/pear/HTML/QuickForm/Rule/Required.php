@@ -24,7 +24,11 @@
 /**
  * Abstract base class for QuickForm validation rules
  */
+<<<<<<< HEAD
 //require_once 'HTML/QuickForm/Rule.php';
+=======
+require_once 'HTML/QuickForm/Rule.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 /**
  * Required elements validation
@@ -47,17 +51,44 @@ class HTML_QuickForm_Rule_Required extends HTML_QuickForm_Rule
      */
     function validate($value, $options = null)
     {
+<<<<<<< HEAD
         if ((string)$value == '') {
             return false;
         }
         return true;
     } // end func validate
+=======
+        // It seems this is a file.
+        if (is_array($value)) {
+            if (isset($value['name']) &&
+                isset($value['type']) &&
+                isset($value['tmp_name']) &&
+                isset($value['size']) &&
+                isset($value['error'])
+            ){
+                if (empty($value['tmp_name'])) {
+                    return false;
+                }
+            }
+        } else {
+            if ((string)$value == '') {
+                return false;
+            }
+        }
+        return true;
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 
     function getValidationScript($options = null)
     {
         return array('', "{jsVar} == ''");
+<<<<<<< HEAD
     } // end func getValidationScript
 
 } // end class HTML_QuickForm_Rule_Required
 ?>
+=======
+    }
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

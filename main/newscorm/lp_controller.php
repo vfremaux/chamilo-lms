@@ -7,8 +7,10 @@
  * @package chamilo.learnpath
  * @author Yannick Warnier <ywarnier@beeznest.org>
  */
-
 use \ChamiloSession as Session;
+
+// Flag to allow for anonymous user - needs to be set before global.inc.php.
+$use_anonymous = true;
 
 $debug = 0;
 if ($debug > 0) error_log('New LP -+- Entered lp_controller.php -+- (action: '.$_REQUEST['action'].')', 0);
@@ -70,9 +72,162 @@ form .label {
     text-shadow:none;
 }
 </style>';
+$ajax_url = api_get_path(WEB_AJAX_PATH).'lp.ajax.php';
+$htmlHeadXtra[] = '
+<script>
+    /*
+    Script to manipuplate Learning Path items with Drag and drop
+     */
+    var newOrderData = "";
+    var lptree_debug = "";  // for debug
+    var lp_id_list = "";    // for debug
 
-// Flag to allow for anonymous user - needs to be set before global.inc.php.
-$use_anonymous = true;
+    // uncomment for some debug display utility
+    /*
+    $(document).ready(function() {
+        buildLPtree_debug($("#lp_item_list"), 0, 0);
+        alert(lp_id_list+"\n\n"+lptree_debug);
+    });
+    */
+
+    function buildLPtree(in_elem, in_parent_id) {
+        var item_tag = in_elem.get(0).tagName;
+        var item_id =  in_elem.attr("id");
+        var parent_id = item_id;
+
+        if (item_tag == "LI" && item_id != undefined) {
+            // in_parent_id de la forme UL_x
+            newOrderData += item_id+"|"+get_UL_integer_id(in_parent_id)+"^";
+        }
+
+        in_elem.children().each(function () {
+            buildLPtree($(this), parent_id);
+        });
+    }
+
+    // same than buildLPtree with some text display for debug in string lptree_debug
+    function buildLPtree_debug(in_elem, in_lvl, in_parent_id) {
+        var item_tag = in_elem.get(0).tagName;
+        var item_id =  in_elem.attr("id");
+        var parent_id = item_id;
+
+        if (item_tag == "LI" && item_id != undefined) {
+            for (i=0; i < 4 * in_lvl; i++) {
+                lptree_debug += " ";
+            }
+            lptree_debug += " Lvl="+(in_lvl - 1)/2+" ("+item_tag+" "+item_id+" Fils de="+in_parent_id+") \n";
+            // in_parent_id de la forme UL_x
+            lp_id_list += item_id+"|"+get_UL_integer_id(in_parent_id)+"^";
+        }
+
+        in_elem.children().each(function () {
+            buildLPtree_debug($(this), in_lvl + 1, parent_id);
+        });
+    }
+
+    // return the interge part of an UL id
+    // (0 for lp_item_list)
+    function get_UL_integer_id(in_ul_id) {
+        in_parent_integer_id = in_ul_id;
+        in_parent_integer_id = in_parent_integer_id.replace("lp_item_list", "0");
+        in_parent_integer_id = in_parent_integer_id.replace("UL_", "");
+        return in_parent_integer_id;
+    }
+
+    $(function() {
+
+        $(".item_data").live("mouseover", function(event) {
+            $(".button_actions", this).show();
+        });
+
+        $(".item_data").live("mouseout", function() {
+            $(".button_actions",this).hide();
+        });
+
+        $(".button_actions").hide();
+
+        $(".lp_resource").sortable({
+            items: ".lp_resource_element ",
+            handle: ".moved", //only the class "moved"
+            cursor: "move",
+            connectWith: "#lp_item_list",
+            placeholder: "ui-state-highlight", //defines the yellow highlight
+
+            start: function(event, ui) {
+                $(ui.item).css("width", "160px");
+                $(ui.item).find(".item_data").attr("style", "");
+            },
+            stop: function(event, ui) {
+                $(ui.item).css("width", "100%");
+            },
+        });
+
+        $("#lp_item_list").sortable({
+            items: "li",
+            handle: ".moved", //only the class "moved"
+            cursor: "move",
+            placeholder: "ui-state-highlight", //defines the yellow highlight
+            update: function(event, ui) {
+                buildLPtree($("#lp_item_list"), 0);
+                var order = "new_order="+ newOrderData + "&a=update_lp_item_order";
+
+                $.post(
+                    "'.$ajax_url.'",
+                    order,
+                    function(reponse){
+                        $("#message").html(reponse);
+                        order = "";
+                        newOrderData = "";
+                    }
+                );
+            },
+
+            receive: function(event, ui) {
+                var id = $(ui.item).attr("data_id");
+                var type = $(ui.item).attr("data_type");
+                var title = $(ui.item).attr("title");
+                processReceive = true;
+
+                if (ui.item.parent()[0]) {
+                    var parent_id = $(ui.item.parent()[0]).attr("id");
+                    var previous_id = $(ui.item.prev()).attr("id");
+
+                    if (parent_id) {
+                        parent_id = parent_id.split("_")[1];
+                        var params = {
+                            "a": "add_lp_item",
+                            "id": id,
+                            "parent_id": parent_id,
+                            "previous_id": previous_id,
+                            "type": type,
+                            "title" : title
+                        };
+                        $.ajax({
+                            type: "GET",
+                            url: "'.$ajax_url.'",
+                            data: params,
+                            async: false,
+                            success: function(data) {
+                                if (data == -1) {
+                                } else {
+                                    $(".normal-message").hide();
+                                    $(ui.item).attr("id", data);
+                                    $(ui.item).addClass("lp_resource_element_new");
+                                    $(ui.item).find(".item_data").attr("style", "");
+                                    $(ui.item).addClass("record li_container");
+                                    $(ui.item).removeClass("lp_resource_element");
+                                    $(ui.item).removeClass("doc_resource");
+                                }
+                            }
+                        });
+                    }
+                }//
+            }//end receive
+        });
+        processReceive = false;
+    });
+</script>
+';
 
 // Include class definitions before session_start() to ensure availability when touching
 // session vars containing learning paths.
@@ -123,7 +278,12 @@ if (isset($_SESSION['lpobject'])) {
     $oLP = unserialize($_SESSION['lpobject']);
     if (isset($oLP) && is_object($oLP)) {
         if ($debug > 0) error_log('New LP - oLP is object', 0);
-        if ($myrefresh == 1 OR empty($oLP->cc) OR $oLP->cc != api_get_course_id() OR $oLP->lp_view_session_id != $session_id OR $oLP->scorm_debug == '1') {
+        if ($myrefresh == 1 OR
+            empty($oLP->cc) OR
+            $oLP->cc != api_get_course_id() OR
+            $oLP->lp_view_session_id != $session_id OR
+            $oLP->scorm_debug == '1'
+        ) {
             if ($debug > 0) error_log('New LP - Course has changed, discard lp object', 0);
             if ($myrefresh == 1) { $myrefresh_id = $oLP->get_id(); }
             $oLP = null;
@@ -167,7 +327,7 @@ if (!$lp_found || (!empty($_REQUEST['lp_id']) && $_SESSION['oLP']->get_id() != $
                         if ($debug > 0) error_log('New LP - found row - type dokeos - Calling constructor with '.api_get_course_id().' - '.$lp_id.' - '.api_get_user_id(), 0);
                         $oLP = new learnpath(api_get_course_id(), $lp_id, api_get_user_id());
                         if ($oLP !== false) { $lp_found = true; } else { error_log($oLP->error, 0); }
-                         break;
+                        break;
                     case 2:
                         if ($debug > 0) error_log('New LP - found row - type scorm - Calling constructor with '.api_get_course_id().' - '.$lp_id.' - '.api_get_user_id(), 0);
                         $oLP = new scorm(api_get_course_id(), $lp_id, api_get_user_id());
@@ -218,11 +378,24 @@ if (isset($_GET['isStudentView']) && $_GET['isStudentView'] == 'true') {
         if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'view' && !isset($_REQUEST['exeId'])) {
             $_REQUEST['action'] = 'build';
         }
+<<<<<<< HEAD
         $_SESSION['studentview'] = "teacherview";
+=======
+        //$_SESSION['studentview'] = null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }
 
 $action = (!empty($_REQUEST['action']) ? $_REQUEST['action'] : '');
+
+// format title to be displayed correctly if QUIZ
+$post_title = "";
+if (isset($_POST['title'])) {
+    $post_title = Security::remove_XSS($_POST['title']);
+    if (isset($_POST['type']) && isset($_POST['title']) && $_POST['type'] == TOOL_QUIZ && !empty($_POST['title'])) {
+        $post_title = Exercise::format_title_variable($_POST['title']);
+    }
+}
 
 switch ($action) {
     case 'add_item':
@@ -238,7 +411,7 @@ switch ($action) {
         } else {
             $_SESSION['refresh'] = 1;
 
-            if (isset($_POST['submit_button']) && !empty($_POST['title'])) {
+            if (isset($_POST['submit_button']) && !empty($post_title)) {
                 // If a title was sumbitted:
 
                 //Updating the lp.modified_on
@@ -248,6 +421,7 @@ switch ($action) {
                     // Check post_time to ensure ??? (counter-hacking measure?)
                     require 'lp_add_item.php';
                 } else {
+
                     $_SESSION['post_time'] = $_POST['post_time'];
                     if ($_POST['type'] == TOOL_DOCUMENT) {
                         if (isset($_POST['path']) && $_GET['edit'] != 'true') {
@@ -255,10 +429,10 @@ switch ($action) {
                         } else {
                             $document_id = $_SESSION['oLP']->create_document($_course);
                         }
-                        $new_item_id = $_SESSION['oLP']->add_item($_POST['parent'], $_POST['previous'], $_POST['type'], $document_id, $_POST['title'], $_POST['description'], $_POST['prerequisites']);
+                        $new_item_id = $_SESSION['oLP']->add_item($_POST['parent'], $_POST['previous'], $_POST['type'], $document_id, $post_title, $_POST['description'], $_POST['prerequisites']);
                     } else {
                         // For all other item types than documents, load the item using the item type and path rather than its ID.
-                        $new_item_id = $_SESSION['oLP']->add_item($_POST['parent'], $_POST['previous'], $_POST['type'], $_POST['path'], $_POST['title'], $_POST['description'], $_POST['prerequisites'], $_POST['maxTimeAllowed']);
+                        $new_item_id = $_SESSION['oLP']->add_item($_POST['parent'], $_POST['previous'], $_POST['type'], $_POST['path'], $post_title, $_POST['description'], $_POST['prerequisites'], $_POST['maxTimeAllowed']);
                     }
                     $url = api_get_self().'?action=add_item&type=step&lp_id='.intval($_SESSION['oLP']->lp_id);
                     header('Location: '.$url);
@@ -285,14 +459,18 @@ switch ($action) {
             if (isset($_REQUEST['id'])) {
                 $lp_item_obj = new learnpathItem($_REQUEST['id']);
 
-                //Remove audio
-                if (isset($_POST['delete_file']) && $_POST['delete_file'] == 1) {
-                     $lp_item_obj->remove_audio();
+                // Remove audio
+                if (isset($_GET['delete_file']) && $_GET['delete_file'] == 1) {
+                    $lp_item_obj->remove_audio();
+
+                    $url = api_get_self().'?action=add_audio&lp_id='.intval($_SESSION['oLP']->lp_id).'&id='.$lp_item_obj->get_id().'&'.api_get_cidreq();
+                    header('Location: '.$url);
+                    exit;
                 }
 
-                //Upload audio
+                // Upload audio
                 if (isset($_FILES['file']) && !empty($_FILES['file'])) {
-                    //Updating the lp.modified_on
+                    // Updating the lp.modified_on
                     $_SESSION['oLP']->set_modified_on();
                     $lp_item_obj->add_audio();
                 }
@@ -385,9 +563,7 @@ switch ($action) {
         } else {
             require 'lp_add.php';
         }
-
         break;
-
     case 'admin_view':
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
@@ -437,7 +613,7 @@ switch ($action) {
         if (!$lp_found) { error_log('New LP - No learnpath given for edit item', 0); require 'lp_list.php'; }
         else {
             $_SESSION['refresh'] = 1;
-            if (isset($_POST['submit_button']) && !empty($_POST['title'])) {
+            if (isset($_POST['submit_button']) && !empty($post_title)) {
 
                 //Updating the lp.modified_on
                 $_SESSION['oLP']->set_modified_on();
@@ -447,7 +623,7 @@ switch ($action) {
                 if (isset($_FILES['mp3'])) {
                     $audio = $_FILES['mp3'];
                 }
-                $_SESSION['oLP']->edit_item($_REQUEST['id'], $_POST['parent'], $_POST['previous'], $_POST['title'], $_POST['description'], $_POST['prerequisites'], $audio, $_POST['maxTimeAllowed']);
+                $_SESSION['oLP']->edit_item($_REQUEST['id'], $_POST['parent'], $_POST['previous'], $post_title, $_POST['description'], $_POST['prerequisites'], $audio, $_POST['maxTimeAllowed'], $_POST['url']);
 
                 if (isset($_POST['content_lp'])) {
                     $_SESSION['oLP']->edit_document($_course);
@@ -488,21 +664,18 @@ switch ($action) {
             }
         }
         break;
-
     case 'move_item':
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
         if ($debug > 0) error_log('New LP - move item action triggered', 0);
-
         if (!$lp_found) { error_log('New LP - No learnpath given for move item', 0); require 'lp_list.php'; }
         else {
             $_SESSION['refresh'] = 1;
             if (isset($_POST['submit_button'])) {
                 //Updating the lp.modified_on
                 $_SESSION['oLP']->set_modified_on();
-
-                $_SESSION['oLP']->edit_item($_GET['id'], $_POST['parent'], $_POST['previous'], $_POST['title'], $_POST['description']);
+                $_SESSION['oLP']->edit_item($_GET['id'], $_POST['parent'], $_POST['previous'], $post_title, $_POST['description']);
                 $is_success = true;
                 $url = api_get_self().'?action=add_item&type=step&lp_id='.intval($_SESSION['oLP']->lp_id);
                 header('Location: '.$url);
@@ -544,7 +717,6 @@ switch ($action) {
         chdir($cwdir);
         require 'lp_list.php';
         break;
-
     case 'copy':
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
@@ -569,7 +741,6 @@ switch ($action) {
         }
         break;
     case 'export_to_pdf':
-
         if (!learnpath::is_lp_visible_for_student($_SESSION['oLP']->lp_id, api_get_user_id())) {
             api_not_allowed();
         }
@@ -591,15 +762,13 @@ switch ($action) {
         if (!$lp_found) { error_log('New LP - No learnpath given for delete', 0); require 'lp_list.php'; }
         else {
             $_SESSION['refresh'] = 1;
-            // Remove lp from homepage if it is there.
-            //$_SESSION['oLP']->toggle_visibility((int)$_GET['lp_id'],'i');
-            $_SESSION['oLP']->delete(null,(int)$_GET['lp_id'],'remove');
+            $_SESSION['oLP']->delete(null, $_GET['lp_id'], 'remove');
             Session::erase('oLP');
             require 'lp_list.php';
         }
         break;
-
-    case 'toggle_visible': // Change lp visibility (inside lp tool).
+    case 'toggle_visible':
+        // Change lp visibility (inside lp tool).
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
@@ -610,20 +779,20 @@ switch ($action) {
             require 'lp_list.php';
         }
         break;
-
-    case 'toggle_publish': // Change lp published status (visibility on homepage).
+    case 'toggle_publish':
+        // Change lp published status (visibility on homepage).
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
         if ($debug > 0) error_log('New LP - publish action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for publish', 0); require 'lp_list.php'; }
         else {
-            learnpath::toggle_publish($_REQUEST['lp_id'],$_REQUEST['new_status']);
+            learnpath::toggle_publish($_REQUEST['lp_id'], $_REQUEST['new_status']);
             require 'lp_list.php';
         }
         break;
-
-    case 'move_lp_up': // Change lp published status (visibility on homepage)
+    case 'move_lp_up':
+        // Change lp published status (visibility on homepage)
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
@@ -636,8 +805,8 @@ switch ($action) {
             require 'lp_list.php';
         }
         break;
-
-    case 'move_lp_down': //change lp published status (visibility on homepage)
+    case 'move_lp_down':
+        // Change lp published status (visibility on homepage)
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
@@ -650,7 +819,6 @@ switch ($action) {
             require 'lp_list.php';
         }
         break;
-
     case 'edit':
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
@@ -704,7 +872,6 @@ switch ($action) {
                 $hide_toc_frame = null;
             }
             $_SESSION['oLP']->set_hide_toc_frame($hide_toc_frame);
-
             $_SESSION['oLP']->set_prerequisite($_REQUEST['prerequisites']);
             $_SESSION['oLP']->set_use_max_score($_REQUEST['use_max_score']);
             $_SESSION['oLP']->set_subscribe_users($_REQUEST['subscribe_users']);
@@ -825,7 +992,6 @@ switch ($action) {
             require 'lp_admin_view.php';
         }
         break;
-
     case 'restart':
         if ($debug > 0) error_log('New LP - restart action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for restart', 0); require 'lp_list.php'; }
@@ -834,7 +1000,6 @@ switch ($action) {
             require 'lp_view.php';
         }
         break;
-
     case 'last':
         if ($debug > 0) error_log('New LP - last action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for last', 0); require 'lp_list.php'; }
@@ -843,7 +1008,6 @@ switch ($action) {
             require 'lp_view.php';
         }
         break;
-
     case 'first':
         if ($debug > 0) error_log('New LP - first action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for first', 0); require 'lp_list.php'; }
@@ -852,7 +1016,6 @@ switch ($action) {
             require 'lp_view.php';
         }
         break;
-
     case 'next':
         if ($debug > 0) error_log('New LP - next action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for next', 0); require 'lp_list.php'; }
@@ -973,7 +1136,6 @@ switch ($action) {
 		$_SESSION['oLP']->switch_attempt_mode();
         require 'lp_list.php';
         break;
-
     case 'switch_scorm_debug':
         if ($debug > 0) error_log('New LP - switch_scorm_debug action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for switch', 0); require 'lp_list.php'; }
@@ -981,12 +1143,10 @@ switch ($action) {
         $_SESSION['oLP']->update_scorm_debug();
         require 'lp_list.php';
         break;
-
     case 'intro_cmdAdd':
         if ($debug > 0) error_log('New LP - intro_cmdAdd action triggered', 0);
         // Add introduction section page.
         break;
-
     case 'js_api_refresh':
         if ($debug > 0) error_log('New LP - js_api_refresh action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for js_api_refresh', 0); require 'lp_message.php'; }

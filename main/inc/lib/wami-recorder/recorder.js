@@ -127,7 +127,7 @@ Wami.setup = function(options) {
 
 		var container = document.createElement('div');
 		container.style.position = 'absolute';
-		_options.cid = Wami.createID();
+        _options.cid = Wami.createID();
 		container.setAttribute('id', _options.cid);
 
 		var swfdiv = document.createElement('div');

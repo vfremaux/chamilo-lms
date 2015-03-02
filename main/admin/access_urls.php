@@ -27,6 +27,13 @@ $interbreadcrumb[] = array ("url" => 'index.php', 'name' => get_lang('PlatformAd
 $tool_name = get_lang('MultipleAccessURLs');
 Display :: display_header($tool_name);
 
+<<<<<<< HEAD
+=======
+require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
+require_once api_get_path(LIBRARY_PATH).'usergroup.lib.php';
+require_once api_get_path(LIBRARY_PATH).'course_category.lib.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $my_user_url_list = api_get_access_url_from_user(api_get_user_id());
 $current_access_url_id = api_get_current_access_url_id();
 $url_list = UrlManager::get_url_data();
@@ -36,6 +43,7 @@ $url_list = UrlManager::get_url_data();
 if (isset ($_GET['action'])) {
     if ($_GET['action'] == 'show_message') {
         Display :: display_normal_message(Security::remove_XSS(stripslashes($_GET['message'])));
+<<<<<<< HEAD
     } else {
         $check = Security::check_token('get');
         if ($check) {
@@ -74,6 +82,46 @@ if (isset ($_GET['action'])) {
                     }
                     break;
             }
+=======
+    }
+
+    $check = Security::check_token('get');
+    if ($check) {
+		$url_id = Database::escape_string($_GET['url_id']);
+
+        switch ($_GET['action']) {
+            case 'delete_url':
+                $result = UrlManager::delete($url_id);
+                if ($result) {
+                    Display :: display_normal_message(get_lang('URLDeleted'));
+                } else {
+                    Display :: display_error_message(get_lang('CannotDeleteURL'));
+                }
+                break;
+            case 'lock':
+                UrlManager::set_url_status('lock', $url_id);
+                Display::display_normal_message(get_lang('URLInactive'));
+                break;
+            case 'unlock':
+                UrlManager::set_url_status('unlock', $url_id);
+                Display::display_normal_message(get_lang('URLActive'));
+                break;
+            case 'register':
+                // we are going to register the admin
+                if (api_is_platform_admin()) {
+                    if ($current_access_url_id!=-1) {
+                        $url_str = '';
+                        foreach ($url_list as $my_url) {
+                            if (!in_array($my_url['id'], $my_user_url_list)) {
+                                UrlManager::add_user_to_url(api_get_user_id(), $my_url['id']);
+                                $url_str.=$my_url['url'].' <br />';
+                            }
+                        }
+                        Display :: display_normal_message(get_lang('AdminUserRegisteredToThisURL').': '.$url_str.'<br />',false);
+                    }
+                }
+                break;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     }
     Security::clear_token();
@@ -83,8 +131,13 @@ $parameters['sec_token'] = Security::get_token();
 // checking if the admin is registered in all sites
 $url_string='';
 $my_user_url_list = api_get_access_url_from_user(api_get_user_id());
+<<<<<<< HEAD
 foreach($url_list as $my_url) {
     if (!in_array($my_url['id'],$my_user_url_list)){
+=======
+foreach ($url_list as $my_url) {
+    if (!in_array($my_url['id'], $my_user_url_list)){
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $url_string.=$my_url['url'].' <br />';
     }
 }
@@ -94,7 +147,11 @@ if(!empty($url_string)) {
 
 // checking the current installation
 if ($current_access_url_id==-1) {
+<<<<<<< HEAD
     Display :: display_warning_message(get_lang('URLNotConfiguredPleaseChangedTo').': '.api_get_path(WEB_PATH));
+=======
+	Display::display_warning_message(get_lang('URLNotConfiguredPleaseChangedTo').': '.api_get_path(WEB_PATH));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } elseif(api_is_platform_admin()) {
     $quant= UrlManager::relation_url_user_exist(api_get_user_id(),$current_access_url_id);
     if ($quant==0) {
@@ -107,12 +164,29 @@ echo '<div class="actions">';
 echo Display::url(Display::return_icon('new_link.png',  get_lang('AddUrl'), array(), ICON_SIZE_MEDIUM),          api_get_path(WEB_CODE_PATH).'admin/access_url_edit.php');
 echo Display::url(Display::return_icon('user.png',      get_lang('ManageUsers'), array(), ICON_SIZE_MEDIUM),     api_get_path(WEB_CODE_PATH).'admin/access_url_edit_users_to_url.php');
 echo Display::url(Display::return_icon('course.png',    get_lang('ManageCourses'), array(), ICON_SIZE_MEDIUM),   api_get_path(WEB_CODE_PATH).'admin/access_url_edit_courses_to_url.php');
-//echo Display::url(Display::return_icon('session.png',   get_lang('ManageSessions'), array(), ICON_SIZE_MEDIUM),          api_get_path(WEB_CODE_PATH).'admin/access_url_edit_sessions_to_url.php');
+//echo Display::url(Display::return_icon('session.png',   get_lang('ManageSessions'), array(), ICON_SIZE_MEDIUM), api_get_path(WEB_CODE_PATH).'admin/access_url_edit_sessions_to_url.php');
+
+$userGroup = new Usergroup();
+if ($userGroup->getUseMultipleUrl()) {
+    echo Display::url(
+        Display::return_icon('class.png', get_lang('ManageUserGroup'), array(), ICON_SIZE_MEDIUM),
+        api_get_path(WEB_CODE_PATH).'admin/access_url_edit_usergroup_to_url.php'
+    );
+}
+
+if (isMultipleUrlSupport()) {
+    echo Display::url(
+        Display::return_icon('folder.png', get_lang('ManageCourseCategories'), array(), ICON_SIZE_MEDIUM),
+        api_get_path(WEB_CODE_PATH).'admin/access_url_edit_course_category_to_url.php'
+    );
+}
+
 echo '</div>';
 
 //$table = new SortableTable('urls', 'url_count_mask', 'get_url_data_mask',2);
 $sortable_data = UrlManager::get_url_data();
 $urls = array();
+<<<<<<< HEAD
 $types = array(1=>'AccessURL',2=>'SincroServer',3=>'SincroClient');
 foreach($sortable_data as $row)  {
     //title
@@ -134,6 +208,13 @@ foreach($sortable_data as $row)  {
         $tech .= (empty($row['up_speed'])?'-':$row['up_speed']).'/';
         $tech .= (empty($row['delay'])?'-':$row['delay']);
     }
+=======
+foreach ($sortable_data as $row)  {
+    //title
+    $url = Display::url($row['url'], $row['url'], array('target'=>'_blank'));
+    $description = $row['description'];
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     //Status
     $active = $row['active'];
     if ($active=='1') {
@@ -148,6 +229,7 @@ foreach($sortable_data as $row)  {
     if ($row['id']=='1') {
         $status = Display::return_icon($image.'.gif', get_lang(ucfirst($action)));
     } else {
+<<<<<<< HEAD
         $status = '<a href="access_urls.php?action='.$action.'&amp;url_id='.$row['id'].'&amp;sec_token='.Security::getCurrentToken().'">'.Display::return_icon($image.'.gif', get_lang(ucfirst($action))).'</a>';
     }
     //Actions
@@ -157,6 +239,17 @@ foreach($sortable_data as $row)  {
         $actions .= '<a href="access_urls.php?action=delete_url&amp;url_id='.$url_id.'&amp;sec_token='.Security::getCurrentToken().'" onclick="javascript:if(!confirm('."'".addslashes(get_lang("ConfirmYourChoice"))."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL).'</a>';
     }
     $urls[] = array($url, $name, $type, $tech, $contact, $status, $actions);
+=======
+        $status = '<a href="access_urls.php?action='.$action.'&amp;url_id='.$row['id'].'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon($image.'.gif', get_lang(ucfirst($action))).'</a>';
+    }
+    // Actions
+    $url_id = $row['id'];
+    $actions = Display::url(Display::return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL), "access_url_edit.php?url_id=$url_id");
+    if ($url_id != '1') {
+        $actions .= '<a href="access_urls.php?action=delete_url&amp;url_id='.$url_id.'&amp;sec_token='.$_SESSION['sec_token'].'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES,$charset))."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL).'</a>';
+    }
+    $urls[] = array($url, $description, $status, $actions);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $table = new SortableTableFromArrayConfig($urls, 2, 50, 'urls');
@@ -172,5 +265,9 @@ $table->set_header(5, get_lang('Active'));
 $table->set_header(6, get_lang('Modify'), false);
 $table->display();
 
+<<<<<<< HEAD
 /*        FOOTER    */
 Display :: display_footer();
+=======
+Display :: display_footer();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

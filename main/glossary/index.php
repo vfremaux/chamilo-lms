@@ -101,7 +101,7 @@ if (api_is_allowed_to_edit(null, true)) {
     switch ($action) {
         case 'addglossary':
             $form = new FormValidator('glossary','post', api_get_self().'?action='.Security::remove_XSS($_GET['action']));
-            // settting the form elements
+            // Setting the form elements
             $form->addElement('header', '', get_lang('TermAddNew'));
             $form->addElement('text', 'glossary_title', get_lang('TermName'), array('size'=>'80', 'id'=>'glossary_title'));
             //$form->applyFilter('glossary_title', 'html_filter');
@@ -129,7 +129,7 @@ if (api_is_allowed_to_edit(null, true)) {
             if (is_numeric($_GET['glossary_id'])) {
                 // initiate the object
                 $form = new FormValidator('glossary','post', api_get_self().'?action='.Security::remove_XSS($_GET['action']).'&glossary_id='.Security::remove_XSS($_GET['glossary_id']));
-                // settting the form elements
+                // Setting the form elements
                 $form->addElement('header', '', get_lang('TermEdit'));
                 $form->addElement('hidden', 'glossary_id');
                 $form->addElement('text', 'glossary_title', get_lang('TermName'),array('size'=>'80'));

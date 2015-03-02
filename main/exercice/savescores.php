@@ -1,5 +1,4 @@
 <?php
-
 /* For licensing terms, see /license.txt */
 /**
  *     Saving the scores.
@@ -24,21 +23,40 @@ if (isset($_GET['origin']) && $_GET['origin'] == 'learnpath') {
 
 require_once '../inc/global.inc.php';
 $this_section = SECTION_COURSES;
+<<<<<<< HEAD
 
 $_cid = api_get_course_id();
 $test = $_REQUEST['test'];
 $score = $_REQUEST['score'];
 $origin = $_REQUEST['origin'];
 
+=======
+require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $documentPath = api_get_path(SYS_COURSE_PATH).$_course['path']."/document";
+
+$test = $_REQUEST['test'];
 $full_file_path = $documentPath.$test;
 
 FileManager::my_delete($full_file_path.$_user['user_id'].".t.html");
 
+<<<<<<< HEAD
 $TABLETRACK_HOTPOTATOES = Database::get_main_table(TABLE_STATISTIC_TRACK_E_HOTPOTATOES);
 $tbl_learnpath_user = Database::get_course_table(TABLE_LEARNPATH_USER);
 $TABLE_LP_ITEM_VIEW = Database::get_course_table(TABLE_LP_ITEM_VIEW);
 
+=======
+$TABLETRACK_HOTPOTATOES = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_HOTPOTATOES);
+$TABLE_LP_ITEM_VIEW = Database::get_course_table(TABLE_LP_ITEM_VIEW);
+
+$_cid = api_get_course_id();
+
+$score = $_REQUEST['score'];
+$origin = $_REQUEST['origin'];
+$learnpath_item_id = intval($_REQUEST['learnpath_item_id']);
+$course_info = api_get_course_info();
+$course_id = $course_info['real_id'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $jscript2run = '';
 
 /**
@@ -52,7 +70,12 @@ $jscript2run = '';
  */
 function save_scores($file, $score)
 {
+<<<<<<< HEAD
     global $origin, $_user, $TABLETRACK_HOTPOTATOES;
+=======
+    global $origin, $_user, $_cid, $TABLETRACK_HOTPOTATOES;
+    // if tracking is disabled record nothing
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $weighting = 100; // 100%
     $date = api_get_utc_datetime();
 
@@ -100,6 +123,9 @@ if ($origin != 'learnpath') {
 } else {
     $htmlHeadXtra[] = $jscript2run;
     Display::display_reduced_header();
+    $update_sql = "UPDATE $TABLE_LP_ITEM_VIEW SET status = 'completed'
+                   WHERE c_id = $course_id AND lp_item_id= $learnpath_item_id";
+    Database::query($update_sql);
     Display::display_confirmation_message(get_lang('HotPotatoesFinished'));
     Display::display_footer();
 }

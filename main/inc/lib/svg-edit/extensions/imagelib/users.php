@@ -11,8 +11,12 @@ require_once '../../../../../inc/global.inc.php';
 api_protect_course_script();
 api_block_anonymous_users();
 
-$user_disk_path = api_get_path(SYS_PATH).'main/upload/users/'.api_get_user_id().'/my_files/';
-$user_web_path  = api_get_path(WEB_PATH).'main/upload/users/'.api_get_user_id().'/my_files/';
+$my_path = UserManager::get_user_picture_path_by_id(api_get_user_id(), 'system');
+$user_disk_path = $my_path['dir'].'my_files/';
+
+$my_path = UserManager::get_user_picture_path_by_id(api_get_user_id(),'web');
+$user_web_path = $my_path['dir'].'my_files/';
+
 //get all files and folders
 $scan_files = scandir($user_disk_path);
 
@@ -48,13 +52,16 @@ if (!empty($png_svg_files)) {
 	echo '<h3>'.get_lang('SelectSVGEditImage').'</h3>';
 	echo '<ul>';
 	foreach($png_svg_files as $filename) {
+<<<<<<< HEAD
 		$image=$user_disk_path.$filename;
+=======
+		$image = $user_disk_path.$filename;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 		if (strpos($filename, "svg")){
 			$new_sizes['width'] = 60;
 			$new_sizes['height'] = 60;
-		}
-		else {
+		} else {
 			$new_sizes = api_resize_image($image, 60, 60);
 		}
 

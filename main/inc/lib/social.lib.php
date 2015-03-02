@@ -27,9 +27,15 @@ class SocialManager extends UserManager
      * @author isaac flores paz
      * @return array
      */
+<<<<<<< HEAD
     public static function show_list_type_friends () {
         $friend_relation_list=array();
         $count_list=0;
+=======
+    public static function show_list_type_friends()
+    {
+        $friend_relation_list = array();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $tbl_my_friend_relation_type = Database :: get_main_table(TABLE_MAIN_USER_FRIEND_RELATION_TYPE);
         $sql='SELECT id,title FROM '.$tbl_my_friend_relation_type.' WHERE id<>6 ORDER BY id ASC';
         $result=Database::query($sql);
@@ -69,11 +75,26 @@ class SocialManager extends UserManager
     public static function get_relation_between_contacts ($user_id,$user_friend) {
         $tbl_my_friend_relation_type = Database :: get_main_table(TABLE_MAIN_USER_FRIEND_RELATION_TYPE);
         $tbl_my_friend = Database :: get_main_table(TABLE_MAIN_USER_REL_USER);
+<<<<<<< HEAD
         $sql= 'SELECT rt.id as id FROM '.$tbl_my_friend_relation_type.' rt ' .
               'WHERE rt.id=(SELECT uf.relation_type FROM '.$tbl_my_friend.' uf WHERE  user_id='.((int)$user_id).' AND friend_user_id='.((int)$user_friend).' AND uf.relation_type <> '.USER_RELATION_TYPE_RRHH.' )';
         $res=Database::query($sql);
         if (Database::num_rows($res)>0) {
             $row = Database::fetch_array($res,'ASSOC');
+=======
+        $sql = 'SELECT rt.id as id FROM '.$tbl_my_friend_relation_type.' rt
+                WHERE rt.id = (
+                    SELECT uf.relation_type FROM '.$tbl_my_friend.' uf
+                    WHERE
+                        user_id='.((int) $user_id).' AND
+                        friend_user_id='.((int) $user_friend).' AND
+                        uf.relation_type <> '.USER_RELATION_TYPE_RRHH.'
+                    LIMIT 1
+                )';
+        $res = Database::query($sql);
+        if (Database::num_rows($res) > 0) {
+            $row = Database::fetch_array($res, 'ASSOC');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             return $row['id'];
         } else {
             return USER_UNKNOW;
@@ -237,7 +258,12 @@ class SocialManager extends UserManager
     {
         $list_friend_invitation=array();
         $tbl_message = Database::get_main_table(TABLE_MAIN_MESSAGE);
+<<<<<<< HEAD
         $sql = 'SELECT user_sender_id,send_date,title,content FROM '.$tbl_message.'
+=======
+        $sql = 'SELECT user_sender_id,send_date,title,content
+                FROM '.$tbl_message.'
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 WHERE user_receiver_id='.intval($user_id).' AND msg_status = '.MESSAGE_STATUS_INVITATION_PENDING;
         $res = Database::query($sql);
         while ($row = Database::fetch_array($res,'ASSOC')) {
@@ -252,6 +278,7 @@ class SocialManager extends UserManager
      * @param int user id
      * @return array()
      */
+<<<<<<< HEAD
 
     public static function get_list_invitation_sent_by_user_id ($user_id) {
         $list_friend_invitation=array();
@@ -260,20 +287,44 @@ class SocialManager extends UserManager
         $res=Database::query($sql);
         while ($row=Database::fetch_array($res,'ASSOC')) {
             $list_friend_invitation[$row['user_receiver_id']]=$row;
+=======
+    public static function get_list_invitation_sent_by_user_id($user_id)
+    {
+        $list_friend_invitation = array();
+        $tbl_message = Database::get_main_table(TABLE_MAIN_MESSAGE);
+        $sql = 'SELECT user_receiver_id, send_date,title,content
+                FROM '.$tbl_message.'
+                WHERE user_sender_id = '.intval($user_id).' AND msg_status = '.MESSAGE_STATUS_INVITATION_PENDING;
+        $res = Database::query($sql);
+        while ($row = Database::fetch_array($res, 'ASSOC')) {
+            $list_friend_invitation[$row['user_receiver_id']] = $row;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         return $list_friend_invitation;
     }
 
     /**
      * Accepts invitation
-     * @param int user sender id
-     * @param int user receiver id
+     * @param int $user_send_id
+     * @param int $user_receiver_id
      * @author isaac flores paz
      * @author Julio Montoya <gugli100@gmail.com> Cleaning code
      */
+<<<<<<< HEAD
     public static function invitation_accepted ($user_send_id,$user_receiver_id) {
         $tbl_message=Database::get_main_table(TABLE_MAIN_MESSAGE);
         $sql='UPDATE '.$tbl_message.' SET msg_status='.MESSAGE_STATUS_INVITATION_ACCEPTED.' WHERE user_sender_id='.((int)$user_send_id).' AND user_receiver_id='.((int)$user_receiver_id).';';
+=======
+    public static function invitation_accepted($user_send_id, $user_receiver_id)
+    {
+        $tbl_message = Database::get_main_table(TABLE_MAIN_MESSAGE);
+        $sql = "UPDATE $tbl_message
+                SET msg_status = ".MESSAGE_STATUS_INVITATION_ACCEPTED."
+                WHERE
+                    user_sender_id = ".((int) $user_send_id)." AND
+                    user_receiver_id=".((int) $user_receiver_id)." AND
+                    msg_status = ".MESSAGE_STATUS_INVITATION_PENDING;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         Database::query($sql);
     }
     /**
@@ -283,11 +334,22 @@ class SocialManager extends UserManager
      * @author isaac flores paz
      * @author Julio Montoya <gugli100@gmail.com> Cleaning code
      */
+<<<<<<< HEAD
     public static function invitation_denied ($user_send_id,$user_receiver_id) {
         $tbl_message=Database::get_main_table(TABLE_MAIN_MESSAGE);
         //$msg_status=7;
         //$sql='UPDATE '.$tbl_message.' SET msg_status='.$msg_status.' WHERE user_sender_id='.((int)$user_send_id).' AND user_receiver_id='.((int)$user_receiver_id).';';
         $sql='DELETE FROM '.$tbl_message.' WHERE user_sender_id='.((int)$user_send_id).' AND user_receiver_id='.((int)$user_receiver_id).';';
+=======
+    public static function invitation_denied($user_send_id, $user_receiver_id)
+    {
+        $tbl_message = Database::get_main_table(TABLE_MAIN_MESSAGE);
+        $sql = 'DELETE FROM '.$tbl_message.'
+                WHERE
+                    user_sender_id =  '.((int) $user_send_id).' AND
+                    user_receiver_id='.((int) $user_receiver_id).' AND
+                    msg_status = '.MESSAGE_STATUS_INVITATION_PENDING;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         Database::query($sql);
     }
     /**
@@ -297,10 +359,19 @@ class SocialManager extends UserManager
      * @param int kind of rating
      * @return void()
      */
+<<<<<<< HEAD
     public static function qualify_friend ($id_friend_qualify,$type_qualify) {
         $tbl_user_friend=Database::get_main_table(TABLE_MAIN_USER_REL_USER);
         $user_id=api_get_user_id();
         $sql='UPDATE '.$tbl_user_friend.' SET relation_type='.((int)$type_qualify).' WHERE user_id='.((int)$user_id).' AND friend_user_id='.((int)$id_friend_qualify).';';
+=======
+    public static function qualify_friend($id_friend_qualify, $type_qualify)
+    {
+        $tbl_user_friend = Database::get_main_table(TABLE_MAIN_USER_REL_USER);
+        $user_id = api_get_user_id();
+        $sql = 'UPDATE '.$tbl_user_friend.' SET relation_type='.((int) $type_qualify).'
+                WHERE user_id = '.((int) $user_id).' AND friend_user_id='.(int) $id_friend_qualify;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         Database::query($sql);
     }
     /**
@@ -383,7 +454,7 @@ class SocialManager extends UserManager
                         break;
                     }
                     $res .= '<h3><a href="'.$item['link'].'">'.$item['title'].'</a></h3>';
-                    $res .= '<div class="social-rss-item-date">'.api_get_datetime($item['date_timestamp']).'</div>';
+                    $res .= '<div class="social-rss-item-date">'.api_get_local_time($item['date_timestamp']).'</div>';
                     $res .= '<div class="social-rss-item-content">'.$item['description'].'</div><br />';
                     $i++;
                 }
@@ -477,8 +548,15 @@ class SocialManager extends UserManager
             $html .= '<div class="social-content-image">';
             $html .= '<div class="well social-background-content">';
             $html .= Display::url('<img src='.$big['file'].' class="social-groups-image" /> </a><br /><br />', api_get_path(WEB_PATH).'main/social/groups.php?id='.$group_id);
+<<<<<<< HEAD
             if ($usergroup->is_group_admin($group_id, api_get_user_id())) {
                 $html .= '<div id="edit_image" class="hidden_message" style="display:none"><a href="'.api_get_path(WEB_PATH).'main/social/group_edit.php?id='.$group_id.'">'.get_lang('EditGroup').'</a></div>';
+=======
+            if (GroupPortalManager::is_group_admin($group_id, api_get_user_id())) {
+                $html .= '<div id="edit_image" class="hidden_message" style="display:none">
+                            <a href="'.api_get_path(WEB_PATH).'main/social/group_edit.php?id='.$group_id.'">'.
+                    get_lang('EditGroup').'</a></div>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             $html .= '</div>';
             $html .= '</div>';
@@ -506,6 +584,7 @@ class SocialManager extends UserManager
         if (!in_array($show, array('shared_profile', 'groups', 'group_edit', 'member_list','waiting_list','invite_friends'))) {
 
             $html .= '<div class="well sidebar-nav"><ul class="nav nav-list">';
+<<<<<<< HEAD
 
             $active = $show=='home' ? 'active' : null;
             $html .= '<li class="'.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('home.png',get_lang('Home'),array()).get_lang('Home').'</a></li>';
@@ -532,6 +611,32 @@ class SocialManager extends UserManager
             //Search users
             $active = $show=='search' ? 'active' : null;
             $html .= '<li class="'.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search'), array()).get_lang('Search').'</a></li>';
+=======
+            $active = $show == 'home' ? 'active' : null;
+            $html .= '<li class="home-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.get_lang('Home').'</a></li>';
+            $active = $show == 'messages' ? 'active' : null;
+            $html .= '<li class="messages-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.get_lang('Messages').$count_unread_message.'</a></li>';
+
+            //Invitations
+            $active = $show == 'invitations' ? 'active' : null;
+            $html .= '<li class="invitations-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.get_lang('Invitations').$total_invitations.'</a></li>';
+
+            //Shared profile and groups
+            $active = $show == 'shared_profile' ? 'active' : null;
+            $html .= '<li class="shared-profile-icon'.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.get_lang('ViewMySharedProfile').'</a></li>';
+            $active = $show == 'friends' ? 'active' : null;
+            $html .= '<li class="friends-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.get_lang('Friends').'</a></li>';
+            $active = $show == 'browse_groups' ? 'active' : null;
+            $html .= '<li class="browse-groups-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.get_lang('SocialGroups').'</a></li>';
+
+            //Search users
+            $active = $show == 'search' ? 'active' : null;
+            $html .= '<li class="search-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.get_lang('Search').'</a></li>';
+
+            //My files
+            $active = $show == 'myfiles' ? 'active' : null;
+            $html .= '<li class="myfiles-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/myfiles.php">'.get_lang('MyFiles').'</span></a></li>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $html .='</ul>
                   </div>';
         }
@@ -547,6 +652,7 @@ class SocialManager extends UserManager
 
               // My own profile
             if ($show_full_profile && $user_id == intval(api_get_user_id())) {
+<<<<<<< HEAD
                 $html .= '<li><a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.Display::return_icon('home.png',get_lang('Home'),array()).get_lang('Home').'</a></li>';
 
                 if (api_get_setting('allow_message_tool') == 'true') {
@@ -560,6 +666,20 @@ class SocialManager extends UserManager
                           <li><a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group_s.png', get_lang('SocialGroups'),array()).get_lang('SocialGroups').'</a></li>';
                 $active = $show=='search' ? 'active' : null;
                 $html .= '<li class="'.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search'),array()).get_lang('Search').'</a></li>';
+=======
+                $html .= '<li class="home-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/home.php">'.get_lang('Home').'</a></li>
+                          <li class="messages-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/messages/inbox.php?f=social">'.get_lang('Messages').$count_unread_message.'</a></li>';
+                $active = $show == 'invitations' ? 'active' : null;
+                $html .= '<li class="invitations-icon'.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/invitations.php">'.get_lang('Invitations').$total_invitations.'</a></li>';
+
+                $html .= '<li class="shared-profile-icon active"><a href="'.api_get_path(WEB_PATH).'main/social/profile.php">'.get_lang('ViewMySharedProfile').'</a></li>
+                          <li class="friends-icon"><a href="'.api_get_path(WEB_PATH).'main/social/friends.php">'.get_lang('Friends').'</a></li>
+                          <li class="browse-groups-icon"><a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.get_lang('SocialGroups').'</a></li>';
+                $active = $show == 'search' ? 'active' : null;
+                $html .= '<li class="search-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.get_lang('Search').'</a></li>';
+                $active = $show == 'myfiles' ? 'active' : null;
+                $html .= '<li class="myfiles-icon '.$active.'"><a href="'.api_get_path(WEB_PATH).'main/social/myfiles.php">'.get_lang('MyFiles').'</a></li>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
 
             // My friend profile
@@ -669,8 +789,12 @@ class SocialManager extends UserManager
 
     /**
      * Displays a sortable table with the list of online users.
-     * @param array $user_list
+     * @param array $user_list The list of users to be shown
+     * @param bool $wrap Whether we want the function to wrap the spans list in a div or not
+     * @return string HTML block or null if and ID was defined
+     * @assert (null) === false
      */
+<<<<<<< HEAD
     public static function display_user_list($user_list) {
         if (!isset($_GET['id'])) {
 
@@ -690,7 +814,29 @@ class SocialManager extends UserManager
                 $extra_params['cidReq'] = Security::remove_XSS($_GET['cidReq']);
                 $course_url = '&amp;cidReq='.Security::remove_XSS($_GET['cidReq']);
             }
+=======
+    public static function display_user_list($user_list, $wrap = true)
+    {
+        $html = null;
+        if (isset($_GET['id']) or count($user_list) < 1) {
+            return false;
+        }
+        $column_size = '9';
+        $add_row = false;
+        if (api_is_anonymous()) {
+            $column_size = '12';
+            $add_row = true;
+        }
 
+        $extra_params = array();
+        $course_url = '';
+        if (isset($_GET['cidReq']) && strlen($_GET['cidReq']) > 0) {
+            $extra_params['cidReq'] = Security::remove_XSS($_GET['cidReq']);
+            $course_url = '&amp;cidReq='.Security::remove_XSS($_GET['cidReq']);
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+
+        if ($wrap) {
             if ($add_row) {
                 $html .='<div class="row">';
             }
@@ -698,6 +844,7 @@ class SocialManager extends UserManager
             $html .= '<div class="span'.$column_size.'">';
 
             $html .= '<ul id="online_grid_container" class="thumbnails">';
+<<<<<<< HEAD
             foreach ($user_list as $uid) {
                 $user_info = api_get_user_info($uid);
                 //Anonymous users can't have access to the profile
@@ -707,16 +854,30 @@ class SocialManager extends UserManager
                     } else {
                         $url = '?id='.$uid.$course_url;
                     }
+=======
+        }
+
+        foreach ($user_list as $uid) {
+            $user_info = api_get_user_info($uid);
+            //Anonymous users can't have access to the profile
+            if (!api_is_anonymous()) {
+                if (api_get_setting('allow_social_tool') == 'true') {
+                    $url = api_get_path(WEB_PATH).'main/social/profile.php?u='.$uid.$course_url;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 } else {
-                    $url = '#';
+                    $url = '?id='.$uid.$course_url;
                 }
-                $image_array = UserManager::get_user_picture_path_by_id($uid, 'system', false, true);
+            } else {
+                $url = '#';
+            }
+            $image_array = UserManager::get_user_picture_path_by_id($uid, 'system', false, true);
 
-                // reduce image
-                $name = $user_info['complete_name'];
-                $status_icon = Display::span('', array('class' => 'online_user_in_text'));
-                $user_status = $user_info['status'] == 1 ? Display::span('', array('class' => 'teacher_online')) : Display::span('', array('class' => 'student_online'));
+            // reduce image
+            $name = $user_info['complete_name'];
+            $status_icon = Display::span('', array('class' => 'online_user_in_text'));
+            $user_status = $user_info['status'] == 1 ? Display::span('', array('class' => 'teacher_online')) : Display::span('', array('class' => 'student_online'));
 
+<<<<<<< HEAD
                 if ($image_array['file'] == 'unknown.jpg' || !file_exists($image_array['dir'].$image_array['file'])) {
                     $friends_profile['file'] = api_get_path(WEB_IMG_PATH).'unknown_180_100.jpg';
                     $img = '<img title = "'.$name.'" alt="'.$name.'" src="'.$friends_profile['file'].'">';
@@ -726,16 +887,28 @@ class SocialManager extends UserManager
                 }
                 $name = '<a href="'.$url.'">'.$status_icon.$user_status.$name.'</a><br>';
                 $html .= '<li class="span'.($column_size/3).'"><div class="thumbnail">'.$img.'<div class="caption">'.$name.'</div</div></li>';
+=======
+            if ($image_array['file'] == 'unknown.jpg' || !file_exists($image_array['dir'].$image_array['file'])) {
+                $friends_profile['file'] = api_get_path(WEB_CODE_PATH).'img/unknown_180_100.jpg';
+                $img = '<img title = "'.$name.'" alt="'.$name.'" src="'.$friends_profile['file'].'">';
+            } else {
+                $friends_profile = UserManager::get_picture_user($uid, $image_array['file'], 80, USER_IMAGE_SIZE_ORIGINAL);
+                $img = '<img title = "'.$name.'" alt="'.$name.'" src="'.$friends_profile['file'].'">';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
-            $counter = $_SESSION['who_is_online_counter'];
+            $name = '<a href="'.$url.'">'.$status_icon.$user_status.$name.'</a><br>';
+            $html .= '<li class="span'.($column_size / 3).'"><div class="thumbnail">'.$img.'<div class="caption">'.$name.'</div</div></li>';
+        }
+        $counter = $_SESSION['who_is_online_counter'];
 
+        if ($wrap) {
             $html .= '</ul></div>';
-            if (count($user_list) >= 9) {
-                $html .= '<div class="span'.$column_size.'"><a class="btn btn-large" id="link_load_more_items" data_link="'.$counter.'" >'.get_lang('More').'</a></div>';
-            }
-            if ($add_row) {
-                $html .= '</div>';
-            }
+        }
+        if (count($user_list) >= 9) {
+            $html .= '<div class="span'.$column_size.'"><a class="btn btn-large" id="link_load_more_items" data_link="'.$counter.'" >'.get_lang('More').'</a></div>';
+        }
+        if ($wrap && $add_row) {
+            $html .= '</div>';
         }
         return $html;
     }
@@ -843,12 +1016,13 @@ class SocialManager extends UserManager
      */
     public static function display_productions($user_id, $returnContent = false) {
         $sysdir_array = UserManager::get_user_picture_path_by_id($user_id, 'system', true);
-        $sysdir = $sysdir_array['dir'].$user_id.'/';
+        $sysdir = $sysdir_array['dir'];
         $webdir_array = UserManager::get_user_picture_path_by_id($user_id, 'web', true);
-        $webdir = $webdir_array['dir'].$user_id.'/';
+        $webdir = $webdir_array['dir'];
         if (!is_dir($sysdir)) {
             mkdir($sysdir, api_get_permissions_for_new_directories(), true);
         }
+<<<<<<< HEAD
         /*
         $handle = opendir($sysdir);
         $productions = array();
@@ -864,6 +1038,9 @@ class SocialManager extends UserManager
         }
         */
         $content = null;
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $productions = UserManager::get_user_productions($user_id);
 
         if (count($productions) > 0) {

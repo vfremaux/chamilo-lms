@@ -23,6 +23,15 @@ $this_section = SECTION_COURSES;
 
 $nameTools = get_lang('ModifInfo');
 
+<<<<<<< HEAD
+=======
+/*	Libraries */
+require_once api_get_path(INCLUDE_PATH).'conf/course_info.conf.php';
+require_once api_get_path(LIBRARY_PATH).'pdf.lib.php';
+require_once api_get_path(LIBRARY_PATH).'fileDisplay.lib.php';
+require_once api_get_path(LIBRARY_PATH).'course_category.lib.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 api_protect_course_script(true);
 api_block_anonymous_users();
 
@@ -47,7 +56,7 @@ function is_settings_editable() {
 
 /* MAIN CODE */
 if (!$is_allowedToEdit) {
-	api_not_allowed(true);
+    api_not_allowed(true);
 }
 
 $show_delete_watermark_text_message = false;
@@ -57,33 +66,46 @@ if (api_get_setting('pdf_export_watermark_by_course') == 'true') {
         $show_delete_watermark_text_message = true;
     }
 }
-$table_course_category = Database :: get_main_table(TABLE_MAIN_CATEGORY);
 $tbl_user              = Database :: get_main_table(TABLE_MAIN_USER);
 $tbl_admin             = Database :: get_main_table(TABLE_MAIN_ADMIN);
 $tbl_course_user       = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
 $tbl_course            = Database :: get_main_table(TABLE_MAIN_COURSE);
 
+<<<<<<< HEAD
 // Get all course categories
 $sql = "SELECT code,name FROM ".$table_course_category."
         WHERE auth_course_child ='TRUE'  OR code = '".Database::escape_string($_course['categoryCode'])."'
         ORDER BY tree_pos";
 $res = Database::query($sql);
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $s_select_course_tutor_name = "SELECT tutor_name FROM $tbl_course WHERE code='$course_code'";
 $q_tutor = Database::query($s_select_course_tutor_name);
 $s_tutor = Database::result($q_tutor, 0, 'tutor_name');
 
 $target_name = api_sort_by_first_name() ? 'firstname' : 'lastname';
+<<<<<<< HEAD
 $s_sql_course_titular = "
     SELECT DISTINCT username, lastname, firstname
     FROM $tbl_user as user, $tbl_course_user as course_rel_user
     WHERE (course_rel_user.status='1') AND user.user_id=course_rel_user.user_id AND c_id ='".$courseId."'
+=======
+$s_sql_course_titular = "SELECT DISTINCT username, lastname, firstname
+    FROM $tbl_user as user, $tbl_course_user as course_rel_user
+    WHERE (course_rel_user.status='1') AND user.user_id=course_rel_user.user_id AND course_code='".$course_code."'
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     ORDER BY ".$target_name." ASC";
 $q_result_titulars = Database::query($s_sql_course_titular);
 
 if (Database::num_rows($q_result_titulars) == 0) {
+<<<<<<< HEAD
 	$sql = "SELECT username, lastname, firstname FROM $tbl_user as user, $tbl_admin as admin
 	        WHERE admin.user_id=user.user_id ORDER BY ".$target_name." ASC";
+=======
+    $sql = "SELECT username, lastname, firstname FROM $tbl_user as user, $tbl_admin as admin
+            WHERE admin.user_id=user.user_id ORDER BY ".$target_name." ASC";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	$q_result_titulars = Database::query($sql);
 }
 
@@ -103,11 +125,7 @@ while ($a_titulars = Database::fetch_array($q_result_titulars)) {
     $a_profs[api_get_person_name($s_firstname, $s_lastname)] = api_get_person_name($s_lastname, $s_firstname).' ('.$s_username.')';
 }
 
-$categories[''] = '-';
-while ($cat = Database::fetch_array($res)) {
-    $categories[$cat['code']] = '('.$cat['code'].') '.$cat['name'];
-    ksort($categories);
-}
+$categories = getCategoriesCanBeAddedInCourse($_course['categoryCode']);
 
 $linebreak = '<div class="row"><div class="label"></div><div class="formw" style="border-bottom:1px dashed grey"></div></div>';
 
@@ -132,7 +150,7 @@ if ($form->validate() && is_settings_editable()) {
 $course_path = api_get_path(SYS_COURSE_PATH).$currentCourseRepository;   // course path
 if (file_exists($course_path.'/course-pic85x85.png')) {
     $course_web_path = api_get_path(WEB_COURSE_PATH).$currentCourseRepository;   // course web path
-    $course_medium_image = $course_web_path.'/course-pic85x85.png?'.rand(1,1000); // redimensioned image 85x85
+    $course_medium_image = $course_web_path.'/course-pic85x85.png?'.rand(1, 1000); // redimensioned image 85x85
     $image_html =  '<div class="row"><div class="formw"><img src="'.$course_medium_image.'" /></div></div>';
 }
 $form->addElement('html', $image_html);
@@ -140,19 +158,6 @@ $form->addElement('html', $image_html);
 $form->add_textfield('title', get_lang('Title'), true, array('class' => 'span6'));
 $form->applyFilter('title', 'html_filter');
 $form->applyFilter('title', 'trim');
-
-//$form->add_textfield('tutor_name', get_lang('Professors'), true, array ('size' => '60'));
-
-//the teacher doesn't need to change the trainer only the admin can do that
-/*
-$prof = &$form->addElement('select', 'tutor_name', get_lang('Teacher'), $a_profs, array('style'=>'width:350px', 'class'=>'chzn-select', 'id'=>'tutor_name'));
-$form->applyFilter('tutor_name', 'html_filter');
-$prof -> setSelected($s_selected_tutor);
- * /
-
-/*$visual_code=$form->addElement('text', 'visual_code', get_lang('Code'));
-$visual_code->freeze();
-$form->applyFilter('visual_code', 'strtoupper');*/
 
 $form->addElement('select', 'category_code', get_lang('Fac'), $categories, array('style'=>'width:350px', 'class'=>'chzn-select', 'id'=>'category_code'));
 $form->addElement('select_language', 'course_language', array(get_lang('Ln'), get_lang('TipLang')));
@@ -163,7 +168,10 @@ $form->applyFilter('department_name', 'trim');
 
 $form->add_textfield('department_url', get_lang('DepartmentUrl'), false, array('class' => 'span5'));
 $form->applyFilter('department_url', 'html_filter');
+<<<<<<< HEAD
 //$form->addRule('tutor_name', get_lang('ThisFieldIsRequired'), 'required');
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // Picture
 $form->addElement('file', 'picture', get_lang('AddPicture'));
@@ -185,7 +193,11 @@ $group = array();
 $group[]=$form->createElement('select_theme', 'course_theme', null, array('class'=>' ', 'id'=>'course_theme_id'));
 $form->addGroup($group, '', array(get_lang("Stylesheets")), '');
 
+<<<<<<< HEAD
 $form->addElement('label', get_lang('DocumentQuota'), Text::format_file_size(DocumentManager::get_course_quota()));
+=======
+$form->addElement('label', get_lang('DocumentQuota'), format_file_size(DocumentManager::get_course_quota()));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 $form->addElement('html', '</div></div>');
@@ -227,6 +239,21 @@ $form->addElement('textarea', 'legal', get_lang('CourseLegalAgreement'), array('
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 $form->addElement('html', '</div></div>');
 
+// Documents
+if (api_get_setting('documents_default_visibility_defined_in_course') == 'true') {
+    $form->addElement('html', '<div> <h3>'.Display::return_icon('folder.png', Security::remove_XSS(get_lang('Documents')),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('Documents')).'</h3><div>');
+
+    $group = array(
+        $form->createElement('radio', 'documents_default_visibility', null, get_lang('Visible'), 'visible'),
+        $form->createElement('radio', 'documents_default_visibility', null, get_lang('Invisible'), 'invisible')
+    );
+    $form->addGroup($group, '', array(get_lang("DocumentsDefaultVisibility")), '');
+
+    $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
+
+    $form->addElement('html', '</div></div>');
+}
+
 // EMAIL NOTIFICATIONS
 $form->addElement('html', '<div> <h3>'.Display::return_icon('mail.png', Security::remove_XSS(get_lang('EmailNotifications')),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('EmailNotifications')).'</h3><div>');
 
@@ -244,7 +271,11 @@ $form->addGroup($group, '', array(Display::return_icon('work.png', get_lang("New
 $group = array();
 $group[]=$form->createElement('radio', 'email_alert_manager_on_new_doc', get_lang('WorkEmailAlert'), get_lang('WorkEmailAlertActivate'), 1);
 $group[]=$form->createElement('radio', 'email_alert_manager_on_new_doc', null, get_lang('WorkEmailAlertDeactivate'), 0);
+<<<<<<< HEAD
 $form->addGroup($group, '', array(Display::return_icon('work.png', get_lang("WorkEmailAlert"))));
+=======
+$form->addGroup($group, '', array(get_lang("WorkEmailAlert")), '');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $group = array();
 $group[]=$form->createElement('radio', 'email_alert_on_new_doc_dropbox', get_lang('DropboxEmailAlert'), get_lang('DropboxEmailAlertActivate'), 1);
@@ -254,8 +285,12 @@ $form->addGroup($group, '', array(Display::return_icon('dropbox.png', get_lang("
 $group = array();
 $group[]=$form->createElement('radio', 'email_alert_manager_on_new_quiz', get_lang('QuizEmailAlert'), get_lang('QuizEmailAlertActivate'), 1);
 $group[]=$form->createElement('radio', 'email_alert_manager_on_new_quiz', null, get_lang('QuizEmailAlertDeactivate'), 0);
+<<<<<<< HEAD
 $form->addGroup($group, '', array(Display::return_icon('quiz.png', get_lang("QuizEmailAlert"))));
 
+=======
+$form->addGroup($group, '', array(get_lang("QuizEmailAlert")), '');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 
 $form->addElement('html', '</div></div>');
@@ -286,7 +321,6 @@ $form->addGroup($group, '', array(get_lang("AllowUserViewUserList")), '');
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 $form->addElement('html', '</div></div>');
 
-
 // CHAT SETTINGS
 $form->addElement('html', '<div><h3>'.Display::return_icon('chat.png', Security::remove_XSS(get_lang('ConfigChat')),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('ConfigChat')).'</h3><div>');
 
@@ -297,7 +331,6 @@ $form->addGroup($group, '', array(get_lang("AllowOpenchatWindow")), '');
 
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 $form->addElement('html', '</div></div>');
-
 
 // LEARNING PATH
 $form->addElement('html', '<div><h3>'.Display::return_icon('scorms.png', get_lang('ConfigLearnpath'),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('ConfigLearnpath')).'</h3><div>');
@@ -362,6 +395,22 @@ $form->addGroup($group, '', array(get_lang("InfoAboutAdvanceInsideHomeCourse")),
 $form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
 $form->addElement('html', '</div></div>');
 
+<<<<<<< HEAD
+=======
+// Document settings
+$form->addElement('html', '<div><h3>'.Display::return_icon('folder.png', Security::remove_XSS(get_lang('Documents')),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('Documents')).'</h3><div>');
+
+$group = array(
+    $form->createElement('radio', 'show_system_folders', null, get_lang('Yes'), 1),
+    $form->createElement('radio', 'show_system_folders', null, get_lang('No'), 2),
+
+);
+$form->addGroup($group, '', array(get_lang("ShowSystemFolders")), '');
+
+$form->addElement('style_submit_button', null, get_lang('SaveSettings'), 'class="save"');
+$form->addElement('html', '</div></div>');
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 // Certificate settings
 if (api_get_setting('allow_public_certificates')=='true') {
     $form->addElement('html', '<div><h3>'.Display::return_icon('certificate.png', Security::remove_XSS(get_lang('Certificates')),'',ICON_SIZE_SMALL).' '.Security::remove_XSS(get_lang('Certificates')).'</h3><div>');
@@ -374,14 +423,13 @@ if (api_get_setting('allow_public_certificates')=='true') {
     $form->addElement('html', '</div></div>');
 }
 
-
 // Plugin course settings
 
-$app_plugin = new AppPlugin();
-$app_plugin->add_course_settings_form($form);
+$appPlugin = new AppPlugin();
+$appPlugin->add_course_settings_form($form);
 
 // Get all the course information
-$all_course_information =  CourseManager::get_course_information($_course['sysCode']);
+$all_course_information = CourseManager::get_course_information($_course['sysCode']);
 
 // Set the default values of the form
 $values = array();
@@ -397,6 +445,7 @@ $values['unsubscribe']                  = $course_access_settings['unsubscribe']
 $values['course_registration_password'] = $all_course_information['registration_code'];
 $values['legal']                        = $all_course_information['legal'];
 $values['activate_legal']               = $all_course_information['activate_legal'];
+<<<<<<< HEAD
 // Get send_mail_setting (auth)from table
 $values['email_alert_to_teacher_on_new_user_in_course'] = api_get_course_setting('email_alert_to_teacher_on_new_user_in_course');
 // Get send_mail_setting (work)from table
@@ -429,21 +478,37 @@ $values['allow_fast_exercise_edition']              = api_get_course_setting('al
 $values['enable_exercise_auto_launch']              = api_get_course_setting('enable_exercise_auto_launch') == -1 ? 0 : api_get_course_setting('enable_exercise_auto_launch') ;
 
 $app_plugin->set_course_settings_defaults($values);
+=======
+
+$courseSettings = CourseManager::getCourseSettingVariables($appPlugin);
+foreach ($courseSettings as $setting) {
+    $result = api_get_course_setting($setting);
+    if ($result != '-1') {
+        $values[$setting] = $result;
+    }
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->setDefaults($values);
 
 // Validate form
 if ($form->validate() && is_settings_editable()) {
-    $update_values = $form->exportValues();
+    $updateValues = $form->exportValues();
 
     $pdf_export_watermark_path = isset($_FILES['pdf_export_watermark_path']) ? $_FILES['pdf_export_watermark_path'] : null;
 
     if (!empty($pdf_export_watermark_path['name'])) {
-        $pdf_export_watermark_path_result = PDF::upload_watermark($pdf_export_watermark_path['name'], $pdf_export_watermark_path['tmp_name'], $course_code);
-        unset($update_values['pdf_export_watermark_path']);
+        $pdf_export_watermark_path_result = PDF::upload_watermark(
+            $pdf_export_watermark_path['name'],
+            $pdf_export_watermark_path['tmp_name'],
+            $course_code
+        );
+        unset($updateValues['pdf_export_watermark_path']);
     }
 
     //Variables that will be saved in the TABLE_MAIN_COURSE table
     $update_in_course_table = array(
+<<<<<<< HEAD
         'title', 'course_language','category_code','department_name', 'department_url','visibility',
         'subscribe', 'unsubscribe','tutor_name','course_registration_password', 'legal', 'activate_legal'
     );
@@ -451,24 +516,44 @@ if ($form->validate() && is_settings_editable()) {
     foreach ($update_values as $index => $value) {
         $update_values[$index] = Database::escape_string($value);
     }
+=======
+        'title',
+        'course_language',
+        'category_code',
+        'department_name',
+        'department_url',
+        'visibility',
+        'subscribe',
+        'unsubscribe',
+        'tutor_name',
+        'course_registration_password',
+        'legal',
+        'activate_legal'
+    );
+    foreach ($updateValues as $index =>$value) {
+        $updateValues[$index] = Database::escape_string($value);
+    }
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $table_course = Database :: get_main_table(TABLE_MAIN_COURSE);
 
     $sql = "UPDATE $table_course SET
-        title 				    = '".$update_values['title']."',
-        course_language 	    = '".$update_values['course_language']."',
-        category_code 		    = '".$update_values['category_code']."',
-        department_name  	    = '".$update_values['department_name']."',
-        department_url  	    = '".$update_values['department_url']."',
-        visibility  		    = '".$update_values['visibility']."',
-        subscribe  			    = '".$update_values['subscribe']."',
-        unsubscribe  		    = '".$update_values['unsubscribe']."',
-        legal                   = '".$update_values['legal']."',
-        activate_legal          = '".$update_values['activate_legal']."',
-        registration_code 	    = '".$update_values['course_registration_password']."'
+        title 				    = '".$updateValues['title']."',
+        course_language 	    = '".$updateValues['course_language']."',
+        category_code 		    = '".$updateValues['category_code']."',
+        department_name  	    = '".$updateValues['department_name']."',
+        department_url  	    = '".$updateValues['department_url']."',
+        visibility  		    = '".$updateValues['visibility']."',
+        subscribe  			    = '".$updateValues['subscribe']."',
+        unsubscribe  		    = '".$updateValues['unsubscribe']."',
+        legal                   = '".$updateValues['legal']."',
+        activate_legal          = '".$updateValues['activate_legal']."',
+        registration_code 	    = '".$updateValues['course_registration_password']."'
         WHERE code = '".$course_code."'";
 
     Database::query($sql);
 
+<<<<<<< HEAD
     // Update course_settings table - this assumes those records exist, otherwise triggers an error
     $table_course_setting = Database::get_course_table(TABLE_COURSE_SETTING);
 
@@ -499,6 +584,23 @@ if ($form->validate() && is_settings_editable()) {
     $app_plugin->save_course_settings($update_values);
     $courseInfo = api_get_course_info($course_code);
     Session::write('_course', $courseInfo);
+=======
+    // Insert/Updates course_settings table
+    foreach ($courseSettings as $setting) {
+        $value = isset($updateValues[$setting]) ? $updateValues[$setting] : null;
+        CourseManager::saveCourseConfigurationSetting(
+            $appPlugin,
+            $setting,
+            $value,
+            api_get_course_int_id()
+        );
+    }
+
+    $appPlugin->saveCourseSettingsHook($update_values);
+    $cidReset = true;
+    $cidReq = $course_code;
+    require '../inc/local.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     header('Location: infocours.php?action=show_message&cidReq='.$course_code);
     exit;
 }

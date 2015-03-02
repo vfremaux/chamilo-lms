@@ -51,6 +51,13 @@ class HTML_QuickForm_element extends HTML_Common
     var $_label = '';
 
     /**
+     * Label "for" a field... (Chamilo LMS customization)
+     * @var     string
+     * @access  private
+     */
+    var $_label_for = '';
+
+    /**
      * Form element type
      * @var       string
      * @since     1.0
@@ -113,7 +120,17 @@ class HTML_QuickForm_element extends HTML_Common
             $this->setName($elementName);
         }
         if (isset($elementLabel)) {
-            $this->setLabel($elementLabel);
+            
+            $labelFor = "";
+            //Default Inputs generate this
+            if (!empty($attributes['id'])) {
+                $labelFor = $attributes['id'];
+            }
+            //Default Labels generate this
+            if (!empty($attributes['for'])) {
+                $labelFor = $attributes['for'];
+            }
+            $this->setLabel($elementLabel, $labelFor);
         }
     } //end constructor
 
@@ -325,13 +342,17 @@ class HTML_QuickForm_element extends HTML_Common
      * Sets display text for the element
      *
      * @param     string    $label  Display text for the element
+     * @param     string    $label_for Optionally add a "for" attribute
      * @since     1.3
      * @access    public
      * @return    void
      */
-    function setLabel($label)
+    function setLabel($label, $labelFor = null)
     {
         $this->_label = $label;
+        if (!empty($labelFor)) {
+            $this->_label_for = $labelFor;
+        }
     } //end func setLabel
 
     // }}}
@@ -348,6 +369,17 @@ class HTML_QuickForm_element extends HTML_Common
     {
         return $this->_label;
     } //end func getLabel
+
+    /**
+     * Returns "for" attribute for the element
+     *
+     * @access    public
+     * @return    string
+     */
+    function getLabelFor()
+    {
+        return $this->_label_for;
+    } //end func getLabelFor
 
     // }}}
     // {{{ _findValue()
@@ -421,8 +453,12 @@ class HTML_QuickForm_element extends HTML_Common
                 $this->setValue($arg);
         }
         return true;
+<<<<<<< HEAD
     } // end func onQuickFormEvent
 
+=======
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
    /**
     * Accepts a renderer

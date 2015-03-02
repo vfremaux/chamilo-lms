@@ -1,6 +1,12 @@
 <?php
 /* For licensing terms, see /license.txt */
 
+<<<<<<< HEAD
+=======
+require_once 'HTML/QuickForm/select.php';
+require_once 'HTML/QuickForm/html.php';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
 * A drop down list with all languages to use with QuickForm
 */
@@ -50,14 +56,40 @@ class HTML_QuickForm_Select_Ajax extends HTML_QuickForm_select
             $dataCondition = '$("#'.$this->getAttribute('name').'").select2("data", '.$result.')';
             $tags = ', tags : function() { return '.$result.'} ';
         }
+<<<<<<< HEAD
+=======
+        $width = 'element';
+        $givenWidth = $this->getAttribute('width');
+        if (!empty($givenWidth)) {
+            $width = $givenWidth;
+        }
+
+        //Get the minimumInputLength for select2
+        $minimumInputLength = $this->getAttribute('minimumInputLength') > 3 ?
+            $this->getAttribute('minimumInputLength') :
+            3
+        ;
+
+        $plHolder = $this->getAttribute('placeholder');
+        if (empty($plHolder)) {
+            $plHolder = get_lang('SelectAnOption');
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $html .= '<script>
                 $(function() {
                     $("#'.$this->getAttribute('name').'").select2({
+<<<<<<< HEAD
                         placeholder: "'.get_lang('SelectAnOption').'",
                         allowClear: true,
                         width: "element",
                         minimumInputLength: 2,
+=======
+                        placeholder: "' . $plHolder . '",
+                        allowClear: true,
+                        width: "'.$width.'",
+                        minimumInputLength: ' . $minimumInputLength . ',
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         // instead of writing the function to execute the request we use Select2s convenient helper
                         ajax: {
                             url: "'.$this->getAttribute('url').'",

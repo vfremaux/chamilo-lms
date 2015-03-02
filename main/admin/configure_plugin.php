@@ -16,7 +16,7 @@ api_protect_admin_script();
 $plugin_name = $_GET['name'];
 
 $plugin_obj = new AppPlugin();
-$plugin_info = $plugin_obj->get_plugin_info($plugin_name, true);
+$plugin_info = $plugin_obj->getPluginInfo($plugin_name, true);
 
 if (empty($plugin_info)) {
     api_not_allowed();
@@ -29,7 +29,7 @@ if (!in_array($plugin_name, $installed_plugins)) {
 }
 
 global $_configuration;
-
+$message = null;
 $content = null;
 
 if (isset($plugin_info['settings_form'])) {
@@ -55,15 +55,39 @@ if (isset($form)) {
                                     array('Plugins', $access_url_id, $plugin_name, 'setting', "status")));
         foreach ($values as $key => $value) {
             $key = Database::escape_string($plugin_name.'_'.$key);
+<<<<<<< HEAD
             api_add_setting($value, $key, $plugin_name, 'setting', 'Plugins', $plugin_name, null, null, null, api_get_current_access_url_id(), 1);
 
+=======
+            api_add_setting(
+                $value,
+                $key,
+                $plugin_name,
+                'setting',
+                'Plugins',
+                $plugin_name,
+                null,
+                null,
+                null,
+                $_configuration['access_url'],
+                1
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         $message = Display::return_message(get_lang('Updated'), 'success');
     }
 }
+<<<<<<< HEAD
 $app['title'] = $tool_name;
 $tpl = $app['template'];
 $tpl->assign('actions', $actions);
+=======
+
+$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'admin/index.php', 'name' => get_lang('PlatformAdmin'));
+$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'admin/settings.php?category=Plugins', 'name' => get_lang('Plugins'));
+
+$tpl = new Template($plugin_name, true, true, false, true, false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $tpl->assign('message', $message);
 $tpl->assign('content', $content);
 $tpl->display_one_col_template();

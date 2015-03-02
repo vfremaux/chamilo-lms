@@ -21,9 +21,10 @@ require_once '../inc/global.inc.php';
 $this_section = SECTION_COURSES;
 
 if (!api_is_allowed_to_edit(null,true)) {
-	api_not_allowed(true);
+    api_not_allowed(true);
 }
 
+<<<<<<< HEAD
 $url = api_get_path(WEB_AJAX_PATH).'exercise.ajax.php?1=1';
 
 $htmlHeadXtra[] = '<script>
@@ -90,6 +91,23 @@ $htmlHeadXtra[] = '<script>
            if (document.getElementById ( \'HiddenFCK\' + editorInstance.Name )) {
               HideFCKEditorByInstanceName (editorInstance.Name);
            }
+=======
+$htmlHeadXtra[] = '<script>
+    function advanced_parameters() {
+        if(document.getElementById(\'options\').style.display == \'none\') {
+            document.getElementById(\'options\').style.display = \'block\';
+            document.getElementById(\'img_plus_and_minus\').innerHTML=\' <img style="vertical-align:middle;" src="../img/div_hide.gif" alt="" /> '.addslashes(api_htmlentities(get_lang('AdvancedParameters'))).'\';
+        } else {
+            document.getElementById(\'options\').style.display = \'none\';
+            document.getElementById(\'img_plus_and_minus\').innerHTML=\' <img style="vertical-align:middle;" src="../img/div_show.gif" alt="" /> '.addslashes(api_htmlentities(get_lang('AdvancedParameters'))).'\';
+        }
+    }
+
+    function FCKeditor_OnComplete( editorInstance ) {
+       if (document.getElementById ( \'HiddenFCK\' + editorInstance.Name )) {
+          HideFCKEditorByInstanceName (editorInstance.Name);
+       }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     function HideFCKEditorByInstanceName ( editorInstanceName ) {
@@ -100,6 +118,7 @@ $htmlHeadXtra[] = '<script>
 
     function show_media() {
         var my_display = document.getElementById(\'HiddenFCKexerciseDescription\').style.display;
+<<<<<<< HEAD
             if(my_display== \'none\' || my_display == \'\') {
                 document.getElementById(\'HiddenFCKexerciseDescription\').style.display = \'block\';
                 document.getElementById(\'media_icon\').innerHTML=\' '.Display::return_icon('media-question.png').' '.addslashes(get_lang('ExerciseDescription')).'\';
@@ -107,6 +126,15 @@ $htmlHeadXtra[] = '<script>
                 document.getElementById(\'HiddenFCKexerciseDescription\').style.display = \'none\';
                 document.getElementById(\'media_icon\').innerHTML=\'  '.Display::return_icon('media-question.png').' '.addslashes(get_lang('ExerciseDescription')).'\';
             }
+=======
+        if(my_display== \'none\' || my_display == \'\') {
+            document.getElementById(\'HiddenFCKexerciseDescription\').style.display = \'block\';
+            document.getElementById(\'media_icon\').innerHTML=\' <img src="../img/looknfeelna.png" alt="" /> '.addslashes(api_htmlentities(get_lang('ExerciseDescription'))).'\';
+        } else {
+            document.getElementById(\'HiddenFCKexerciseDescription\').style.display = \'none\';
+            document.getElementById(\'media_icon\').innerHTML=\' <img src="../img/looknfeel.png" alt="" /> '.addslashes(api_htmlentities(get_lang('ExerciseDescription'))).'\';
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     function activate_start_date() {
@@ -114,6 +142,7 @@ $htmlHeadXtra[] = '<script>
             document.getElementById(\'start_date_div\').style.display = \'block\';
         } else {
             document.getElementById(\'start_date_div\').style.display = \'none\';
+<<<<<<< HEAD
         }
     }
 
@@ -210,6 +239,63 @@ $htmlHeadXtra[] = '<script>
 
         }
     }
+=======
+        }
+    }
+
+    function activate_end_date() {
+        if(document.getElementById(\'end_date_div\').style.display == \'none\') {
+            document.getElementById(\'end_date_div\').style.display = \'block\';
+        } else {
+            document.getElementById(\'end_date_div\').style.display = \'none\';
+        }
+    }
+
+    function feedbackselection() {
+        var index = document.exercise_admin.exerciseFeedbackType.selectedIndex;
+
+        if (index == \'1\') {
+            document.exercise_admin.exerciseType[1].checked=true;
+            document.exercise_admin.exerciseType[0].disabled=true;
+        } else {
+            document.exercise_admin.exerciseType[0].disabled=false;
+        }
+    }
+
+    function option_time_expired() {
+        if(document.getElementById(\'timercontrol\').style.display == \'none\')
+        {
+          document.getElementById(\'timercontrol\').style.display = \'block\';
+        } else {
+          document.getElementById(\'timercontrol\').style.display = \'none\';
+        }
+    }
+
+    function check_per_page_one() {
+         document.getElementById(\'exerciseType_0\').checked=true;
+    }
+
+    function check_per_page_all() {
+        if (document.getElementById(\'exerciseType_1\') && document.getElementById(\'exerciseType_1\').checked) {
+            document.getElementById(\'exerciseType_0\').checked = true;
+        }
+    }
+
+    function check_feedback() {
+        if (document.getElementById(\'result_disabled_1\').checked == true) {
+            document.getElementById(\'result_disabled_0\').checked = true;
+        }
+    }
+
+    function check_direct_feedback() {
+        document.getElementById(\'option_page_one\').checked = true;
+        document.getElementById(\'result_disabled_0\').checked = true;
+    }
+
+    function check_results_disabled() {
+        document.getElementById(\'exerciseType_2\').checked = true;
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 </script>';
 
 // to correct #4029 Random and number of attempt menu empty added window.onload=advanced_parameters;
@@ -230,12 +316,12 @@ $course_id = api_get_course_int_id();
 
 //INIT FORM
 if (isset($_GET['exerciseId'])) {
-	$form = new FormValidator('exercise_admin', 'post', api_get_self().'?'.api_get_cidreq().'&exerciseId='.intval($_GET['exerciseId']));
-	$objExercise->read($_GET['exerciseId']);
-	$form->addElement('hidden','edit','true');
+    $form = new FormValidator('exercise_admin', 'post', api_get_self().'?'.api_get_cidreq().'&exerciseId='.intval($_GET['exerciseId']));
+    $objExercise->read($_GET['exerciseId']);
+    $form->addElement('hidden','edit','true');
 } else {
-	$form = new FormValidator('exercise_admin','post',api_get_self().'?'.api_get_cidreq());
-	$form->addElement('hidden','edit','false');
+    $form = new FormValidator('exercise_admin','post',api_get_self().'?'.api_get_cidreq());
+    $form->addElement('hidden','edit','false');
 }
 
 $objExercise->createForm($form);
@@ -250,36 +336,41 @@ if ($form->validate()) {
     }
     $exercise_id = $objExercise->id;
     Session::erase('objExercise');
+<<<<<<< HEAD
     header('Location:admin.php?message='.$message.'&exerciseId='.$exercise_id.'&'.api_get_cidreq());
+=======
+    header('Location:admin.php?message='.$message.'&exerciseId='.$exercise_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     exit;
 } else {
     // DISPLAY FORM
-	if (isset($_SESSION['gradebook'])) {
-		$gradebook=	$_SESSION['gradebook'];
-	}
+    if (isset($_SESSION['gradebook'])) {
+        $gradebook=    $_SESSION['gradebook'];
+    }
 
-	if (!empty($gradebook) && $gradebook=='view') {
-		$interbreadcrumb[]= array ('url' => '../gradebook/'.$_SESSION['gradebook_dest'],'name' => get_lang('ToolGradebook'));
-	}
-	$nameTools = get_lang('ExerciseManagement');
-	$interbreadcrumb[] = array("url"=>'exercice.php', 'name'=> get_lang('Exercices'));
+    if (!empty($gradebook) && $gradebook=='view') {
+        $interbreadcrumb[]= array ('url' => '../gradebook/'.$_SESSION['gradebook_dest'],'name' => get_lang('ToolGradebook'));
+    }
+    $nameTools = get_lang('ExerciseManagement');
+    $interbreadcrumb[] = array("url"=>'exercice.php', 'name'=> get_lang('Exercices'));
     $interbreadcrumb[] = array("url"=>"admin.php?exerciseId=".$objExercise->id, "name" => $objExercise->name);
 
-	Display::display_header($nameTools,get_lang('Exercise'));
+    Display::display_header($nameTools,get_lang('Exercise'));
 
-	echo '<div class="actions">';
+    echo '<div class="actions">';
 
-	if ($objExercise->id != 0) {
-	    echo '<a href="admin.php?'.api_get_cidReq().'&exerciseId='.$objExercise->id.'">' . Display :: return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).'</a>';
-	} else {
-		if (!empty($_GET['lp_id']) || !empty($_POST['lp_id'])){
-			if (!empty($_POST['lp_id'])){
-				$lp_id = Security::remove_XSS($_POST['lp_id']);//TODO:this remains to be implemented after press the first post
-			} else {
-				$lp_id = Security::remove_XSS($_GET['lp_id']);
-			}
-			echo "<a href=\"../newscorm/lp_controller.php?".api_get_cidreq()."&gradebook=&action=add_item&type=step&lp_id=".$lp_id."#resource_tab-2\">".Display::return_icon('back.png', get_lang("BackTo").' '.get_lang("LearningPaths"),'',ICON_SIZE_MEDIUM)."</a>";
+    if ($objExercise->id != 0) {
+        echo '<a href="admin.php?'.api_get_cidReq().'&exerciseId='.$objExercise->id.'">' . Display :: return_icon('back.png', get_lang('GoBackToQuestionList'),'',ICON_SIZE_MEDIUM).'</a>';
+    } else {
+        if (!empty($_GET['lp_id']) || !empty($_POST['lp_id'])){
+            if (!empty($_POST['lp_id'])){
+                $lp_id = Security::remove_XSS($_POST['lp_id']);//TODO:this remains to be implemented after press the first post
+            } else {
+                $lp_id = Security::remove_XSS($_GET['lp_id']);
+            }
+            echo "<a href=\"../newscorm/lp_controller.php?".api_get_cidreq()."&gradebook=&action=add_item&type=step&lp_id=".$lp_id."#resource_tab-2\">".Display::return_icon('back.png', get_lang("BackTo").' '.get_lang("LearningPaths"),'',ICON_SIZE_MEDIUM)."</a>";
         } else {
+<<<<<<< HEAD
 	    	echo '<a href="exercice.php">' . Display :: return_icon('back.png', get_lang('BackToExercisesList'),'',ICON_SIZE_MEDIUM).'</a>';
 		}
 	}
@@ -295,7 +386,22 @@ if ($form->validate()) {
 
     if ($objExercise->id != 0 && $objExercise->edit_exercise_in_lp == false) {
         $form->freeze();
+=======
+            echo '<a href="exercice.php">' . Display :: return_icon('back.png', get_lang('BackToExercisesList'),'',ICON_SIZE_MEDIUM).'</a>';
+        }
     }
-	$form->display();
+    echo '</div>';
+
+    if ($objExercise->feedback_type==1)
+        Display::display_normal_message(get_lang('DirectFeedbackCantModifyTypeQuestion'));
+
+    if (api_get_setting('search_enabled')=='true' && !extension_loaded('xapian')) {
+        Display::display_error_message(get_lang('SearchXapianModuleNotInstalled'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+    }
+
+    // to hide the exercise description
+    echo '<style> .media { display:none;}</style>';
+    $form->display();
 }
 Display::display_footer();

@@ -206,7 +206,11 @@ function store_resources($source_type, $source_id)
     $addedresourceid = $_SESSION['addedresourceid'];
     if ($_SESSION['addedresource']) {
         foreach ($addedresource as $resource_type) {
+<<<<<<< HEAD
             $sql = "INSERT INTO $resource_table (c_id, source_type, source_id, resource_type, resource_id) VALUES
+=======
+            $sql="INSERT INTO $resource_table (c_id, source_type, source_id, resource_type, resource_id) VALUES
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             ($course_id, '$source_type', '$source_id', '$resource_type', '".$addedresourceid[key($addedresource)]."')";
             Database::query($sql);
             $i = key($addedresource);
@@ -309,6 +313,20 @@ function display_addedresource_link($type, $id, $style = '')
             $ext = explode('.', $filename);
             $ext = strtolower($ext[sizeof($ext) - 1]);
             $myrow['path'] = rawurlencode($myrow['path']);
+<<<<<<< HEAD
+=======
+
+			$array_ext=array('htm', 'html', 'gif', 'jpg', 'jpeg', 'png');
+
+			if (api_browser_support('svg')){
+				$array_ext[]='svg';
+			}
+			if (api_browser_support('ogg')){
+				$array_ext[]='ogg';
+			}
+
+            $in_frames = in_array($ext, $array_ext);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             $array_ext = array('htm', 'html', 'gif', 'jpg', 'jpeg', 'png');
 
@@ -347,11 +365,20 @@ function display_addedresource_link($type, $id, $style = '')
  *                      if ="nolink" then only the name is returned with no href and no icon (note:only in this case, the result is not displayed, but returned)
  * @todo this function is too long, rewrite
  */
+<<<<<<< HEAD
 function display_addedresource_link_in_learnpath($type, $id, $completed, $id_in_path, $builder, $icon, $level = 0)
 {
     global $learnpath_id, $tbl_learnpath_item, $items;
     global $curDirPath, $_configuration, $enableDocumentParsing, $_user, $_cid;
     $_course = api_get_course_info();
+=======
+function display_addedresource_link_in_learnpath($type, $id, $completed, $id_in_path, $builder, $icon, $level = 0) {
+    global $_course, $learnpath_id, $tbl_learnpath_item, $items;
+    global $curDirPath, $_configuration, $enableDocumentParsing, $_course, $_user, $_cid;
+
+    $course_id = api_get_course_int_id();
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $course_id = api_get_course_int_id();
     $tbl_lp_item = Database::get_course_table(TABLE_LP_ITEM);
@@ -451,7 +478,11 @@ function display_addedresource_link_in_learnpath($type, $id, $completed, $id_in_
             $result = Database::query($sql);
             $row = Database::fetch_array($result);
             if ($row['title'] != '') {
+<<<<<<< HEAD
                 $myrow['content'] = $row['title'];
+=======
+                 $myrow['content'] = $row['title'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             $desc = $row['description'];
             $ann_id = $row['item_id'];
@@ -919,10 +950,15 @@ function display_addedresource_link_in_learnpath($type, $id, $completed, $id_in_
 
             $sql = "select * from $tbl_lp_item where c_id = $course_id AND id=$id_in_path";
             $result = Database::query($sql);
+<<<<<<< HEAD
             $row = Database::fetch_array($result);
             if ($row['title'] != '') {
                 $myrow['post_title'] = $row['title'];
             }
+=======
+            $row=Database::fetch_array($result);
+            if ($row['title'] != '') { $myrow['post_title'] = $row['title']; }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $desc = $row['description'];
             echo str_repeat("&nbsp;&gt;", $level);
 
@@ -2061,8 +2097,14 @@ function showorhide_addresourcelink($type, $id)
  * @param boolean    Open in a new window (true) or in the current frame/window (false)?
  * @todo use the constants for the type definitions.
  */
+<<<<<<< HEAD
 function rl_get_html_resource_link($course_code, $type, $id, $style = '', $new_window = true)
 {
+=======
+function rl_get_html_resource_link($course_code, $type, $id, $style='', $new_window = true) {
+    $_course = Database::get_course_info($course_code);
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $course_id = api_get_course_int_id();
 
     // Styling the link of the added resource
@@ -2158,6 +2200,7 @@ function rl_get_html_resource_link($course_code, $type, $id, $style = '', $new_w
  * The function is a big switch on tool type.
  * In each case, we query the corresponding table for information and build the link
  * with that information.
+<<<<<<< HEAD
  * @author    Yannick Warnier <ywarnier@beeznest.org> - rebranding based on previous work (display_addedresource_link_in_learnpath())
  * @param    string    Course code
  * @param    integer    The learning path ID (in lp table)
@@ -2168,20 +2211,40 @@ function rl_get_html_resource_link($course_code, $type, $id, $style = '', $new_w
 function rl_get_resource_link_for_learnpath($course_id, $learnpath_id, $id_in_path)
 {
     $tbl_lp_item = Database::get_course_table(TABLE_LP_ITEM);
+=======
+ * @author	Yannick Warnier <ywarnier@beeznest.org> - rebranding based on previous work (display_addedresource_link_in_learnpath())
+ * @param	int	Course code
+ * @param	int The learning path ID (in lp table)
+ * @param   int id_in_path  - the unique index in the items table
+ */
+function rl_get_resource_link_for_learnpath($course_id, $learnpath_id, $id_in_path)
+{
+    $tbl_lp_item 	= Database::get_course_table(TABLE_LP_ITEM);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $course_info = api_get_course_info_by_id($course_id);
     $course_id = $course_info['real_id'];
     $course_code = $course_info['code'];
     $session_id = api_get_session_id();
 
+<<<<<<< HEAD
     $learnpath_id = intval($learnpath_id);
     $id_in_path = intval($id_in_path);
+=======
+    $learnpath_id 	= intval($learnpath_id);
+    $id_in_path		= intval($id_in_path);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $sql_item = "SELECT * FROM $tbl_lp_item WHERE c_id = $course_id AND lp_id = $learnpath_id AND id = $id_in_path";
     $res_item = Database::query($sql_item);
     if (Database::num_rows($res_item) < 1) {
+<<<<<<< HEAD
         return -1;
     } //exit
+=======
+        return -1; //exit
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $row_item = Database::fetch_array($res_item);
 
     $type = strtolower($row_item['item_type']);
@@ -2261,11 +2324,11 @@ function rl_get_resource_link_for_learnpath($course_id, $learnpath_id, $id_in_pa
             break;
         case TOOL_DOCUMENT:
             $tbl_doc = Database::get_course_table(TABLE_DOCUMENT);
-            $sql = "SELECT * FROM $tbl_doc WHERE c_id = $course_id AND id=$id";
+            $sql = "SELECT * FROM $tbl_doc WHERE c_id = $course_id AND id = $id";
             $result = Database::query($sql);
             $myrow = Database::fetch_array($result);
             $docurl = str_replace('%2F', '/', urlencode($myrow['path']));
-            $link .= $main_course_path.'document'.$docurl.'?'.api_get_cidreq();
+            $link .= $main_course_path.'document'.$docurl.'?cidReq='.$course_code.'&id_session='.$session_id;
             $openmethod = 2;
             $officedoc = false;
             Session::write('openmethod', $openmethod);
@@ -2306,7 +2369,11 @@ function rl_get_resource_link_for_learnpath($course_id, $learnpath_id, $id_in_pa
  */
 function rl_get_resource_name($course_code, $learnpath_id, $id_in_path)
 {
+<<<<<<< HEAD
     $_course = api_get_course_info($course_code);
+=======
+    $_course = Database::get_course_info($course_code);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $course_id = $_course['real_id'];
     $tbl_lp_item = Database::get_course_table(TABLE_LP_ITEM);
 

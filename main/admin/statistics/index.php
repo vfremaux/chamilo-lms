@@ -48,7 +48,6 @@ $tools[$strSocial]['report=messagesent'] = get_lang('MessagesSent');
 $tools[$strSocial]['report=messagereceived'] = get_lang('MessagesReceived');
 $tools[$strSocial]['report=friends'] = get_lang('CountFriends');
 
-
 echo '<table><tr>';
 foreach ($tools as $section => $items) {
     echo '<td style="vertical-align:top;">';
@@ -88,9 +87,10 @@ switch ($report) {
     case 'users':
         // total amount of users
         Statistics::print_stats(
-            get_lang('NumberOfUsers'), array(
-            get_lang('Teachers') => Statistics::count_users(1, null, $_GET['count_invisible_courses']),
-            get_lang('Students') => Statistics::count_users(5, null, $_GET['count_invisible_courses'])
+            get_lang('NumberOfUsers'),
+            array(
+                get_lang('Teachers') => Statistics::count_users(1, null, $_GET['count_invisible_courses']),
+                get_lang('Students') => Statistics::count_users(5, null, $_GET['count_invisible_courses'])
             )
         );
         $teachers = $students = array();

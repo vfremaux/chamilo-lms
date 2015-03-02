@@ -24,7 +24,11 @@ $current_course_tool  = TOOL_GROUP;
 api_protect_course_script(true);
 
 $group_id = api_get_group_id();
+<<<<<<< HEAD
 $current_group = GroupManager::get_group_properties($group_id);
+=======
+$current_group = GroupManager :: get_group_properties($group_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $nameTools = get_lang('EditGroup');
 $interbreadcrumb[] = array ('url' => 'group.php', 'name' => get_lang('Groups'));
@@ -103,13 +107,21 @@ $form = new FormValidator('group_edit', 'post', api_get_self().'?'.api_get_cidre
 $form->addElement('hidden', 'action');
 
 // Group tutors
+<<<<<<< HEAD
 $group_tutor_list = GroupManager::get_subscribed_tutors($current_group['id']);
+=======
+$group_tutor_list = GroupManager :: get_subscribed_tutors($current_group['id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $selected_tutors = array();
 foreach ($group_tutor_list as $index => $user) {
     $selected_tutors[] = $user['user_id'];
 }
 
+<<<<<<< HEAD
 $complete_user_list = GroupManager::fill_groups_list($current_group['id']);
+=======
+$complete_user_list = GroupManager :: fill_groups_list($current_group['id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $possible_users = array();
 if (!empty($complete_user_list)) {
     usort($complete_user_list, 'sort_users');
@@ -119,7 +131,26 @@ if (!empty($complete_user_list)) {
     }
 }
 
+<<<<<<< HEAD
 $form->addDoubleMultipleSelect('group_tutors', get_lang('GroupTutors'), $possible_users, 'style="width: 280px;"');
+=======
+$group_tutors_element = $form->addElement('advmultiselect', 'group_tutors', get_lang('GroupTutors'), $possible_users, 'style="width: 280px;"');
+$group_tutors_element->setElementTemplate('
+{javascript}
+<table{class}>
+<!-- BEGIN label_2 --><tr><th>{label_2}</th><!-- END label_2 -->
+<!-- BEGIN label_3 --><th>&nbsp;</th><th>{label_3}</th></tr><!-- END label_3 -->
+<tr>
+  <td valign="top">{unselected}</td>
+  <td align="center">{add}<br /><br />{remove}</td>
+  <td valign="top">{selected}</td>
+</tr>
+</table>
+');
+
+$group_tutors_element->setButtonAttributes('add', array('class' => 'btn arrowr'));
+$group_tutors_element->setButtonAttributes('remove', array('class' => 'btn arrowl'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // submit button
 $form->addElement('style_submit_button', 'submit', get_lang('SaveSettings'), 'class="save"');

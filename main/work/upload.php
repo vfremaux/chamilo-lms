@@ -1,4 +1,5 @@
 <?php
+/* For licensing terms, see /license.txt */
 
 use ChamiloSession as Session;
 
@@ -6,8 +7,6 @@ $language_file = array('exercice', 'work', 'document', 'admin', 'gradebook');
 
 require_once '../inc/global.inc.php';
 $current_course_tool  = TOOL_STUDENTPUBLICATION;
-
-/*	Configuration settings */
 
 api_protect_course_script(true);
 
@@ -20,8 +19,6 @@ require_once api_get_path(LIBRARY_PATH).'fileDisplay.lib.php';
 $this_section = SECTION_COURSES;
 
 $work_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-
-$work_table = Database :: get_course_table(TABLE_STUDENT_PUBLICATION);
 
 $is_allowed_to_edit = api_is_allowed_to_edit();
 $course_id = api_get_course_int_id();
@@ -36,13 +33,19 @@ if (empty($work_id)) {
     api_not_allowed(true);
 }
 
+<<<<<<< HEAD
 allowOnlySubscribedUser($user_id, $work_id, $course_id);
 
 $parent_data = $my_folder_data = get_work_data_by_id($work_id);
+=======
+$workInfo = get_work_data_by_id($work_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-if (empty($parent_data)) {
+if (empty($workInfo)) {
     api_not_allowed(true);
 }
+
+allowOnlySubscribedUser($user_id, $work_id, $course_id);
 
 $is_course_member = CourseManager::is_user_subscribed_in_real_or_linked_course($user_id, $course_code, $session_id);
 $is_course_member = $is_course_member || api_is_platform_admin();
@@ -55,15 +58,10 @@ $check = Security::check_token('post');
 $token = Security::get_token();
 
 $student_can_edit_in_session = api_is_allowed_to_session_edit(false, true);
-$has_ended   = false;
-
-$is_author = false;
-
-$parent_data['qualification'] = intval($parent_data['qualification']);
 
 //  @todo add an option to allow/block multiple attempts.
 /*
-if (!empty($parent_data) && !empty($parent_data['qualification'])) {
+if (!empty($workInfo) && !empty($workInfo['qualification'])) {
     $count =  get_work_count_by_student($user_id, $work_id);
     if ($count >= 1) {
         Display::display_header();
@@ -77,6 +75,7 @@ if (!empty($parent_data) && !empty($parent_data['qualification'])) {
     }
 }*/
 
+<<<<<<< HEAD
 $has_expired = false;
 $has_ended   = false;
 $message = null;
@@ -147,8 +146,19 @@ if ($submitGroupWorkUrl) {
     $form->addElement('file', 'file', get_lang('UploadADocument'), 'size="40" onchange="updateDocumentTitle(this.value)"');
     $show_progress_bar = true;
 }
+=======
+$homework = get_work_assignment_by_id($workInfo['id']);
+$validationStatus = getWorkDateValidationStatus($homework);
 
+$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq(), 'name' => get_lang('StudentPublications'));
+$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'work/work_list.php?'.api_get_cidreq().'&id='.$work_id, 'name' =>  $workInfo['title']);
+$interbreadcrumb[] = array('url' => '#', 'name'  => get_lang('UploadADocument'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+
+$form = new FormValidator('form', 'POST', api_get_self()."?".api_get_cidreq()."&id=".$work_id, '', array('enctype' => "multipart/form-data"));
+setWorkUploadForm($form, $workInfo['allow_text_assignment']);
 $form->addElement('hidden', 'id', $work_id);
+<<<<<<< HEAD
 $form->addElement('hidden', 'contains_file', 0, array('id'=>'contains_file_id'));
 $form->addElement('text', 'title', get_lang('Title'), array('id' => 'file_upload', 'class' => 'span4'));
 $form->add_html_editor('description', get_lang('Description'), false, false, getWorkDescriptionToolbar());
@@ -184,146 +194,31 @@ if (!empty($documentTemplateData)) {
 }
 
 $form->setDefaults($defaults);
+=======
+$form->addElement('hidden', 'sec_token', $token);
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $error_message = null;
-$_course = api_get_course_info();
-$currentCourseRepositorySys = api_get_path(SYS_COURSE_PATH).$_course['path'] . '/';
 
 $succeed = false;
 if ($form->validate()) {
+
     if ($student_can_edit_in_session && $check) {
-
-        // Check the token inserted into the form
-
-        if (isset($_POST['submitWork'])) {
-            $url = null;
-            $contains_file = 0;
-
-            $title  = isset($_POST['title']) ? $_POST['title'] : null;
-            $description = isset($_POST['description']) ? $_POST['description'] : null;
-
-            if ($_POST['contains_file'] && !empty($_FILES['file']['size'])) {
-                $updir = $currentCourseRepositorySys.'work/'; //directory path to upload
-
-                // Try to add an extension to the file if it has'nt one
-                $new_file_name = add_ext_on_mime(stripslashes($_FILES['file']['name']), $_FILES['file']['type']);
-
-                // Replace dangerous characters
-                $new_file_name = replace_dangerous_char($new_file_name, 'strict');
-
-                // Transform any .php file in .phps fo security
-                $new_file_name = php2phps($new_file_name);
-
-                $filesize = filesize($_FILES['file']['tmp_name']);
-
-                if (empty($filesize)) {
-                    $error_message .= Display :: return_message(get_lang('UplUploadFailedSizeIsZero'), 'error');
-                    $succeed = false;
-                } elseif (!filter_extension($new_file_name)) {
-                    //filter extension
-                    $error_message .= Display :: return_message(get_lang('UplUnableToSaveFileFilteredExtension'), 'error');
-                    $succeed = false;
-                }
-
-                if (!$title) {
-                    $title = $_FILES['file']['name'];
-                }
-
-                // Compose a unique file name to avoid any conflict
-                $new_file_name = api_get_unique_id();
-                $curdirpath = basename($my_folder_data['url']);
-
-                // If we come from the group tools the groupid will be saved in $work_table
-                $result = move_uploaded_file($_FILES['file']['tmp_name'], $updir.$curdirpath.'/'.$new_file_name);
-
-                if ($result) {
-                    $url = 'work/'.$curdirpath.'/'.$new_file_name;
-                    $contains_file = 1;
-                }
-            }
-
-            if (empty($title)) {
-                $title = get_lang('Untitled');
-            }
-
-            $documents_total_space = DocumentManager::documents_total_space();
-            $course_max_space = DocumentManager::get_course_quota();
-            $total_size = $filesize + $documents_total_space;
-
-            if ($total_size > $course_max_space) {
-                $error_message .= Display::return_message(get_lang('NoSpace'), 'warning');
-            } else {
-                $active = '1';
-                $sql_add_publication = "INSERT INTO ".$work_table." SET
-                                   c_id 		= $course_id ,
-                                   url         	= '".$url . "',
-                                   title       	= '".Database::escape_string($title)."',
-                                   description	= '".Database::escape_string($description)."',
-                                   contains_file = '".$contains_file."',
-                                   active		= '" . $active."',
-                                   accepted		= '1',
-                                   post_group_id = '".$group_id."',
-                                   sent_date	=  '".api_get_utc_datetime()."',
-                                   parent_id 	=  '".$work_id."' ,
-                                   session_id	= '".intval($id_session)."' ,
-                                   user_id 		= '".$user_id."'";
-
-                Database::query($sql_add_publication);
-                $id = Database::insert_id();
-            }
-
-            if ($id) {
-                api_item_property_update($course_info, 'work', $id, 'DocumentAdded', $user_id, api_get_group_id());
-                $succeed = true;
-            }
-        } else {
-            $error_message .= Display::return_message(get_lang('IsNotPosibleSaveTheDocument'), 'error');
-        }
-        Security::clear_token();
-    } else {
-        //Bad token or can't add works
-        $error_message = Display::return_message(get_lang('IsNotPosibleSaveTheDocument'), 'error');
-    }
-
-    if (!empty($succeed) && !empty($id)) {
-        //last value is to check this is not "just" an edit
-        //YW Tis part serve to send a e-mail to the tutors when a new file is sent
-        $send = api_get_course_setting('email_alert_manager_on_new_doc');
-
-        if ($send > 0) {
-            // Lets predefine some variables. Be sure to change the from address!
-            if (empty($id_session)) {
-                //Teachers
-                $user_list = CourseManager::get_user_list_from_course_code(api_get_course_id(), null, null, null, COURSEMANAGER);
-            } else {
-                //Coaches
-                $user_list = CourseManager::get_user_list_from_course_code(api_get_course_id(), $session_id, null, null, 2);
-            }
-
-            $subject = "[" . api_get_setting('siteName') . "] ".get_lang('SendMailBody')."\n".get_lang('CourseName')." : ".$_course['name']."  ";
-
-            foreach ($user_list as $user_data) {
-                $to_user_id = $user_data['user_id'];
-                $emailbody = get_lang('SendMailBody')."\n".get_lang('CourseName')." : ".$_course['name']."\n";
-                $user_info = api_get_user_info($user_id);
-                $emailbody .= get_lang('UserName')." : ".api_get_person_name($user_info['firstname'], $user_info['lastname'])."\n";
-                $emailbody .= get_lang('DateSent')." : ".api_format_date(api_get_local_time())."\n";
-                $emailbody .= get_lang('WorkName')." : ".$title."\n\n".get_lang('DownloadLink')."\n";
-                $url = api_get_path(WEB_CODE_PATH)."work/work.php?".api_get_cidreq()."&amp;id=".$work_id;
-                $emailbody .= $url;
-
-                MessageManager::send_message_simple($to_user_id, $subject, $emailbody);
-            }
-        }
-        $message = get_lang('DocAdd');
-        event_upload($id);
-        $error_message .= Display::return_message(get_lang('DocAdd'));
-
+        $values = $form->getSubmitValues();
+        // Process work
+        $error_message = processWorkForm($workInfo, $values, $course_info, $session_id, $group_id, $user_id);
         $script = 'work_list.php';
         if ($is_allowed_to_edit) {
             $script = 'work_list_all.php';
         }
-        header('Location: '.api_get_path(WEB_CODE_PATH).'work/'.$script.'?'.api_get_cidreq().'&id='.$work_id.'&error_message='.$error_message);
+        if (!empty($error_message)) {
+            Session::write('error_message', $error_message);
+        }
+        header('Location: '.api_get_path(WEB_CODE_PATH).'work/'.$script.'?'.api_get_cidreq().'&id='.$work_id);
         exit;
+    } else {
+        // Bad token or can't add works
+        $error_message = Display::return_message(get_lang('IsNotPosibleSaveTheDocument'), 'error');
     }
 }
 
@@ -331,15 +226,20 @@ $htmlHeadXtra[] = to_javascript_work();
 Display :: display_header(null);
 
 if (!empty($work_id)) {
+<<<<<<< HEAD
 
     echo $message;
 
+=======
+    echo $validationStatus['message'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     if ($is_allowed_to_edit) {
         if (api_resource_is_locked_by_gradebook($work_id, LINK_STUDENTPUBLICATION)) {
             echo Display::display_warning_message(get_lang('ResourceLockedByGradebook'));
         } else {
             $form->display();
         }
+<<<<<<< HEAD
     } elseif ($is_author) {
         if (empty($work_item['qualificator_id']) || $work_item['qualificator_id'] == 0) {
             $form->display();
@@ -348,6 +248,9 @@ if (!empty($work_id)) {
         }
     } elseif ($student_can_edit_in_session && $has_ended == false) {
 
+=======
+    } elseif ($student_can_edit_in_session && $validationStatus['has_ended'] == false) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $form->display();
     } else {
         Display::display_error_message(get_lang('ActionNotAllowed'));

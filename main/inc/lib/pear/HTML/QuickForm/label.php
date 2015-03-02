@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * HTML class for static data
  * @example  $form->addElement('label', 'My label', 'Content');
@@ -22,6 +22,7 @@ class HTML_QuickForm_label extends HTML_QuickForm_static
 {
     // {{{ constructor
 
+<<<<<<< HEAD
     /**
      * Class constructor
      *
@@ -31,6 +32,16 @@ class HTML_QuickForm_label extends HTML_QuickForm_static
      */
     function HTML_QuickForm_label($label = null, $text = null, $attributes = null)
     {
+=======
+   /**
+    * Class constructor
+    *
+    * @param string $text   raw HTML to add
+    * @access public
+    * @return void
+    */
+    function HTML_QuickForm_label($label = null, $text = null, $attributes = null) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $this->HTML_QuickForm_static(null, $label, $text, $attributes);
         $this->_type = 'html';
     }
@@ -49,6 +60,21 @@ class HTML_QuickForm_label extends HTML_QuickForm_static
     {
         $renderer->renderHtml($this);
     }
+<<<<<<< HEAD
+=======
+    
+    function toHtml() {
+         $for = $this->getLabelFor();
+         return '<div class="control-group ">
+                    <label class="control-label"'.(empty($for)?'':' for="'.$for.'"').'>'.$this->getLabel().'</label>
+                    <div class="controls">
+                    '.HTML_QuickForm_static::toHtml().'
+                        </div>
+                 </div>
+                                        
+                ';
+    } //end func toHtml
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     function toHtml()
     {

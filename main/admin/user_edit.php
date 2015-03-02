@@ -48,6 +48,18 @@ function show_image(image,width,height) {
 	height = parseInt(height) + 20;
 	window_x = window.open(image,\'windowX\',\'width=\'+ width + \', height=\'+ height + \' , resizable=0\');
 }
+<<<<<<< HEAD
+=======
+
+function confirmation(name) {
+    if (confirm("'.get_lang('AreYouSureToDelete', '').' " + name + " ?")) {
+            document.forms["profile"].submit();
+    } else {
+        return false;
+    }
+}
+//-->
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 </script>';
 
 $noPHP_SELF = true;
@@ -244,8 +256,11 @@ $group[] = $form->createElement('radio', 'send_mail', null, get_lang('Yes'), 1);
 $group[] = $form->createElement('radio', 'send_mail', null, get_lang('No'), 0);
 $form->addGroup($group, 'mail', get_lang('SendMailToNewUser'), '&nbsp;', false);
 
-// Registration Date
-$form->addElement('static', 'registration_date', get_lang('RegistrationDate'), $user_data['registration_date']);
+// Registration User and Date
+$creatorInfo = api_get_user_info($user_data['creator_id']);
+$date = sprintf(get_lang('CreatedByXYOnZ'), 'user_information.php?user_id='.$user_data['creator_id'], $creatorInfo['username'], $user_data['registration_date']);
+$form->addElement('html', '<div class="control-group"><label class="control-label">'.get_lang('RegistrationDate').'</label><div class="controls">'.$date.'</div></div>');
+
 
 // Expiration Date
 $form->addElement('radio', 'radio_expiration_date', get_lang('ExpirationDate'), get_lang('NeverExpires'), 0);
@@ -317,6 +332,7 @@ $form->setDefaults($user_data);
 $error_drh = false;
 // Validate form
 if ($form->validate()) {
+<<<<<<< HEAD
 
     $user = $form->getSubmitValues();
     $is_user_subscribed_in_course = CourseManager::is_user_subscribed_in_course($user['user_id']);
@@ -337,6 +353,23 @@ if ($form->validate()) {
                 $_FILES['picture']['tmp_name']
             );
         }
+=======
+	$user = $form->getSubmitValues(1);
+	$is_user_subscribed_in_course = CourseManager::is_user_subscribed_in_course($user['user_id']);
+
+	if ($user['status'] == DRH && $is_user_subscribed_in_course) {
+		$error_drh = true;
+	} else {
+		$picture_element = $form->getElement('picture');
+		$picture = $picture_element->getValue();
+
+		$picture_uri = $user_data['picture_uri'];
+		if ($user['delete_picture']) {
+			$picture_uri = UserManager::delete_user_picture($user_id);
+		} elseif (!empty($picture['name'])) {
+			$picture_uri = UserManager::update_user_picture($user_id, $_FILES['picture']['name'], $_FILES['picture']['tmp_name']);
+		}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $lastname = $user['lastname'];
         $firstname = $user['firstname'];
@@ -391,6 +424,7 @@ if ($form->validate()) {
             $up = UserManager::update_openid($user_id, $user['openid']);
         }
 
+<<<<<<< HEAD
         // Using the extra field value obj
         $extraFieldValues = new ExtraFieldValue('user');
         $extraFieldValues->save_field_values($user);
@@ -402,6 +436,50 @@ if ($form->validate()) {
         );
         exit();
     }
+=======
+		foreach ($user as $key => $value) {
+			if (substr($key, 0, 6) == 'extra_') {
+                //an extra field
+                //@todo remove this as well as in the profile.php ad put it in a function
+                if (is_array($value) && isset($value['Y']) && isset($value['F']) && isset($value['d'])) {
+                    if (isset($value['H']) && isset($value['i'])) {
+                        // extra field date time
+                        $time = mktime($value['H'],$value['i'],0,$value['F'],$value['d'],$value['Y']);
+                        $value = date('Y-m-d H:i:s',$time);
+                    } else {
+                        // extra field date
+                        $time = mktime(0,0,0,$value['F'],$value['d'],$value['Y']);
+                        $value = date('Y-m-d',$time);
+                    }
+                }
+                // For array $value -> if exists key 'tmp_name' then must not be empty
+                // This avoid delete from user field value table when doesn't upload a file
+                if (is_array($value)) {
+                    if (array_key_exists('tmp_name', $value) && empty($value['tmp_name'])) {
+                        //Nothing to do
+                    } else {
+                        if (array_key_exists('tmp_name', $value)) {
+                            $value['tmp_name'] = Security::filter_filename($value['tmp_name']);
+                        }
+                        if (array_key_exists('name', $value)) {
+                            $value['name'] = Security::filter_filename($value['name']);
+                        }
+                        UserManager::update_extra_field_value($user_id, substr($key, 6), $value);
+                    }
+                } else {
+                    UserManager::update_extra_field_value($user_id, substr($key, 6), $value);
+                }
+            } elseif (strpos($key,'remove_extra') !== false) {
+                $extra_value = Security::filter_filename(urldecode(key($value)));
+                // To remove from user_field_value and folder
+                UserManager::update_extra_field_value($user_id, substr($key,13), $extra_value);
+            }
+		}
+		$tok = Security::get_token();
+		header('Location: user_list.php?action=show_message&message='.urlencode(get_lang('UserUpdated')).'&sec_token='.$tok);
+		exit();
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $message = null;

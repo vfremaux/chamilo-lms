@@ -79,12 +79,25 @@ if (isset($_GET['action']) && $_GET['action']=='delete_moderator') {
 	}
 }
 
+<<<<<<< HEAD
 $users	= $usergroup->get_users_by_group($group_id, false, array(GROUP_USER_PERMISSION_ADMIN, GROUP_USER_PERMISSION_READER, GROUP_USER_PERMISSION_MODERATOR), 0 , 1000);
+=======
+$users	= GroupPortalManager::get_users_by_group(
+    $group_id,
+    false,
+    array(GROUP_USER_PERMISSION_ADMIN, GROUP_USER_PERMISSION_READER, GROUP_USER_PERMISSION_MODERATOR),
+    0,
+    1000
+);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $new_member_list = array();
 
 $social_left_content = SocialManager::show_social_menu('member_list',$group_id);
-
 $social_right_content = '<h2>'.$group_info['name'].'</h2>';
+<<<<<<< HEAD
+=======
+$social_right_content .= '<div style="width:90%">';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 foreach($users as $user) {
     switch ($user['relation_type']) {
@@ -116,6 +129,7 @@ foreach($users as $user) {
     $new_member_list[] = $user;
 }
 if (count($new_member_list) > 0) {
+<<<<<<< HEAD
     $social_right_content .= Display::return_sortable_grid('list_members', array(), $new_member_list, array('hide_navigation'=>true, 'per_page' => 100), null, false, array(true, false, true,true,false,true,true));
 }
 
@@ -127,3 +141,24 @@ $tpl = $app['template'];
 $tpl->setHelp('Groups');
 $tpl->assign('content', $social_right_content);
 $tpl->assign('message', $show_message);
+=======
+    $social_right_content .= Display::return_sortable_grid(
+        'list_members',
+        array(),
+        $new_member_list,
+        array('hide_navigation'=>true, 'per_page' => 100),
+        array(),
+        false,
+        array(true, false, true, true, false, true, true)
+    );
+}
+$social_right_content .= '</div>';
+
+$tpl = new Template($tool_name);
+$tpl->set_help('Groups');
+$tpl->assign('social_left_content', $social_left_content);
+$tpl->assign('social_right_content', $social_right_content);
+
+$social_layout = $tpl->get_template('layout/social_layout.tpl');
+$tpl->display($social_layout);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

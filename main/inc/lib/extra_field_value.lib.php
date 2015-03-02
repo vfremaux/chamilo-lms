@@ -202,6 +202,7 @@ class ExtraFieldValue extends Model
                 case ExtraField::FIELD_TYPE_SELECT:
                 case ExtraField::FIELD_TYPE_SELECT_MULTIPLE:
                     //$field_options = $session_field_option->get_field_options_by_field($params['field_id']);
+<<<<<<< HEAD
                     //$params['field_value'] = split(';', $value_to_insert);
                     /*
                         if ($field_options) {
@@ -218,6 +219,24 @@ class ExtraFieldValue extends Model
                        } else {
                            return false; //enumerated type but no option found
                        }*/
+=======
+					//$params['field_value'] = split(';', $value_to_insert);
+               /*
+                   if ($field_options) {
+                       $check = false;
+                       foreach ($field_options as $option) {
+                           if (in_array($option['option_value'], $values)) {
+                               $check = true;
+                               break;
+                           }
+                      }
+                      if (!$check) {
+                          return false; //option value not found
+                      }
+                  } else {
+                      return false; //enumerated type but no option found
+                  }*/
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     break;
                 case ExtraField::FIELD_TYPE_TEXT:
                 case ExtraField::FIELD_TYPE_TEXTAREA:
@@ -226,7 +245,11 @@ class ExtraFieldValue extends Model
                     if (is_array($value)) {
                         if (isset($value['extra_'.$extra_field_info['field_variable']]) &&
                             isset($value['extra_'.$extra_field_info['field_variable'].'_second'])
+<<<<<<< HEAD
                         ) {
+=======
+                             ) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                             $value_to_insert = $value['extra_'.$extra_field_info['field_variable']].'::'.$value['extra_'.$extra_field_info['field_variable'].'_second'];
                         } else {
                             $value_to_insert = null;

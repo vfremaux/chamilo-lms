@@ -29,8 +29,12 @@ $uncompress = 1;
 $user_file = isset($_POST) ? isset($_FILES['user_file']) : array();
 $user_file = $user_file ? $user_file : array();
 $is_error = isset($user_file['error']) ? $user_file['error'] : false;
+<<<<<<< HEAD
 
 if (isset($_POST) && $is_error) {
+=======
+if (Request::is_post() && $is_error) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     return api_failure::set_failure('upload_file_too_big');
     unset($_FILES['user_file']);
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST' && count($_FILES) > 0 && !empty($_FILES['user_file']['name'])) {
@@ -55,11 +59,11 @@ if (isset($_POST) && $is_error) {
 
     $proximity = 'local';
     if (!empty($_REQUEST['content_proximity'])) {
-    	$proximity = Database::escape_string($_REQUEST['content_proximity']);
+        $proximity = Database::escape_string($_REQUEST['content_proximity']);
     }
     $maker = 'Scorm';
     if (!empty($_REQUEST['content_maker'])) {
-    	$maker = Database::escape_string($_REQUEST['content_maker']);
+        $maker = Database::escape_string($_REQUEST['content_maker']);
     }
 
     switch ($type) {
@@ -108,7 +112,7 @@ if (isset($_POST) && $is_error) {
         default:
             return api_failure::set_failure('not_a_learning_path');
     }
-} elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // end if is_uploaded_file
 
     // If file name given to get in claroline/upload/, try importing this way.
@@ -142,7 +146,7 @@ if (isset($_POST) && $is_error) {
             require_once 'scorm.class.php';
             $oScorm = new scorm();
             $manifest = $oScorm->import_local_package($s, $current_dir);
-            if ($manifest === false ) { //if ap i_set_failure
+            if ($manifest === false) { //if ap i_set_failure
                 return api_failure::set_failure(api_failure::get_last_failure());
             }
             if (!empty($manifest)) {
@@ -151,9 +155,13 @@ if (isset($_POST) && $is_error) {
             }
 
             $proximity = '';
-            if (!empty($_REQUEST['content_proximity'])) { $proximity = Database::escape_string($_REQUEST['content_proximity']); }
+            if (!empty($_REQUEST['content_proximity'])) {
+                $proximity = Database::escape_string($_REQUEST['content_proximity']);
+            }
             $maker = '';
-            if (!empty($_REQUEST['content_maker'])) {$maker = Database::escape_string($_REQUEST['content_maker']); }
+            if (!empty($_REQUEST['content_maker'])) {
+                $maker = Database::escape_string($_REQUEST['content_maker']);
+            }
             $oScorm->set_proximity($proximity);
             $oScorm->set_maker($maker);
             $oScorm->set_jslib('scorm_api.php');
@@ -167,9 +175,13 @@ if (isset($_POST) && $is_error) {
                 $oAICC->import_aicc(api_get_course_id());
             }
             $proximity = '';
-            if (!empty($_REQUEST['content_proximity'])) { $proximity = Database::escape_string($_REQUEST['content_proximity']); }
+            if (!empty($_REQUEST['content_proximity'])) {
+                $proximity = Database::escape_string($_REQUEST['content_proximity']);
+            }
             $maker = '';
-            if (!empty($_REQUEST['content_maker'])) { $maker = Database::escape_string($_REQUEST['content_maker']); }
+            if (!empty($_REQUEST['content_maker'])) {
+                $maker = Database::escape_string($_REQUEST['content_maker']);
+            }
             $oAICC->set_proximity($proximity);
             $oAICC->set_maker($maker);
             $oAICC->set_jslib('aicc_api.php');

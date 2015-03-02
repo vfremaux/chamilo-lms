@@ -17,12 +17,21 @@ $language_file = array('chat');
 require_once '../inc/global.inc.php';
 
 $course = $_GET['cidReq'];
+<<<<<<< HEAD
 $session_id = intval($_SESSION['id_session']);
 $group_id = intval($_SESSION['_gid']);
 
 // if we have the session set up
 if (!empty($course)) {
     $reset = (bool)$_GET['reset'];
+=======
+$session_id = api_get_session_id();
+$group_id 	= api_get_group_id();
+
+// if we have the session set up
+if (!empty($course)) {
+    $reset = isset($_GET['reset']) ? (bool)$_GET['reset'] : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $tbl_user = Database::get_main_table(TABLE_MAIN_USER);
     $query = "SELECT username FROM $tbl_user WHERE user_id='".intval($_user['user_id'])."'";
     $result = Database::query($query);
@@ -30,7 +39,11 @@ if (!empty($course)) {
     list($pseudo_user) = Database::fetch_row($result);
 
     $isAllowed = !(empty($pseudo_user) || !$_cid);
+<<<<<<< HEAD
     $isMaster = (bool)api_is_course_admin();
+=======
+    $isMaster = (bool)$is_courseAdmin;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $date_now = date('Y-m-d');
     $basepath_chat = '';
@@ -56,14 +69,21 @@ if (!empty($course)) {
             @mkdir($chat_path, api_get_permissions_for_new_directories());
             // Save chat files document for group into item property
             if (!empty($group_id)) {
+<<<<<<< HEAD
                 $doc_id = FileManager::add_document($_course, $basepath_chat, 'folder', 0, 'chat_files');
                 $sql = "INSERT INTO $TABLEITEMPROPERTY (c_id, tool,insert_user_id,insert_date,lastedit_date,ref,lastedit_type,lastedit_user_id,to_group_id,to_user_id,visibility)
 						VALUES ($course_id, 'document',1,NOW(),NOW(),$doc_id,'FolderCreated',1,$group_id,NULL,0)";
+=======
+                $doc_id = add_document($_course, $basepath_chat, 'folder', 0, 'chat_files');
+                $sql = "INSERT INTO $TABLEITEMPROPERTY (c_id, tool,insert_user_id,insert_date,lastedit_date,ref,lastedit_type,lastedit_user_id,to_group_id,to_user_id,visibility)
+                        VALUES ($course_id, 'document',1,NOW(),NOW(),$doc_id,'FolderCreated',1,$group_id,NULL,0)";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 Database::query($sql);
             }
         }
     }
 
+<<<<<<< HEAD
     $filename_chat = '';
     if (!empty($group_id)) {
         $filename_chat = 'messages-'.$date_now.'_gid-'.$group_id.'.log.html';
@@ -214,6 +234,94 @@ if (!empty($course)) {
         ).'</a>';
         echo '</div>';
     }
+=======
+	$filename_chat = '';
+	if (!empty($group_id)) {
+		$filename_chat = 'messages-'.$date_now.'_gid-'.$group_id.'.log.html';
+	} else if (!empty($session_id)) {
+		$filename_chat = 'messages-'.$date_now.'_sid-'.$session_id.'.log.html';
+	} else {
+		$filename_chat = 'messages-'.$date_now.'.log.html';
+	}
+
+	if (!file_exists($chat_path.$filename_chat)) {
+		@fclose(fopen($chat_path.$filename_chat, 'w'));
+		if (!api_is_anonymous()) {
+			$doc_id = add_document($_course, $basepath_chat.'/'.$filename_chat, 'file', 0, $filename_chat);
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id'], $group_id, null, null, null, $session_id);
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id'], $group_id, null, null, null, $session_id);
+			item_property_update_on_folder($_course, $basepath_chat, $_user['user_id']);
+		}
+	}
+
+	$basename_chat = '';
+	if (!empty($group_id)) {
+		$basename_chat = 'messages-'.$date_now.'_gid-'.$group_id;
+	} else if (!empty($session_id)) {
+		$basename_chat = 'messages-'.$date_now.'_sid-'.$session_id;
+	} else {
+		$basename_chat = 'messages-'.$date_now;
+	}
+
+	if ($reset && $isMaster) {
+
+		$i = 1;
+		while (file_exists($chat_path.$basename_chat.'-'.$i.'.log.html')) {
+			$i++;
+		}
+
+		@rename($chat_path.$basename_chat.'.log.html', $chat_path.$basename_chat.'-'.$i.'.log.html');
+
+		@fclose(fopen($chat_path.$basename_chat.'.log.html', 'w'));
+
+		$doc_id = add_document($_course, $basepath_chat.'/'.$basename_chat.'-'.$i.'.log.html', 'file', filesize($chat_path.$basename_chat.'-'.$i.'.log.html'), $basename_chat.'-'.$i.'.log.html');
+
+		api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id'], $group_id, null, null, null, $session_id);
+		api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id'], $group_id, null, null, null, $session_id);
+		item_property_update_on_folder($_course,$basepath_chat, $_user['user_id']);
+
+		$doc_id = DocumentManager::get_document_id($_course, $basepath_chat.'/'.$basename_chat.'.log.html');
+
+		update_existing_document($_course, $doc_id, 0);
+	}
+
+	$remove = 0;
+	$content = array();
+	if (file_exists($chat_path.$basename_chat.'.log.html')) {
+		$content = file($chat_path.$basename_chat.'.log.html');
+		$nbr_lines = sizeof($content);
+		$remove = $nbr_lines - 100;
+	}
+
+	if ($remove < 0) {
+		$remove = 0;
+	}
+
+	array_splice($content, 0, $remove);
+	require 'header_frame.inc.php';
+
+	if (isset($_GET['origin']) && $_GET['origin'] == 'whoisonline') {  //the caller
+		$content[0] = get_lang('CallSent').'<br />'.$content[0];
+	}
+	if (isset($_GET['origin']) && $_GET['origin'] == 'whoisonlinejoin') {   //the joiner (we have to delete the chat request to him when he joins the chat)
+		$track_user_table = Database::get_main_table(TABLE_MAIN_USER);
+		$sql = "UPDATE $track_user_table set chatcall_user_id = '', chatcall_date = '', chatcall_text='' WHERE (user_id = ".$_user['user_id'].")";
+		$result = Database::query($sql);
+	}
+
+	echo '<div style="margin-left: 5px;">';
+	foreach ($content as & $this_line) {
+		echo strip_tags(api_html_entity_decode($this_line), '<br> <span> <b> <i> <img> <font>');
+	}
+	echo '</div>';
+	echo '<a name="bottom" style="text-decoration:none;">&nbsp;</a>';
+	if ($isMaster || $is_courseCoach) {
+		$rand = mt_rand(1, 1000);
+		echo '<div style="margin-left: 5px;">';
+		echo '<a href="'.api_get_self().'?rand='.$rand.'&reset=1&'.api_get_cidreq().'#bottom" onclick="javascript: if(!confirm(\''.addslashes(api_htmlentities(get_lang('ConfirmReset'), ENT_QUOTES)).'\')) return false;">'.Display::return_icon('delete.gif', get_lang('ClearList')).' '.get_lang('ClearList').'</a>';
+		echo '</div>';
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
     require 'header_frame.inc.php';
     $message = get_lang('CloseOtherSession');

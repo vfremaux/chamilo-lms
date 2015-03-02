@@ -56,7 +56,6 @@ function add_user_to_url(code, content) {
 }
 
 function send() {
-
 	if (document.formulaire.access_url_id.value!=0) {
 		document.formulaire.form_sent.value=0;
 		document.formulaire.add_type.value=\''.$add_type.'\';
@@ -64,8 +63,7 @@ function send() {
 	}
 }
 
-function remove_item(origin)
-{
+function remove_item(origin) {
 	for(var i = 0 ; i<origin.options.length ; i++) {
 		if(origin.options[i].selected) {
 			origin.options[i]=null;
@@ -82,6 +80,7 @@ $UserList=array();
 $message = '';
 
 if (isset($_POST['form_sent']) && $_POST['form_sent']) {
+<<<<<<< HEAD
 	$form_sent  = $_POST['form_sent'];
 	$UserList   = $_POST['sessionUsersList'];
 
@@ -96,6 +95,21 @@ if (isset($_POST['form_sent']) && $_POST['form_sent']) {
 		} elseif (is_array($UserList)) {
 			$result     = UrlManager::update_urls_rel_user($UserList, $access_url_id);
             $url_info   = UrlManager::get_url_data_from_id($access_url_id);
+=======
+    $form_sent = $_POST['form_sent'];
+    $UserList = $_POST['sessionUsersList'];
+
+    if (!is_array($UserList)) {
+        $UserList = array();
+    }
+    if ($form_sent == 1) {
+        if ($access_url_id == 0) {
+            header('Location: access_url_edit_users_to_url.php?action=show_message&message=' . get_lang('SelectURL'));
+            exit;
+        } elseif (is_array($UserList)) {
+            $result = UrlManager::update_urls_rel_user($UserList, $access_url_id);
+            $url_info = UrlManager::get_url_data_from_id($access_url_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if (!empty($result)) {
                 $message .= 'URL: '.$url_info['url'].'<br />';
             }
@@ -107,7 +121,11 @@ if (isset($_POST['form_sent']) && $_POST['form_sent']) {
                 foreach ($result['users_added'] as $user) {
                     $user_info = api_get_user_info($user);
                     if (!empty($user_info)) {
+<<<<<<< HEAD
                         $user_added_list[] = $i.'. '.api_get_person_name($user_info['firstname'], $user_info['lastname']);
+=======
+                        $user_added_list[] = $i . '. ' . api_get_person_name($user_info['firstname'], $user_info['lastname'], null, null, null, null, $user_info['username']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         $i++;
                     }
                 }
@@ -148,7 +166,11 @@ echo '</div>';
 api_display_tool_title($tool_name);
 
 if (isset($_GET['action']) && $_GET['action'] == 'show_message') {
+<<<<<<< HEAD
 	Display :: display_normal_message(Security::remove_XSS(stripslashes($_GET['message'])));
+=======
+    Display :: display_normal_message(Security::remove_XSS(stripslashes($_GET['message'])));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $nosessionUsersList = $sessionUsersList = array();
@@ -160,6 +182,7 @@ if ($ajax_search) {
 		$sessionUsersList[$user['user_id']] = $user ;
 	}
 } else {
+<<<<<<< HEAD
 	$Users = UrlManager::get_url_rel_user_data();
 	foreach ($Users as $user) {
 		if ($user['access_url_id'] == $access_url_id) {
@@ -177,6 +200,28 @@ if ($ajax_search) {
 		if (!in_array($user['user_id'],$user_list_leys))
 			$nosessionUsersList[$user['user_id']] = $user ;
 	}
+=======
+    $order_clause = api_sort_by_first_name() ? ' ORDER BY username, firstname, lastname' : ' ORDER BY username, lastname, firstname';
+
+    $Users = UrlManager::get_url_rel_user_data(null, $order_clause);
+    foreach ($Users as $user) {
+        if ($user['access_url_id'] == $access_url_id) {
+            $sessionUsersList[$user['user_id']] = $user;
+        }
+    }
+
+    $sql = "SELECT u.user_id, lastname, firstname, username
+	  	  	FROM $tbl_user u WHERE status <> " . ANONYMOUS . " " .
+            $order_clause;
+    $result = Database::query($sql);
+    $Users = Database::store_result($result);
+    $user_list_leys = array_keys($sessionUsersList);
+    foreach ($Users as $user) {
+        if (!in_array($user['user_id'], $user_list_leys)) {
+            $nosessionUsersList[$user['user_id']] = $user;
+        }
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 if ($add_type == 'multiple') {
@@ -186,7 +231,6 @@ if ($add_type == 'multiple') {
 	$link_add_type_unique = get_lang('SessionAddTypeUnique');
 	$link_add_type_multiple = '<a href="'.api_get_self().'?add_type=multiple&access_url_id='.$access_url_id.'">'.get_lang('SessionAddTypeMultiple').'</a>';
 }
-
 $url_list = UrlManager::get_url_data();
 
 ?>
@@ -224,7 +268,11 @@ $url_list = UrlManager::get_url_data();
 
 <?php
 if (!empty($errorMsg)) {
+<<<<<<< HEAD
 	Display::display_normal_message($errorMsg); //main API
+=======
+    Display::display_normal_message($errorMsg); //main API
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 ?>
 
@@ -245,10 +293,10 @@ if (!empty($errorMsg)) {
   <td></td>
   <td align="center"><b><?php echo get_lang('UserListIn').' '.$url_selected; ?> :</b></td>
 </tr>
-
 <tr>
   <td align="center">
   <div id="content_source">
+<<<<<<< HEAD
   	  <?php
   	  if ($ajax_search) {
   	  	?>
@@ -287,10 +335,40 @@ if (!empty($errorMsg)) {
 	<?php
   }
   ?>
+=======
+    <?php if ($ajax_search) { ?>
+    <input type="text" id="user_to_add" onkeyup="xajax_search_users(this.value,document.formulaire.access_url_id.options[document.formulaire.access_url_id.selectedIndex].value)" />
+    <div id="ajax_list_users"></div>
+    <?php } else { ?>
+    <select id="origin_users" name="nosessionUsersList[]" multiple="multiple" size="15" style="width:380px;">
+    <?php
+        foreach ($nosessionUsersList as $enreg) {
+    ?>
+    <option value="<?php echo $enreg['user_id']; ?>"><?php echo $enreg['username'].' - '.api_get_person_name($enreg['firstname'], $enreg['lastname']); ?></option>
+    <?php
+     }
+    unset($nosessionUsersList);
+    ?>
+    </select>
+        <?php
+    }
+    ?>
+  </div>
+  </td>
+  <td width="10%" valign="middle" align="center">
+    <?php if ($ajax_search) { ?>
+        <button class="arrowl" type="button" onclick="remove_item(document.getElementById('destination_users'))"> </button>
+    <?php } else { ?>
+        <button class="arrowr" type="button" onclick="moveItem(document.getElementById('origin_users'), document.getElementById('destination_users'))" ></button>
+        <br /><br />
+        <button class="arrowl" type="button" onclick="moveItem(document.getElementById('destination_users'), document.getElementById('origin_users'))" ></button>
+    <?php } ?>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	<br /><br /><br /><br /><br /><br />
   </td>
   <td align="center">
   <select id="destination_users" name="sessionUsersList[]" multiple="multiple" size="15" style="width:380px;">
+<<<<<<< HEAD
 
 <?php
 foreach ($sessionUsersList as $enreg) {
@@ -301,35 +379,89 @@ foreach ($sessionUsersList as $enreg) {
 unset($sessionUsersList);
 ?>
 
+=======
+    <?php
+    foreach ($sessionUsersList as $enreg) {
+        ?>
+        <option value="<?php echo $enreg['user_id']; ?>">
+            <?php echo $enreg['username'].' - '.api_get_person_name($enreg['firstname'], $enreg['lastname']); ?>
+        </option>
+    <?php
+    }
+    unset($sessionUsersList);
+    ?>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
   </select></td>
 </tr>
-
 <tr>
 	<td colspan="3" align="center">
 		<br />
+<<<<<<< HEAD
 		<?php
 		if (isset($_GET['add']))
 			echo '<button class="save" type="button" onclick="valide()" >'.get_lang('AddUsersToURL').'</button>';
 		else
 			echo '<button class="save" type="button" onclick="valide()" >'.get_lang('EditUsersToURL').'</button>';
 		?>
+=======
+        <?php
+        if (isset($_GET['add'])) {
+            echo '<button class="save" type="button" onclick="valide()" >' . get_lang('AddUsersToURL') . '</button>';
+        } else {
+            echo '<button class="save" type="button" onclick="valide()" >' . get_lang('EditUsersToURL') . '</button>';
+        }
+        ?>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	</td>
 </tr>
 </table>
 </form>
 <script>
+<<<<<<< HEAD
 function valide(){
+=======
+function moveItem(origin , destination) {
+	for(var i = 0 ; i<origin.options.length ; i++) {
+		if(origin.options[i].selected) {
+			destination.options[destination.length] = new Option(origin.options[i].text,origin.options[i].value);
+			origin.options[i]=null;
+			i = i-1;
+		}
+	}
+	destination.selectedIndex = -1;
+	sortOptions(destination.options);
+}
+
+function sortOptions(options) {
+	newOptions = new Array();
+	for (i = 0 ; i<options.length ; i++)
+		newOptions[i] = options[i];
+	newOptions = newOptions.sort(mysort);
+	options.length = 0;
+	for(i = 0 ; i < newOptions.length ; i++)
+		options[i] = newOptions[i];
+
+}
+
+function mysort(a, b) {
+	if(a.text.toLowerCase() > b.text.toLowerCase()){
+		return 1;
+	}
+	if(a.text.toLowerCase() < b.text.toLowerCase()){
+		return -1;
+	}
+	return 0;
+}
+
+function valide() {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	var options = document.getElementById('destination_users').options;
 	for (i = 0 ; i<options.length ; i++)
 		options[i].selected = true;
 	document.forms.formulaire.submit();
 }
-
-
-function loadUsersInSelect(select){
-
+function loadUsersInSelect(select) {
 	var xhr_object = null;
-
 	if(window.XMLHttpRequest) // Firefox
 		xhr_object = new XMLHttpRequest();
 	else if(window.ActiveXObject) // Internet Explorer
@@ -338,20 +470,15 @@ function loadUsersInSelect(select){
 	alert("Votre navigateur ne supporte pas les objets XMLHTTPRequest...");
 
 	xhr_object.open("POST", "loadUsersInSelect.ajax.php");
-
 	xhr_object.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-
 	nosessionUsers = makepost(document.getElementById('origin_users'));
 	sessionUsers = makepost(document.getElementById('destination_users'));
 	nosessionClasses = makepost(document.getElementById('origin_classes'));
 	sessionClasses = makepost(document.getElementById('destination_classes'));
 	xhr_object.send("nosessionusers="+nosessionUsers+"&sessionusers="+sessionUsers+"&nosessionclasses="+nosessionClasses+"&sessionclasses="+sessionClasses);
-
 	xhr_object.onreadystatechange = function() {
-		if(xhr_object.readyState == 4) {
+		if (xhr_object.readyState == 4) {
 			document.getElementById('content_source').innerHTML = result = xhr_object.responseText;
-			//alert(xhr_object.responseText);
 		}
 	}
 }
@@ -361,9 +488,7 @@ function makepost(select){
 	var ret = "";
 	for (i = 0 ; i<options.length ; i++)
 		ret = ret + options[i].value +'::'+options[i].text+";;";
-
 	return ret;
-
 }
 </script>
 <?php

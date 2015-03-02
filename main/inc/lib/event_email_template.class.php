@@ -25,6 +25,10 @@ class EventEmailTemplate extends Model {
         return Database::select('*',$this->table, array('where'=>$where_conditions,'order' =>'name ASC'));
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     /**
      * Displays the title + grid
      */
@@ -52,8 +56,19 @@ class EventEmailTemplate extends Model {
      * @param   string  action add, edit
      * @return  obj     form validator obj
      */
+<<<<<<< HEAD
     public function return_form($url, $action)
     {
+=======
+    public function return_form($url, $action) {
+
+		$oFCKeditor = new FCKeditor('description') ;
+		$oFCKeditor->ToolbarSet = 'careers';
+		$oFCKeditor->Width		= '100%';
+		$oFCKeditor->Height		= '200';
+		$oFCKeditor->Value		= '';
+		$oFCKeditor->CreateHtml();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $form = new FormValidator('career', 'post', $url);
         // Setting the form elements

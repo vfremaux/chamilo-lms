@@ -160,13 +160,47 @@ function cas_is_authenticated()
 }
 
 /**
-* Logs out the user of the cas 
-* The user MUST be logged in with cas to use this function 
-**/ 
-function cas_logout()
+ * Logs out the user of the cas
+ * The user MUST be logged in with cas to use this function
+ *
+ * @param $uinfo array user info (not needed)
+ * @param $location string redirect url
+ *
+ * @see online_logout()
+ */
+function cas_logout($uinfo=null, $location=null)
 {
-	//phpCAS::logoutWithRedirectService("fmc.univ-paris5.fr");		
-	phpCAS::logoutWithRedirectService(api_get_path(WEB_PATH));		
+    global $cas_auth_ver, $cas_auth_server, $cas_auth_port, $cas_auth_uri;
+    global $PHPCAS_CLIENT;
+    if (!is_object($PHPCAS_CLIENT)) {
+        phpCAS::client($cas_auth_ver, $cas_auth_server, $cas_auth_port, $cas_auth_uri);
+        phpCAS::setNoCasServerValidation();
+    }
+
+    if (!isset($location)) {
+        $location = api_get_path(WEB_PATH);
+    }
+
+    phpCAS::logoutWithRedirectService($location);
 }
+
+
+
+/*
+ * Return the direct URL to a course code with CAS login
+ */
+function get_cas_direct_URL($in_course_code) {
+    return api_get_path(WEB_PATH).'main/auth/cas/logincas.php?firstpage='.$in_course_code;
+}
+
+
+function getCASLogoHTML() {
+    $out_res = "";
+    if (api_get_setting("casLogoURL") != "") {
+        $out_res = "<img src='".api_get_setting("casLogoURL")."' alt='CAS Logo' />";
+    }
+    return $out_res;
+}
+
 
 ?>

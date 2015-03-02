@@ -44,9 +44,103 @@ $(document).ready(function() {
     );
 });
 
+<<<<<<< HEAD
 function setFocus() {
    $("#document_title").focus();
 }
+=======
+function InnerDialogLoaded() {
+	var isIE  = (navigator.appVersion.indexOf(\'MSIE\') != -1) ? true : false ;
+	var EditorFrame = null ;
+
+	if ( !isIE ) {
+		EditorFrame = window.frames[0] ;
+	} else {
+		// For this dynamic page window.frames[0] enumerates frames in a different order in IE.
+		// We need a sure method to locate the frame that contains the online editor.
+		for ( var i = 0, n = window.frames.length ; i < n ; i++ ) {
+			if ( window.frames[i].location.toString().indexOf(\'InstanceName=content\') != -1 ) {
+				EditorFrame = window.frames[i] ;
+			}
+		}
+	}
+
+	if ( !EditorFrame ) {
+		return null ;
+	}
+
+	var B = new EditorFrame.FCKToolbarButton(\'Templates\', EditorFrame.FCKLang.Templates);
+	return B.ClickFrame();
+};
+
+	var temp=false;
+	var temp2=false;
+	var load_default_template = '. ((isset($_POST['submit']) || empty($_SERVER['QUERY_STRING'])) ? 'false' : 'true' ) .';
+
+	function FCKeditor_OnComplete( editorInstance ) {
+		editorInstance.Events.AttachEvent( \'OnSelectionChange\', check_for_title ) ;
+		document.getElementById(\'frmModel\').innerHTML = "<iframe style=\'height: 525px; width: 180px;\' scrolling=\'no\' frameborder=\'0\' src=\''.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/fckdialogframe.html \'>";
+	}
+
+	function check_for_title() {
+		if (temp) {
+			// This functions shows that you can interact directly with the editor area
+			// DOM. In this way you have the freedom to do anything you want with it.
+
+			// Get the editor instance that we want to interact with.
+			var oEditor = FCKeditorAPI.GetInstance(\'content\') ;
+
+			// Get the Editor Area DOM (Document object).
+			var oDOM = oEditor.EditorDocument ;
+
+			var iLength ;
+			var contentText ;
+			var contentTextArray;
+			var bestandsnaamNieuw = "";
+			var bestandsnaamOud = "";
+
+			// The are two different ways to get the text (without HTML markups).
+			// It is browser specific.
+            // If Internet Explorer.
+			if( document.all ) {
+				contentText = oDOM.body.innerText ;
+			} else  {
+			    // If Gecko.
+				var r = oDOM.createRange() ;
+				r.selectNodeContents( oDOM.body ) ;
+				contentText = r.toString() ;
+			}
+
+			var index=contentText.indexOf("/*<![CDATA");
+			contentText=contentText.substr(0,index);
+
+			// Compose title if there is none
+			contentTextArray = contentText.split(\' \') ;
+			var x=0;
+			for(x=0; (x<5 && x<contentTextArray.length); x++) {
+				if(x < 4) {
+					bestandsnaamNieuw += contentTextArray[x] + \' \';
+				} else {
+					bestandsnaamNieuw += contentTextArray[x];
+				}
+			}
+		}
+		temp=true;
+	}
+
+	function trim(s) {
+        while(s.substring(0,1) == \' \') {
+            s = s.substring(1,s.length);
+        }
+        while(s.substring(s.length-1,s.length) == \' \') {
+            s = s.substring(0,s.length-1);
+        }
+        return s;
+	}
+	function setFocus() {
+	   $("#document_title").focus();
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $(window).load(function () {
     setFocus();
@@ -92,6 +186,7 @@ if (empty($document_data)) {
     $folder_id = $document_data['id'];
     $dir = $document_data['path'];
 }
+
 
 /*	MAIN CODE */
 
@@ -171,6 +266,7 @@ if (!is_dir($filepath)) {
 
 if (!$is_certificate_mode) {
     $req_gid = null;
+<<<<<<< HEAD
     if (api_is_in_group()) {
         $req_gid = '&amp;gidReq='.$groupId;
         $interbreadcrumb[] = array(
@@ -197,35 +293,88 @@ if (!($is_allowed_to_edit || GroupManager::groupMemberWithUploadRights() || is_m
 ))
 ) {
     api_not_allowed(true);
+=======
+	if (api_is_in_group()) {
+		$req_gid = '&amp;gidReq='.api_get_group_id();
+		$interbreadcrumb[] = array ("url" => "../group/group_space.php?gidReq=".api_get_group_id(), "name" => get_lang('GroupSpace'));
+		$noPHP_SELF = true;
+		$to_group_id = api_get_group_id();
+		$path = explode('/', $dir);
+		if ('/'.$path[1] != $group_properties['directory']) {
+			api_not_allowed(true);
+		}
+	}
+	$interbreadcrumb[] = array("url" => "./document.php?curdirpath=".urlencode($dir).$req_gid, "name" => get_lang('Documents'));
+} else {
+	$interbreadcrumb[]= array('url' => '../gradebook/'.$_SESSION['gradebook_dest'], 'name' => get_lang('Gradebook'));
+}
+
+if (!$is_allowed_in_course) {
+	api_not_allowed(true);
+}
+
+if (!($is_allowed_to_edit ||
+    $_SESSION['group_member_with_upload_rights'] ||
+    is_my_shared_folder($_user['user_id'], $dir, api_get_session_id()))
+) {
+	api_not_allowed(true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 event_access_tool(TOOL_DOCUMENT);
 
 $display_dir = $dir;
+<<<<<<< HEAD
 if (isset ($group_properties)) {
     $display_dir = explode('/', $dir);
     unset ($display_dir[0]);
     unset ($display_dir[1]);
     $display_dir = implode('/', $display_dir);
+=======
+if (isset($group_properties)) {
+	$display_dir = explode('/', $dir);
+	unset($display_dir[0]);
+	unset($display_dir[1]);
+	$display_dir = implode('/', $display_dir);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $select_cat = isset($_GET['selectcat']) ? intval($_GET['selectcat']) : null;
-
+$curDirPath = isset($_GET['curdirpath']) ? Security::remove_XSS($_GET['curdirpath']) : null;
 // Create a new form
+<<<<<<< HEAD
 $form = new FormValidator('create_document', 'post', api_get_self().'?'.api_get_cidreq().'&dir='.Security::remove_XSS(
     urlencode($dir)
 ).'&selectcat='.$select_cat, null, array('class' => 'form-horizontal'));
+=======
+$form = new FormValidator(
+    'create_document',
+    'post',
+    api_get_self().'?'.api_get_cidreq().'&dir='.Security::remove_XSS(urlencode($dir)).'&selectcat='.$select_cat,
+    null,
+    array('class' =>'form-vertical')
+);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // form title
 $form->addElement('header', $nameTools);
 
+<<<<<<< HEAD
 if ($is_certificate_mode) { //added condition for certicate in gradebook
     $form->addElement('hidden', 'certificate', 'true', array('id' => 'certificate'));
     if (isset($_GET['selectcat'])) {
         $form->addElement('hidden', 'selectcat', $select_cat);
     }
 
+=======
+if ($is_certificate_mode) {//added condition for certicate in gradebook
+	$form->addElement('hidden','certificate','true',array('id'=>'certificate'));
+	if (isset($_GET['selectcat'])) {
+		$form->addElement('hidden','selectcat', $select_cat);
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
+
 // Hidden element with current directory
 $form->addElement('hidden', 'id');
 $defaults = array();
@@ -396,6 +545,7 @@ $form->setDefaults($defaults);
 
 // If form validates -> save the new document
 if ($form->validate()) {
+<<<<<<< HEAD
     $values = $form->exportValues();
     $readonly = isset($values['readonly']) ? 1 : 0;
 
@@ -415,11 +565,32 @@ if ($form->validate()) {
     $filename = Security::remove_XSS($filename);
     $filename = api_replace_dangerous_char($filename);
     $filename = FileManager::disable_dangerous_file($filename);
+=======
+	$values = $form->exportValues();
+	$readonly = isset($values['readonly']) ? 1 : 0;
+	$values['title'] = trim($values['title']);
+
+	/*if (!empty($values['curdirpath'])) {
+		$dir = $values['curdirpath'];
+	}*/
+
+    if ($dir[strlen($dir) - 1] != '/') {
+		$dir .= '/';
+	}
+
+    // Setting the filename
+	$filename = $values['title'];
+	$filename = addslashes(trim($filename));
+	$filename = Security::remove_XSS($filename);
+	$filename = replace_dangerous_char($filename);
+	$filename = disable_dangerous_file($filename);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     //Setting the title
     $title = $values['title'];
 
     //Setting the extension
+<<<<<<< HEAD
     $extension = 'html';
 
     $content = Security::remove_XSS($values['content'], COURSEMANAGERLOWSECURITY);
@@ -526,20 +697,74 @@ if ($form->validate()) {
         );
         if ($document_id) {
             api_item_property_update(
+=======
+	$extension = 'html';
+
+	$content = Security::remove_XSS($values['content'], COURSEMANAGERLOWSECURITY);
+
+	if (strpos($content, '/css/frames.css') == false) {
+		$content = str_replace('</head>', '<link rel="stylesheet" href="./css/frames.css" type="text/css" /><style> body{margin:50px;}</style></head>', $content);
+	}
+	if ($fp = @fopen($filepath.$filename.'.'.$extension, 'w')) {
+		$content = str_replace(api_get_path(WEB_COURSE_PATH), $_configuration['url_append'].'/courses/', $content);
+
+		// change the path of mp3 to absolute
+		// first regexp deals with ../../../ urls
+		// Disabled by Ivan Tcholakov.
+		//$content = preg_replace("|(flashvars=\"file=)(\.+/)+|","$1".api_get_path(REL_COURSE_PATH).$_course['path'].'/document/',$content);
+		//second regexp deals with audio/ urls
+		// Disabled by Ivan Tcholakov.
+		//$content = preg_replace("|(flashvars=\"file=)([^/]+)/|","$1".api_get_path(REL_COURSE_PATH).$_course['path'].'/document/$2/',$content);
+		fputs($fp, $content);
+		fclose($fp);
+		chmod($filepath.$filename.'.'.$extension, api_get_permissions_for_new_files());
+		if (!is_dir($filepath.'css')) {
+			mkdir($filepath.'css', api_get_permissions_for_new_directories());
+			$doc_id = add_document($_course, $dir.'css', 'folder', 0, 'css');
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'FolderCreated', $_user['user_id'], null, null, null, null, $current_session_id);
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id'], null, null, null, null, $current_session_id);
+		}
+
+		if (!is_file($filepath.'css/frames.css')) {
+			// Make a copy of the current css for the new document
+			copy(api_get_path(SYS_CODE_PATH).'css/'.api_get_setting('stylesheets').'/frames.css', $filepath.'css/frames.css');
+			$doc_id = add_document($_course, $dir.'css/frames.css', 'file', filesize($filepath.'css/frames.css'), 'frames.css');
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentAdded', $_user['user_id'], null, null, null, null, $current_session_id);
+			api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'invisible', $_user['user_id'], null, null, null, null, $current_session_id);
+		}
+
+		$file_size = filesize($filepath.$filename.'.'.$extension);
+		$save_file_path = $dir.$filename.'.'.$extension;
+
+		$document_id = add_document($_course, $save_file_path, 'file', $file_size, $title, null, $readonly);
+
+		if ($document_id) {
+			api_item_property_update(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $_course,
                 TOOL_DOCUMENT,
                 $document_id,
                 'DocumentAdded',
                 $_user['user_id'],
+<<<<<<< HEAD
                 $groupId,
+=======
+                $to_group_id,
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 null,
                 null,
                 null,
                 $current_session_id
             );
+<<<<<<< HEAD
             // Update parent folders
             FileManager::item_property_update_on_folder($_course, $dir, $_user['user_id']);
             $new_comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
+=======
+			// Update parent folders
+			item_property_update_on_folder($_course, $dir, $_user['user_id']);
+			$new_comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $new_comment = Database::escape_string($new_comment);
             $new_title = isset($_POST['title']) ? trim($_POST['title']) : '';
             $new_title = htmlspecialchars($new_title);
@@ -565,6 +790,7 @@ if ($form->validate()) {
             if ($is_certificate_mode) {
                 $df = DocumentManager::get_default_certificate_id($_course['code']);
                 if (!isset($df)) {
+<<<<<<< HEAD
                     DocumentManager::attach_gradebook_certificate($_course['code'], $document_id);
                 }
                 $certificate_condition = '&certificate=true';
@@ -581,6 +807,25 @@ if ($form->validate()) {
         Display :: display_error_message(get_lang('Impossible'));
         Display :: display_footer();
     }
+=======
+                    DocumentManager::attach_gradebook_certificate ($_course['code'],$document_id);
+				}
+				$certificate_condition = '&certificate=true&curdirpath=/certificates';
+			}
+
+			header('Location: document.php?'.api_get_cidreq().'&id='.$folder_id.$selectcat.$certificate_condition);
+			exit();
+		} else {
+			Display :: display_header($nameTools, 'Doc');
+			Display :: display_error_message(get_lang('Impossible'));
+			Display :: display_footer();
+		}
+	} else {
+		Display :: display_header($nameTools, 'Doc');
+		Display :: display_error_message(get_lang('Impossible'));
+		Display :: display_footer();
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
 
     // Interbreadcrumb for the current directory root path

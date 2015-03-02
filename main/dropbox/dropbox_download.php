@@ -28,7 +28,15 @@ require_once api_get_path(LIBRARY_PATH).'document.lib.php';
 $course_id = api_get_course_int_id();
 $user_id = api_get_user_id();
 
+<<<<<<< HEAD
 if (isset($_GET['cat_id']) AND is_numeric($_GET['cat_id']) AND $_GET['action'] == 'downloadcategory' AND isset($_GET['sent_received'])) {
+=======
+if (isset($_GET['cat_id']) AND
+    is_numeric($_GET['cat_id']) AND
+    $_GET['action'] == 'downloadcategory' AND
+    isset($_GET['sent_received'])
+) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     /** step 1: constructing the sql statement.
     Due to the nature off the classes of the dropbox the categories for sent files are stored in the table
     dropbox_file while the categories for the received files are stored in dropbox_post.
@@ -39,7 +47,12 @@ if (isset($_GET['cat_id']) AND is_numeric($_GET['cat_id']) AND $_GET['action'] =
     if ($_GET['sent_received'] == 'sent') {
         // here we also incorporate the person table to make sure that deleted sent documents are not included.
         $sql = "SELECT DISTINCT file.id, file.filename, file.title
+<<<<<<< HEAD
                 FROM ".$dropbox_cnf['tbl_file']." file INNER JOIN ".$dropbox_cnf['tbl_person']." person
+=======
+                FROM ".$dropbox_cnf['tbl_file']." file
+                INNER JOIN ".$dropbox_cnf['tbl_person']." person
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 ON (person.file_id=file.id AND file.c_id = $course_id AND person.c_id = $course_id)
                 WHERE
                     file.uploader_id = $user_id AND
@@ -49,7 +62,12 @@ if (isset($_GET['cat_id']) AND is_numeric($_GET['cat_id']) AND $_GET['action'] =
 
     if ($_GET['sent_received'] == 'received') {
         $sql = "SELECT DISTINCT file.id, file.filename, file.title
+<<<<<<< HEAD
                 FROM ".$dropbox_cnf['tbl_file']." file INNER JOIN ".$dropbox_cnf['tbl_person']." person
+=======
+                FROM ".$dropbox_cnf['tbl_file']." file
+                INNER JOIN ".$dropbox_cnf['tbl_person']." person
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 ON (person.file_id=file.id AND file.c_id = $course_id AND person.c_id = $course_id)
                 INNER JOIN ".$dropbox_cnf['tbl_post']." post
                 ON (post.file_id = file.id AND post.c_id = $course_id AND file.c_id = $course_id)
@@ -57,7 +75,11 @@ if (isset($_GET['cat_id']) AND is_numeric($_GET['cat_id']) AND $_GET['action'] =
                     post.cat_id = ".intval($_GET['cat_id'])." AND
                     post.dest_user_id = $user_id" ;
     }
+<<<<<<< HEAD
 
+=======
+    $files_to_download = array();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $result = Database::query($sql);
     while ($row = Database::fetch_array($result)) {
         $files_to_download[] = $row['id'];
@@ -66,7 +88,10 @@ if (isset($_GET['cat_id']) AND is_numeric($_GET['cat_id']) AND $_GET['action'] =
         header('location: index.php?view='.Security::remove_XSS($_GET['sent_received']).'&error=ErrorNoFilesInFolder');
         exit;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     zip_download($files_to_download);
     exit;
 }
@@ -100,12 +125,19 @@ if (!$allowed_to_download) {
     $_SESSION['_seen'][$_course['id']][TOOL_DROPBOX][] = intval($_GET['id']);
 
     $work = new Dropbox_work($_GET['id']);
+<<<<<<< HEAD
     $path = dropbox_cnf('sysPath').'/'.$work -> filename; //path to file as stored on server
+=======
+    $path = dropbox_cnf('sysPath') . '/' . $work -> filename; //path to file as stored on server
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if (!Security::check_abs_path($path, dropbox_cnf('sysPath').'/')) {
         exit;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $file = $work->title;
     $mimetype = DocumentManager::file_get_mime_type(true);
     $fileinfo = pathinfo($file);

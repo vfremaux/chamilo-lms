@@ -141,7 +141,7 @@ define('HTML_QUICKFORM_ADVMULTISELECT_ERROR_INVALID_INPUT', 1);
  */
 class HTML_QuickForm extends HTML_Common
 {
-    // {{{ properties
+    private $dateTimePickerLibraryAdded;
 
     /**
      * Array containing the form fields
@@ -311,10 +311,7 @@ class HTML_QuickForm extends HTML_Common
     {
         HTML_Common::HTML_Common($attributes);
         $method = (strtoupper($method) == 'GET') ? 'get' : 'post';
-        // Modified by Chamilo team, 16-MAR-2010
-        //$action = ($action == '') ? $_SERVER['PHP_SELF'] : $action;
         $action = ($action == '') ? api_get_self() : $action;
-        //
         $target = empty($target) ? array() : array('target' => $target);
         $form_id = $formName;
         if (isset($attributes['id']) && !empty($attributes['id'])) {
@@ -362,14 +359,14 @@ class HTML_QuickForm extends HTML_Common
             }
         }
 
-        $course_id = api_get_course_int_id();
-        //If I'm in a course replace the default max filesize with the course limits
-        if (!empty($course_id)) {
-            $free_course_quota = DocumentManager::get_course_quota() - DocumentManager::documents_total_space();
-            if (empty($this->_maxFileSize) || $free_course_quota <= $this->_maxFileSize) {
-                $this->_maxFileSize = intval($free_course_quota);
-            }
-        }
+//        $course_id = api_get_course_int_id();
+//        //If I'm in a course replace the default max filesize with the course limits
+//        if (!empty($course_id)) {
+//            $free_course_quota = DocumentManager::get_course_quota() - DocumentManager::documents_total_space();
+//            if (empty($this->_maxFileSize) || $free_course_quota <= $this->_maxFileSize) {
+//                $this->_maxFileSize = intval($free_course_quota);
+//            }
+//        }
     } // end constructor
 
     // }}}
@@ -686,13 +683,19 @@ class HTML_QuickForm extends HTML_Common
 
         // Add the element if it is not an incompatible duplicate
         if (!empty($elementName) && isset($this->_elementIndex[$elementName])) {
-            if ($this->_elements[$this->_elementIndex[$elementName]]->getType() ==
-                $elementObject->getType()) {
+            if ($this->_elements[$this->_elementIndex[$elementName]]->getType() == $elementObject->getType()) {
                 $this->_elements[] =& $elementObject;
                 $elKeys = array_keys($this->_elements);
                 $this->_duplicateIndex[$elementName][] = end($elKeys);
             } else {
-                $error = PEAR::raiseError(null, QUICKFORM_INVALID_ELEMENT_NAME, null, E_USER_WARNING, "Element '$elementName' already exists in HTML_QuickForm::addElement()", 'HTML_QuickForm_Error', true);
+                $error = PEAR::raiseError(
+                    null,
+                    QUICKFORM_INVALID_ELEMENT_NAME,
+                    null,
+                    E_USER_WARNING,
+                    "Element '$elementName' already exists in HTML_QuickForm::addElement()", 'HTML_QuickForm_Error',
+                    true
+                );
                 return $error;
             }
         } else {
@@ -700,6 +703,7 @@ class HTML_QuickForm extends HTML_Common
             $elKeys = array_keys($this->_elements);
             $this->_elementIndex[$elementName] = end($elKeys);
         }
+
         if ($this->_freezeAll) {
             $elementObject->freeze();
         }
@@ -931,11 +935,23 @@ class HTML_QuickForm extends HTML_Common
                 }
             }
         }
-        return $value;
-    } // end func getSubmitValue
 
-    // }}}
-    // {{{ _reindexFiles()
+        if ($this->getElementType($elementName) == 'date_range_picker') {
+            /** @var DateRangePicker $element */
+            $element = $this->getElement($elementName);
+            $parsedDates = $element->parseDateRange($value);
+
+            if (!$element->validateDates($parsedDates)) {
+                $this->_errors[$elementName] = get_lang('CheckDates');
+            }
+
+            $this->_submitValues[$elementName.'_start'] = $parsedDates['start'];
+            $this->_submitValues[$elementName.'_end'] = $parsedDates['end'];
+
+        }
+
+        return $value;
+    }
 
    /**
     * A helper function to change the indexes in $_FILES array

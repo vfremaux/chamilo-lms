@@ -27,7 +27,11 @@ if (!api_is_allowed_to_edit()) {
 
 // Remove memory and time limits as much as possible as this might be a long process...
 if (function_exists('ini_set')) {
+<<<<<<< HEAD
 	api_set_memory_limit('256M');
+=======
+    api_set_memory_limit('256M');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     ini_set('max_execution_time', 1800);
     //ini_set('post_max_size', "512M");
 }
@@ -47,7 +51,11 @@ echo Display::page_header(get_lang('CopyCourse'));
 // If a CourseSelectForm is posted or we should copy all resources, then copy them
 if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (isset($_POST['copy_option']) && $_POST['copy_option'] == 'full_copy')) {
     if (isset($_POST['action']) && $_POST['action'] == 'course_select_form') {
+<<<<<<< HEAD
         $course = CourseSelectForm :: get_posted_course('copy_course');
+=======
+        $course = CourseSelectForm::get_posted_course('copy_course');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     } else {
         $cb = new CourseBuilder();
         $course = $cb->build();
@@ -55,6 +63,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (is
     $cr = new CourseRestorer($course);
     $cr->set_file_option($_POST['same_file_name_option']);
     $cr->restore($_POST['destination_course']);
+<<<<<<< HEAD
     Display::display_normal_message(
         get_lang('CopyFinished').': <a href="'.api_get_course_url(
             $_POST['destination_course']
@@ -69,17 +78,41 @@ if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (is
     $hidden_fields['same_file_name_option'] = $_POST['same_file_name_option'];
     $hidden_fields['destination_course'] = $_POST['destination_course'];
     CourseSelectForm :: display_form($course, $hidden_fields, true);
+=======
+    Display::display_normal_message(get_lang('CopyFinished').': <a href="'.api_get_course_url($_POST['destination_course']).'">'.$_POST['destination_course'].'</a>', false);
+} elseif (isset ($_POST['copy_option']) && $_POST['copy_option'] == 'select_items') {
+    $cb = new CourseBuilder();
+    $course = $cb->build();
+    $hidden_fields = array();
+    $hidden_fields['same_file_name_option'] = $_POST['same_file_name_option'];
+    $hidden_fields['destination_course']    = $_POST['destination_course'];
+    CourseSelectForm::display_form($course, $hidden_fields, true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
     $table_c = Database :: get_main_table(TABLE_MAIN_COURSE);
     $table_cu = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
     $user_info = api_get_user_info();
     $course_info = api_get_course_info();
+<<<<<<< HEAD
     $sql = 'SELECT * FROM '.$table_c.' c, '.$table_cu.' cu WHERE cu.c_id = c.id';
     if (!api_is_platform_admin()) {
         $sql .= ' AND cu.status=1 ';
     }
     $sql .= ' AND target_course_code IS NULL AND cu.user_id = '.$user_info['user_id'].' AND c.code != '."'".$course_info['sysCode']."'".' ORDER BY title ASC';
 
+=======
+    $sql = 'SELECT *
+            FROM '.$table_c.' c, '.$table_cu.' cu
+            WHERE cu.course_code = c.code';
+    if (!api_is_platform_admin()) {
+        $sql .= ' AND cu.status=1 ';
+    }
+    $sql .= ' AND
+        target_course_code IS NULL AND
+        cu.user_id = '.$user_info['user_id'].' AND
+        c.code != '."'".$course_info['sysCode']."'".'
+    ORDER BY title ASC';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $res = Database::query($sql);
     if (Database::num_rows($res) == 0) {
         Display::display_normal_message(get_lang('NoDestinationCoursesAvailable'));
@@ -90,7 +123,10 @@ if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (is
         }
 
         $form = new FormValidator('copy_course', 'post', 'copy_course.php?'.api_get_cidreq());
+<<<<<<< HEAD
         $form->addElement('header', '');
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $form->addElement('select', 'destination_course', get_lang('SelectDestinationCourse'), $options);
 
         $group = array();
@@ -121,6 +157,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (is
             FILE_OVERWRITE
         );
         $form->addGroup($group, '', get_lang('SameFilename'));
+<<<<<<< HEAD
 
         $form->addElement('style_submit_button', 'submit', get_lang('CopyCourse'), 'class="save"');
 
@@ -128,7 +165,13 @@ if ((isset($_POST['action']) && $_POST['action'] == 'course_select_form') || (is
         $form->display();
 
     }
+=======
+        $form->add_progress_bar();
+        $form->addElement('style_submit_button', 'submit', get_lang('CopyCourse'), 'class="save"');
+        $form->setDefaults(array('copy_option' =>'select_items','same_file_name_option' => FILE_OVERWRITE));
+        $form->display();
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
-/*	FOOTER	*/
 Display::display_footer();

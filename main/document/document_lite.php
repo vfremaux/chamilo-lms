@@ -57,6 +57,7 @@ $document_id = intval($_REQUEST['id']);
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 
 switch ($action) {
+<<<<<<< HEAD
     case 'download':
         $document_data = DocumentManager::get_document_data_by_id($document_id, api_get_course_id());
         // Check whether the document is in the database
@@ -114,6 +115,52 @@ switch ($action) {
             exit;
         }
         break;
+=======
+	case 'download':
+		$document_data = DocumentManager::get_document_data_by_id($document_id, api_get_course_id());
+		// Check whether the document is in the database
+		if (empty($document_data)) {
+			// File not found!
+			header('HTTP/1.0 404 Not Found');
+			$error404 = '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">';
+			$error404 .= '<html><head>';
+			$error404 .= '<title>404 Not Found</title>';
+			$error404 .= '</head><body>';
+			$error404 .= '<h1>Not Found</h1>';
+			$error404 .= '<p>The requested URL was not found on this server.</p>';
+			$error404 .= '<hr>';
+			$error404 .= '</body></html>';
+			echo $error404;
+			exit;
+		}
+		// Launch event
+		event_download($document_data['url']);
+		// Check visibility of document and paths
+		if (!($is_allowed_to_edit || $group_member_with_upload_rights) && !DocumentManager::is_visible_by_id($document_id, $course_info, api_get_session_id(), api_get_user_id())) {
+			api_not_allowed(true);
+		}
+		$full_file_name = $base_work_dir.$document_data['path'];
+		if (Security::check_abs_path($full_file_name, $base_work_dir.'/')) {
+			DocumentManager::file_send_for_download($full_file_name, true);
+		}
+		exit;
+		break;
+	case 'downloadfolder' :
+		if (api_get_setting('students_download_folders') == 'true' || api_is_allowed_to_edit() || api_is_platform_admin()) {
+			$document_data = DocumentManager::get_document_data_by_id($document_id, api_get_course_id());
+
+			//filter when I am into shared folder, I can donwload only my shared folder
+			if (is_any_user_shared_folder($document_data['path'], $session_id)) {
+				if (is_my_shared_folder(api_get_user_id(), $document_data['path'], $session_id) || api_is_allowed_to_edit() || api_is_platform_admin()){
+					require 'downloadfolder.inc.php';
+				}
+			} else {
+				require 'downloadfolder.inc.php';
+			}
+			exit;
+		}
+		break;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 
@@ -123,6 +170,7 @@ if (isset($document_id)) {
 
     //If the document is not a folder we show the document
     if ($document_data) {
+<<<<<<< HEAD
         $parent_id = $document_data['parent_id'];
 
         //$visibility = DocumentManager::is_visible_by_id($document_id, $course_info, api_get_session_id(), api_get_user_id());
@@ -147,6 +195,25 @@ if (isset($document_id)) {
             }
         }
         $_GET['curdirpath'] = $document_data['path'];
+=======
+    	$parent_id     = $document_data['parent_id'];
+
+    	//$visibility = DocumentManager::is_visible_by_id($document_id, $course_info, api_get_session_id(), api_get_user_id());
+    	$visibility = DocumentManager::check_visibility_tree($document_id, api_get_course_id(), api_get_session_id(), api_get_user_id(), api_get_group_id());
+
+	    if (!empty($document_data['filetype']) && $document_data['filetype'] == 'file') {
+	    	if ($visibility && api_is_allowed_to_session_edit()) {
+	    		$url = api_get_path(WEB_COURSE_PATH).$course_info['path'].'/document'.$document_data['path'].'?'.api_get_cidreq();
+	    		header("Location: $url");
+	    	}
+	    	exit;
+	    } else {
+	    	if (!$visibility && !api_is_allowed_to_edit()) {
+	    		api_not_allowed();
+	    	}
+	    }
+    	$_GET['curdirpath'] = $document_data['path'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     // What's the current path?
@@ -156,11 +223,16 @@ if (isset($document_id)) {
     } elseif (isset($_POST['curdirpath']) && $_POST['curdirpath'] != '') {
         $curdirpath = Security::remove_XSS($_POST['curdirpath']);
     } else {
+<<<<<<< HEAD
         $curdirpath = '/';
+=======
+    	$curdirpath = '/';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
     $curdirpathurl = urlencode($curdirpath);
 
 } else {
+<<<<<<< HEAD
     // What's the current path?
     // We will verify this a bit further down
     if (isset($_GET['curdirpath']) && $_GET['curdirpath'] != '') {
@@ -183,6 +255,30 @@ if (isset($document_id)) {
 
     $document_data = DocumentManager::get_document_data_by_id($document_id, api_get_course_id(), true);
     $parent_id = $document_data['parent_id'];
+=======
+	// What's the current path?
+	// We will verify this a bit further down
+	if (isset($_GET['curdirpath']) && $_GET['curdirpath'] != '') {
+		$curdirpath = Security::remove_XSS($_GET['curdirpath']);
+	} elseif (isset($_POST['curdirpath']) && $_POST['curdirpath'] != '') {
+		$curdirpath = Security::remove_XSS($_POST['curdirpath']);
+	} else {
+		$curdirpath = '/';
+	}
+
+	$curdirpathurl = urlencode($curdirpath);
+
+	// Check the path
+	// If the path is not found (no document id), set the path to /
+	$document_id = DocumentManager::get_document_id($course_info, $curdirpath);
+
+	if (!$document_id) {
+		$document_id = DocumentManager::get_document_id($course_info, $curdirpath);
+	}
+
+	$document_data = DocumentManager::get_document_data_by_id($document_id, api_get_course_id(), true);
+	$parent_id     = $document_data['parent_id'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $current_folder_id = $document_id;
@@ -221,7 +317,11 @@ if ($to_group_id != 0 && $curdirpath == '/') {
 //if (!$is_allowed_to_edit || api_is_coach()) { before
 
 if (!$is_allowed_to_edit && api_is_coach()) {
+<<<<<<< HEAD
     if ($curdirpath != '/' && !(DocumentManager::is_visible($curdirpath, $_course, api_get_session_id(), 'folder'))) {
+=======
+    if ($curdirpath != '/' && !(DocumentManager::is_visible($curdirpath, $_course, api_get_session_id(),'folder'))) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         api_not_allowed(true);
     }
 }
@@ -249,6 +349,7 @@ if ($is_certificate_mode) {
 // Interbreadcrumb for the current directory root path
 
 if (empty($document_data['parents'])) {
+<<<<<<< HEAD
     if (isset($_GET['createdir'])) {
         $interbreadcrumb[] = array('url' => $document_data['document_url'], 'name' => $document_data['title']);
     } else {
@@ -261,6 +362,20 @@ if (empty($document_data['parents'])) {
         }
         $interbreadcrumb[] = array('url' => $document_sub_data['document_url'], 'name' => $document_sub_data['title']);
     }
+=======
+	if (isset($_GET['createdir'])) {
+		$interbreadcrumb[] = array('url' => $document_data['document_url'], 'name' => $document_data['title']);
+	} else {
+		$interbreadcrumb[] = array('url' => '#', 'name' => $document_data['title']);
+	}
+} else {
+	foreach($document_data['parents'] as $document_sub_data) {
+		if (!isset($_GET['createdir']) && $document_sub_data['id'] ==  $document_data['id']) {
+			$document_sub_data['document_url'] = '#';
+		}
+		$interbreadcrumb[] = array('url' => $document_sub_data['document_url'], 'name' => $document_sub_data['title']);
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 if (isset($_GET['createdir'])) {
@@ -282,6 +397,7 @@ $docs_and_folders = DocumentManager::get_all_document_data(
 $file_list = $format_list = '';
 $count = 1;
 
+<<<<<<< HEAD
 if (!empty($docs_and_folders)) {
     foreach ($docs_and_folders as $file) {
         if ($file['filetype'] == 'file') {
@@ -295,6 +411,21 @@ if (!empty($docs_and_folders)) {
                     $extension = 'oga';
                 }
                 $jquery .= ' $("#jquery_jplayer_'.$count.'").jPlayer({
+=======
+if (!empty($docs_and_folders))
+foreach ($docs_and_folders  as $file) {
+    if ($file['filetype'] == 'file') {
+        $path_info = pathinfo($file['path']);
+        $extension = strtolower($path_info['extension']);
+        //@todo use a js loop to autogenerate this code
+        if (in_array($extension, array('ogg', 'mp3', 'wav'))) {
+            $document_data = DocumentManager::get_document_data_by_id($file['id'], api_get_course_id());
+
+            if ($extension == 'ogg') {
+                $extension = 'oga';
+            }
+            $jquery .= ' $("#jquery_jplayer_'.$count.'").jPlayer({
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                                 ready: function() {
                                     $(this).jPlayer("setMedia", {
                                         '.$extension.' : "'.$document_data['direct_url'].'"
@@ -305,8 +436,12 @@ if (!empty($docs_and_folders)) {
                                 solution: "flash, html",  // Do not change this setting otherwise
                                 cssSelectorAncestor: "#jp_interface_'.$count.'",
                             });'."\n\n";
+<<<<<<< HEAD
                 $count++;
             }
+=======
+            $count++;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     }
 }
@@ -389,17 +524,22 @@ if (isset($_GET['action']) && $_GET['action'] == 'copytomyfiles' && api_get_sett
 
 /*	MOVE FILE OR DIRECTORY */
 //Only teacher and all users into their group and each user into his/her shared folder
+<<<<<<< HEAD
 if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder(
     api_get_user_id(),
     $curdirpath,
     $session_id
 ) || is_my_shared_folder(api_get_user_id(), Security::remove_XSS($_POST['move_to']), $session_id)
 ) {
+=======
+if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder(api_get_user_id(), $curdirpath, $session_id) || is_my_shared_folder(api_get_user_id(), Security::remove_XSS($_POST['move_to']), $session_id)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     if (isset($_GET['move']) && $_GET['move'] != '') {
         $my_get_move = intval($_REQUEST['move']);
 
         if (api_is_coach()) {
+<<<<<<< HEAD
             if (!DocumentManager::is_visible_by_id(
                 $my_get_move,
                 $course_info,
@@ -407,6 +547,9 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
                 api_get_user_id()
             )
             ) {
+=======
+            if (!DocumentManager::is_visible_by_id($my_get_move, $course_info, api_get_session_id(), api_get_user_id())) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 api_not_allowed();
             }
         }
@@ -439,12 +582,16 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
                     }
                 }
                 echo '<legend>'.get_lang('Move').'</legend>';
+<<<<<<< HEAD
                 echo build_move_to_selector(
                     $user_shared_folders,
                     $move_path,
                     $my_get_move,
                     $group_properties['directory']
                 );
+=======
+                echo build_move_to_selector($user_shared_folders, $move_path, $my_get_move, $group_properties['directory']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             } else {
 
                 echo '<legend>'.get_lang('Move').'</legend>';
@@ -462,6 +609,7 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
         }
 
         if (api_is_coach()) {
+<<<<<<< HEAD
             if (!DocumentManager::is_visible_by_id(
                 $_POST['move_file'],
                 $_course,
@@ -469,10 +617,14 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
                 api_get_user_id()
             )
             ) {
+=======
+            if (!DocumentManager::is_visible_by_id($_POST['move_file'], $_course, api_get_session_id(), api_get_user_id())) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 api_not_allowed();
             }
         }
         $document_to_move = DocumentManager::get_document_data_by_id($_POST['move_file'], api_get_course_id());
+<<<<<<< HEAD
         // Security fix: make sure they can't move files that are not in the document table
         if (!empty($document_to_move)) {
 
@@ -526,6 +678,37 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
                 }
 
                 // Set the current path
+=======
+        require_once $lib_path.'fileManage.lib.php';
+        // Security fix: make sure they can't move files that are not in the document table
+        if (!empty($document_to_move)) {
+
+			$real_path_target = $base_work_dir.$_POST['move_to'].'/'.basename($document_to_move['path']);
+			$fileExist=false;
+			if(file_exists($real_path_target)){
+				$fileExist=true;
+			}
+
+            if (move($base_work_dir.$document_to_move['path'], $base_work_dir.$_POST['move_to'])) {
+            //if (1) {
+            //$contents = DocumentManager::replace_urls_inside_content_html_when_moving_file(basename($document_to_move['path']), $base_work_dir.dirname($document_to_move['path']), $base_work_dir.$_POST['move_to']);
+            //exit;
+                update_db_info('update', $document_to_move['path'], $_POST['move_to'].'/'.basename($document_to_move['path']));
+
+			   //update database item property
+			   $doc_id=$_POST['move_file'];
+
+			   if(is_dir($real_path_target)){
+					api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'FolderMoved', api_get_user_id(),$to_group_id,null,null,null,$session_id);
+					Display::display_confirmation_message(get_lang('DirMv'));
+			   }
+			   elseif(is_file($real_path_target)){
+				   api_item_property_update($_course, TOOL_DOCUMENT, $doc_id, 'DocumentMoved', api_get_user_id(),$to_group_id,null,null,null,$session_id);
+				   Display::display_confirmation_message(get_lang('DocMv'));
+			   }
+
+				// Set the current path
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $curdirpath = $_POST['move_to'];
                 $curdirpathurl = urlencode($_POST['move_to']);
 
@@ -567,10 +750,14 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
             }
         }
         if (DocumentManager::delete_document($_course, $_GET['delete'], $base_work_dir)) {
+<<<<<<< HEAD
             if (isset($_GET['delete_certificate_id']) && $_GET['delete_certificate_id'] == strval(
                 intval($_GET['delete_certificate_id'])
             )
             ) {
+=======
+            if ( isset($_GET['delete_certificate_id']) && $_GET['delete_certificate_id'] == strval(intval($_GET['delete_certificate_id']))) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $default_certificate_id = $_GET['delete_certificate_id'];
                 DocumentManager::remove_attach_certificate(api_get_course_id(), $default_certificate_id);
             }
@@ -632,8 +819,13 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
                 $curdirpath = $document_data['path'];
             }
             $added_slash = ($curdirpath == '/') ? '' : '/';
+<<<<<<< HEAD
             $dir_name = $curdirpath.$added_slash.api_replace_dangerous_char($post_dir_name);
             $dir_name = FileManager::disable_dangerous_file($dir_name);
+=======
+            $dir_name = $curdirpath.$added_slash.replace_dangerous_char($post_dir_name);
+            $dir_name = disable_dangerous_file($dir_name);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $dir_check = $base_work_dir.$dir_name;
 
             if (!is_dir($dir_check)) {
@@ -747,6 +939,62 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
         $template_text .= '</form>';
         // Show the form
         Display::display_normal_message($template_text, false);
+<<<<<<< HEAD
+=======
+
+    } elseif (isset($_GET['add_as_template']) && isset($_POST['create_template'])) {
+
+        $document_id_for_template = intval(Database::escape_string($_GET['add_as_template']));
+
+        $title = Security::remove_XSS($_POST['template_title']);
+        //$description = Security::remove_XSS($_POST['template_description']);
+        $user_id = api_get_user_id();
+
+        // Create the template_thumbnails folder in the upload folder (if needed)
+        if (!is_dir(api_get_path(SYS_PATH).'courses/'.$_course['path'].'/upload/template_thumbnails/')) {
+            @mkdir(api_get_path(SYS_PATH).'courses/'.$_course['path'].'/upload/template_thumbnails/', api_get_permissions_for_new_directories());
+        }
+        // Upload the file
+        if (!empty($_FILES['template_image']['name'])) {
+
+            require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
+            $upload_ok = process_uploaded_file($_FILES['template_image']);
+
+            if ($upload_ok) {
+                // Try to add an extension to the file if it hasn't one
+                $new_file_name = $_course['sysCode'].'-'.add_ext_on_mime(stripslashes($_FILES['template_image']['name']), $_FILES['template_image']['type']);
+
+                // Upload dir
+                $upload_dir = api_get_path(SYS_PATH).'courses/'.$_course['path'].'/upload/template_thumbnails/';
+
+                // Resize image to max default and end upload
+                $temp = new Image($_FILES['template_image']['tmp_name']);
+                $picture_info = $temp->get_image_info();
+
+                $max_width_for_picture = 100;
+
+                if ($picture_info['width'] > $max_width_for_picture) {
+                    $thumbwidth = $max_width_for_picture;
+                    if (empty($thumbwidth) || $thumbwidth == 0) {
+                        $thumbwidth = $max_width_for_picture;
+                    }
+                    $new_height = round(($thumbwidth/$picture_info['width'])*$picture_info['height']);
+                    $temp->resize($thumbwidth, $new_height, 0);
+                }
+                $temp->send_image($upload_dir.$new_file_name);
+            }
+        }
+
+        DocumentManager::set_document_as_template($title, $description, $document_id_for_template, $course_code, $user_id, $new_file_name);
+        Display::display_confirmation_message(get_lang('DocumentSetAsTemplate'));
+    }
+
+    if (isset($_GET['remove_as_template'])) {
+        $document_id_for_template = intval($_GET['remove_as_template']);
+        $user_id = api_get_user_id();
+        DocumentManager::unset_document_as_template($document_id_for_template, $course_code, $user_id);
+        Display::display_confirmation_message(get_lang('DocumentUnsetAsTemplate'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }
 
@@ -767,6 +1015,7 @@ if (isset($_GET['curdirpath']) && $_GET['curdirpath'] == '/certificates' && isse
 
 /*	GET ALL DOCUMENT DATA FOR CURDIRPATH */
 if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
+<<<<<<< HEAD
     $docs_and_folders = DocumentManager::get_all_document_data(
         $_course,
         $curdirpath,
@@ -775,6 +1024,9 @@ if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
         $is_allowed_to_edit || $group_member_with_upload_rights,
         true
     );
+=======
+    $docs_and_folders = DocumentManager::get_all_document_data($_course, $curdirpath, $to_group_id, null, $is_allowed_to_edit || $group_member_with_upload_rights, true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
     $docs_and_folders = DocumentManager::get_all_document_data(
         $_course,
@@ -804,6 +1056,7 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
     $count = 1;
     foreach ($docs_and_folders as $key => $document_data) {
         $row = array();
+<<<<<<< HEAD
         $row['id'] = $document_data['id'];
         //$row['type'] = $document_data['filetype'];
         $row['type'] = create_document_link($document_data, true, $count, $is_visible);
@@ -819,15 +1072,31 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         );
 
         $invisibility_span_open = ($is_visible == 0) ? '<span class="muted">' : '';
+=======
+        $row['id']   = $document_data['id'];
+        //$row['type'] = $document_data['filetype'];
+        $row['type'] = create_document_link($document_data,  true, $count, $is_visible);
+
+        // If the item is invisible, wrap it in a span with class invisible
+
+        $is_visible = DocumentManager::is_visible_by_id($document_data['id'], $course_info, api_get_session_id(), api_get_user_id(), false);
+
+        $invisibility_span_open  = ($is_visible == 0) ? '<span class="muted">' : '';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $invisibility_span_close = ($is_visible == 0) ? '</span>' : '';
 
 
         // Size (or total size of a directory)
+<<<<<<< HEAD
         $size = $document_data['filetype'] == 'folder' ? FileManager::get_total_folder_size(
             $document_data['path'],
             $is_allowed_to_edit
         ) : $document_data['size'];
         $row['size'] = Text::format_file_size($size);
+=======
+        $size = $document_data['filetype'] == 'folder' ? get_total_folder_size($document_data['path'], $is_allowed_to_edit) : $document_data['size'];
+        $row['size'] = format_file_size($size);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         // Get the title or the basename depending on what we're using
         if ($document_data['title'] != '') {
@@ -836,6 +1105,7 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
             $document_name = basename($document_data['path']);
         }
         $row['name'] = $document_name;
+<<<<<<< HEAD
         $row['name'] = create_document_link(
             $document_data,
             false,
@@ -844,6 +1114,9 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         ).$session_img.'<br />'.$invisibility_span_open.'<i>'.nl2br(
             htmlspecialchars($document_data['comment'], ENT_QUOTES, $charset)
         ).'</i>'.$invisibility_span_close.$user_link;
+=======
+        $row['name'] = create_document_link($document_data, false, null, $is_visible).$session_img.'<br />'.$invisibility_span_open.'<i>'.nl2br(htmlspecialchars($document_data['comment'],ENT_QUOTES,$charset)).'</i>'.$invisibility_span_close.$user_link;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         // Data for checkbox
         if (($is_allowed_to_edit || $group_member_with_upload_rights) && count($docs_and_folders) > 1) {
@@ -895,18 +1168,28 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         }
 
         // Icons (clickable)
+<<<<<<< HEAD
         $row[] = create_document_link($document_data, true, $count, $is_visible);
 
         $path_info = pathinfo($document_data['path']);
 
         if (isset($path_info['extension']) && in_array($path_info['extension'], array('ogg', 'mp3', 'wav'))) {
             $count++;
+=======
+        $row[] = create_document_link($document_data,  true, $count, $is_visible);
+
+        $path_info = pathinfo($document_data['path']);
+
+        if (isset($path_info['extension']) && in_array($path_info['extension'], array('ogg', 'mp3','wav'))) {
+            $count ++;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
 
         // Validacion when belongs to a session
         $session_img = api_get_session_image($document_data['session_id'], $_user['status']);
 
         // Document title with link
+<<<<<<< HEAD
         $row[] = create_document_link(
             $document_data,
             false,
@@ -915,6 +1198,9 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         ).$session_img.'<br />'.$invisibility_span_open.'<i>'.nl2br(
             htmlspecialchars($document_data['comment'], ENT_QUOTES, $charset)
         ).'</i>'.$invisibility_span_close.$user_link;
+=======
+        $row[] = create_document_link($document_data, false, null, $is_visible).$session_img.'<br />'.$invisibility_span_open.'<i>'.nl2br(htmlspecialchars($document_data['comment'],ENT_QUOTES,$charset)).'</i>'.$invisibility_span_close.$user_link;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         // Comments => display comment under the document name
         $display_size = Text::format_file_size($size);
@@ -928,17 +1214,22 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         $row[] = $invisibility_span_open.$display_date.$invisibility_span_close;
         // Admins get an edit column
 
+<<<<<<< HEAD
         if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder(
             api_get_user_id(),
             $curdirpath,
             $session_id
         )
         ) {
+=======
+        if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder(api_get_user_id(), $curdirpath, $session_id)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $is_template = isset($document_data['is_template']) ? $document_data['is_template'] : false;
             // If readonly, check if it the owner of the file or if the user is an admin
             if ($document_data['insert_user_id'] == api_get_user_id() || api_is_platform_admin()) {
                 $edit_icons = build_edit_icons($document_data, $key, $is_template, 0, $is_visible);
             } else {
+<<<<<<< HEAD
                 $edit_icons = build_edit_icons(
                     $document_data,
                     $key,
@@ -946,6 +1237,9 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
                     $document_data['readonly'],
                     $is_visible
                 );
+=======
+                $edit_icons = build_edit_icons($document_data, $key, $is_template, $document_data['readonly'], $is_visible);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
             $row[] = $edit_icons;
         }
@@ -954,11 +1248,15 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
         $row[] = $document_name;
         $total_size = $total_size + $size;
 
+<<<<<<< HEAD
         if ((isset($_GET['keyword']) && search_keyword(
             $document_name,
             $_GET['keyword']
         )) || !isset($_GET['keyword']) || empty($_GET['keyword'])
         ) {
+=======
+        if ((isset($_GET['keyword']) && search_keyword($document_name, $_GET['keyword'])) || !isset($_GET['keyword']) || empty($_GET['keyword'])) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $sortable_data[] = $row;
         }
     }
@@ -985,6 +1283,7 @@ $extra_params['height'] = 'auto';
 
 //With this function we can add actions to the jgrid (edit, delete, etc)
 $action_links = 'function action_formatter(cellvalue, options, rowObject) {
+<<<<<<< HEAD
                          return \'<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon(
     'edit.png',
     get_lang('Edit'),
@@ -1008,6 +1307,12 @@ $action_links = 'function action_formatter(cellvalue, options, rowObject) {
     ICON_SIZE_SMALL
 ).'</a>'.
     '\';
+=======
+                         return \'<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon('edit.png',get_lang('Edit'),'',ICON_SIZE_SMALL).'</a>'.
+                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=copy&id=\'+options.rowId+\'">'.Display::return_icon('copy.png',get_lang('Copy'),'',ICON_SIZE_SMALL).'</a>'.
+                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=delete&id=\'+options.rowId+\'">'.Display::return_icon('delete.png',get_lang('Delete'),'',ICON_SIZE_SMALL).'</a>'.
+                         '\';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                  }';
 $js_content = Display::grid_js(
     'documents',

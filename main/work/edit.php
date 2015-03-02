@@ -8,11 +8,9 @@ $language_file = array('exercice', 'work', 'document', 'admin', 'gradebook');
 require_once '../inc/global.inc.php';
 $current_course_tool  = TOOL_STUDENTPUBLICATION;
 
-/*	Configuration settings */
-
 api_protect_course_script(true);
 
-// Including necessary files
+// Including files
 require_once 'work.lib.php';
 require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
 require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
@@ -54,9 +52,7 @@ $token = Security::get_token();
 
 $student_can_edit_in_session = api_is_allowed_to_session_edit(false, true);
 $has_ended   = false;
-
 $is_author = false;
-
 $work_item = get_work_data_by_id($item_id);
 
 // Get the author ID for that document from the item_property table
@@ -104,8 +100,22 @@ if (!empty($my_folder_data)) {
     }
 }
 
-$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq(), 'name' => get_lang('StudentPublications'));
-$interbreadcrumb[] = array('url' => api_get_path(WEB_CODE_PATH).'work/work_list.php?'.api_get_cidreq().'&id='.$work_id, 'name' =>  $parent_data['title']);
+$interbreadcrumb[] = array(
+    'url' => api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq(),
+    'name' => get_lang('StudentPublications')
+);
+
+if (api_is_allowed_to_edit()) {
+    $interbreadcrumb[] = array(
+        'url' => api_get_path(WEB_CODE_PATH).'work/work_list_all.php?'.api_get_cidreq().'&id='.$work_id,
+        'name' =>  $parent_data['title']
+    );
+} else {
+    $interbreadcrumb[] = array(
+        'url' => api_get_path(WEB_CODE_PATH).'work/work_list.php?'.api_get_cidreq().'&id='.$work_id,
+        'name' =>  $parent_data['title']
+    );
+}
 
 // form title
 $form_title = get_lang('Edit');
@@ -115,14 +125,18 @@ $interbreadcrumb[] = array('url' => '#', 'name'  => $form_title);
 $form = new FormValidator(
     'form',
     'POST',
+<<<<<<< HEAD
     api_get_self()."?".api_get_cidreq()."&id=".$work_id."&gradebook=".Security::remove_XSS($_GET['gradebook'])."&origin=$origin",
+=======
+    api_get_self()."?".api_get_cidreq()."&id=".$work_id,
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     '',
     array('enctype' => "multipart/form-data")
 );
 $form->addElement('header', $form_title);
 
 $show_progress_bar = false;
-
+/*
 if ($submitGroupWorkUrl) {
     // For user coming from group space to publish his work
     $realUrl = str_replace($_configuration['root_sys'], api_get_path(WEB_PATH), str_replace("\\", '/', realpath($submitGroupWorkUrl)));
@@ -132,7 +146,7 @@ if ($submitGroupWorkUrl) {
     $text_document->freeze();
 } elseif ($item_id && ($is_allowed_to_edit or $is_author)) {
     $workUrl = $currentCourseRepositoryWeb . $workUrl;
-}
+}*/
 
 $form->addElement('hidden', 'id', $work_id);
 $form->addElement('hidden', 'item_id', $item_id);
@@ -144,7 +158,7 @@ $defaults["description"] 	= $work_item['description'];
 $defaults['qualification']  = $work_item['qualification'];
 
 if ($is_allowed_to_edit && !empty($item_id)) {
-    // Get qualification from parent_id that'll allow the validation qualification over
+    // Get qualification from parent_id that will allow the validation qualification over
     $sql = "SELECT qualification FROM $work_table WHERE c_id = $course_id AND id ='$work_id' ";
     $result = Database::query($sql);
     $row = Database::fetch_array($result);
@@ -198,7 +212,11 @@ if ($form->validate()) {
                 }
 
                 if ($_POST['qualification'] > $_POST['qualification_over']) {
+<<<<<<< HEAD
                     Display::display_error_message(get_lang('QualificationMustNotBeMoreThanQualificationOver'));
+=======
+                    $error_message .= Display::return_message(get_lang('QualificationMustNotBeMoreThanQualificationOver'), 'error');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 } else {
                     $sql = "UPDATE  " . $work_table . "
                             SET	title = '".Database::escape_string($title)."',
@@ -210,7 +228,7 @@ if ($form->validate()) {
                 api_item_property_update($_course, 'work', $item_to_edit_id, 'DocumentUpdated', $user_id);
 
                 $succeed = true;
-                $error_message .= Display::return_message(get_lang('ItemUpdated'), false);
+                $error_message .= Display::return_message(get_lang('ItemUpdated'), 'warning');
             } else {
                 $error_message .= Display::return_message(get_lang('IsNotPosibleSaveTheDocument'), 'error');
             }
@@ -222,37 +240,56 @@ if ($form->validate()) {
         // Bad token or can't add works
         $error_message = Display::return_message(get_lang('IsNotPosibleSaveTheDocument'), 'error');
     }
+
+    if (!empty($error_message)) {
+        Session::write('error_message', $error_message);
+    }
+
     $script = 'work_list.php';
     if ($is_allowed_to_edit) {
         $script = 'work_list_all.php';
     }
+<<<<<<< HEAD
     header('Location: '.api_get_path(WEB_CODE_PATH).'work/'.$script.'?'.api_get_cidreq().'&id='.$work_id.'&error_message='.$error_message);
+=======
+    header('Location: '.api_get_path(WEB_CODE_PATH).'work/'.$script.'?'.api_get_cidreq().'&id='.$work_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     exit;
 }
 
 $htmlHeadXtra[] = to_javascript_work();
-Display :: display_header(null);
 
+$tpl = new Template();
+$content = null;
 if (!empty($work_id)) {
     if ($is_allowed_to_edit) {
         if (api_resource_is_locked_by_gradebook($work_id, LINK_STUDENTPUBLICATION)) {
             echo Display::display_warning_message(get_lang('ResourceLockedByGradebook'));
         } else {
-            $form->display();
+
+            $comments = getWorkComments($my_folder_data);
+
+            $template = $tpl->get_template('work/comments.tpl');
+            $tpl->assign('work_comment_enabled', ALLOW_USER_COMMENTS);
+            $tpl->assign('comments', $comments);
+
+            $content .= $form->return_form();
+            $content  .= $tpl->fetch($template);
         }
     } elseif ($is_author) {
         if (empty($work_item['qualificator_id']) || $work_item['qualificator_id'] == 0) {
-            $form->display();
+            $content .= $form->return_form();
         } else {
-            Display::display_error_message(get_lang('ActionNotAllowed'));
+            $content .= Display::return_message(get_lang('ActionNotAllowed'), 'error');
         }
     } elseif ($student_can_edit_in_session && $has_ended == false) {
-        $form->display();
+        $content .= $form->return_form();
     } else {
-        Display::display_error_message(get_lang('ActionNotAllowed'));
+        $content .= Display::return_message(get_lang('ActionNotAllowed'), 'error');
     }
 } else {
-    Display::display_error_message(get_lang('ActionNotAllowed'));
+    $content .= Display::return_message(get_lang('ActionNotAllowed'), 'error');
 }
 
-Display :: display_footer();
+$tpl->assign('content', $content);
+$tpl->display_one_col_template();

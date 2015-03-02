@@ -4,9 +4,6 @@
  * @package chamilo.social
  * @author Julio Montoya <gugli100@gmail.com>
  */
-/**
- * Initialization
- */
 // Language files that should be included
 $language_file = array('userInfo');
 $cidReset = true;
@@ -24,6 +21,7 @@ $tool_name = get_lang('GroupEdit');
 
 $interbreadcrumb[] = array('url' => 'groups.php', 'name' => get_lang('Groups'));
 
+<<<<<<< HEAD
 $usergroup = new UserGroup();
 
 $group_data = $usergroup->get($group_id);
@@ -34,21 +32,36 @@ if (empty($group_data)) {
 
 //only group admins can edit the group
 if (!$usergroup->is_group_admin($group_id)) {
+=======
+$table_group = Database::get_main_table(TABLE_MAIN_GROUP);
+$group_data = GroupPortalManager::get_group_data($group_id);
+
+if (empty($group_data)) {
+    api_not_allowed();
+}
+
+//only group admins can edit the group
+if (!GroupPortalManager::is_group_admin($group_id)) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     api_not_allowed();
 }
 
 // Create the form
 $form = new FormValidator('group_edit', 'post', '', '');
 $form->addElement('hidden', 'id', $group_id);
+<<<<<<< HEAD
 $usergroup->setGroupType($usergroup::SOCIAL_CLASS);
 $usergroup->setForm($form, 'edit', $group_data);
-
-// Set default values
-$form->setDefaults($group_data);
+=======
+$form = GroupPortalManager::setGroupForm($form, $group_data);
+// Submit button
+$form->addElement('style_submit_button', 'submit', get_lang('ModifyInformation'), 'class="save"');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // Validate form
 if ($form->validate()) {
     $group = $form->exportValues();
+<<<<<<< HEAD
     $group['id'] = $group_id;
     $group['type'] = $usergroup::SOCIAL_CLASS;
     $usergroup->update($group);
@@ -70,3 +83,53 @@ $app['title'] = $tool_name;
 $tpl = $app['template'];
 $tpl->setHelp('Groups');
 $tpl->assign('content', $social_right_content);
+=======
+    $picture_element = $form->getElement('picture');
+    $picture = $picture_element->getValue();
+    $picture_uri = $group_data['picture_uri'];
+
+    if ($group['delete_picture']) {
+        $picture_uri = GroupPortalManager::delete_group_picture($group_id);
+    } elseif (!empty($picture['name'])) {
+        $picture_uri = GroupPortalManager::update_group_picture($group_id, $_FILES['picture']['name'], $_FILES['picture']['tmp_name']);
+    }
+
+    $name 			= $group['name'];
+    $description	= $group['description'];
+    $url 			= $group['url'];
+    $status 		= intval($group['visibility']);
+
+    $allowMemberGroupToLeave = null;
+    if (GroupPortalManager::canLeaveFeatureEnabled($group_data)) {
+        $allowMemberGroupToLeave = isset($group['allow_members_leave_group']) ? true : false;
+    }
+    GroupPortalManager::update($group_id, $name, $description, $url, $status, $picture_uri, $allowMemberGroupToLeave);
+    $tok = Security::get_token();
+    header('Location: groups.php?id='.$group_id.'&action=show_message&message='.urlencode(get_lang('GroupUpdated')).'&sec_token='.$tok);
+    exit();
+}
+
+// Group picture
+$image_path = GroupPortalManager::get_group_picture_path_by_id($group_id, 'web');
+$image_dir = $image_path['dir'];
+$image = $image_path['file'];
+$image_file = ($image != '' ? $image_dir.$image : api_get_path(WEB_CODE_PATH).'img/unknown_group.jpg');
+$image_size = api_getimagesize($image_file);
+
+// get the path,width and height from original picture
+$big_image = $image_dir.'big_'.$image;
+$big_image_size = api_getimagesize($big_image);
+$big_image_width = $big_image_size['width'];
+$big_image_height = $big_image_size['height'];
+$url_big_image = $big_image.'?rnd='.time();
+
+$social_left_content = SocialManager::show_social_menu('group_edit', $group_id);
+$social_right_content = $form->return_form();
+
+$tpl = new Template($tool_name);
+$tpl->set_help('Groups');
+$tpl->assign('social_left_content', $social_left_content);
+$tpl->assign('social_right_content', $social_right_content);
+$social_layout = $tpl->get_template('layout/social_layout.tpl');
+$tpl->display($social_layout);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

@@ -77,8 +77,26 @@ if (is_dir($file_url_sys)) {
     api_not_allowed(true);
 }
 
+<<<<<<< HEAD
 // Check user visibility.
 $is_visible = DocumentManager::check_visibility_tree($document_id, api_get_course_id(), api_get_session_id(), api_get_user_id());
+=======
+//fix the screen when you try to access a protected course through the url
+$is_allowed_in_course = $_SESSION['is_allowed_in_course'];
+if ($is_allowed_in_course == false) {
+    api_not_allowed(true);
+}
+
+// Check user visibility.
+//$is_visible = DocumentManager::is_visible_by_id($document_id, $course_info, api_get_session_id(), api_get_user_id());
+$is_visible = DocumentManager::check_visibility_tree(
+    $document_id,
+    api_get_course_id(),
+    api_get_session_id(),
+    api_get_user_id(),
+    api_get_group_id()
+);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (!api_is_allowed_to_edit() && !$is_visible) {
     api_not_allowed(true);
@@ -107,7 +125,7 @@ if (isset($group_id) && $group_id != '') {
     $name_to_show = implode('/', $name_to_show);
 }
 
-$interbreadcrumb[] = array('url' => './document.php?curdirpath='.dirname($header_file).$req_gid, 'name' => get_lang('Documents'));
+$interbreadcrumb[] = array('url' => './document.php?curdirpath='.dirname($header_file).'&'.api_get_cidreq(), 'name' => get_lang('Documents'));
 
 if (empty($document_data['parents'])) {
     if (isset($_GET['createdir'])) {
@@ -146,6 +164,7 @@ $mathJaxUrl = api_get_path(WEB_LIBRARY_JS_PATH).'math_jax/MathJax.js?config=defa
 
 $js_glossary_in_documents = '';
 if (api_get_setting('show_glossary_in_documents') == 'ismanual') {
+<<<<<<< HEAD
     $js_glossary_in_documents = '
         $.frameReady(function() {
             //  $("<div>I am a div courses</div>").prependTo("body");
@@ -185,6 +204,38 @@ $js_glossary_in_documents = '
         ]
     }
     );';
+=======
+    $js_glossary_in_documents = '	//	    $(document).ready(function() {
+                                    $.frameReady(function() {
+                                       //  $("<div>I am a div courses</div>").prependTo("body");
+                                      }, "top.mainFrame",
+                                      { load: [
+                                                {type:"script", id:"_fr1", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.min.js"},
+                                                {type:"script", id:"_fr4", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/smoothness/jquery-ui-1.8.21.custom.min.js"},
+                                                {type:"stylesheet", id:"_fr5", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/smoothness/jquery-ui-1.8.21.custom.css"},
+                                                {type:"script", id:"_fr2", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"},
+                                                {type:"script", id:"_fr3", src:"'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_manual.js"}
+                                           ]
+                                      }
+                                      );
+                                    //});';
+} elseif (api_get_setting('show_glossary_in_documents') == 'isautomatic') {
+    $js_glossary_in_documents =	'//    $(document).ready(function() {
+                                      $.frameReady(function(){
+                                       //  $("<div>I am a div courses</div>").prependTo("body");
+
+                                      }, "top.mainFrame",
+                                      { load: [
+                                                {type:"script", id:"_fr1", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.min.js"},
+                                                {type:"script", id:"_fr4", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/smoothness/jquery-ui-1.8.21.custom.min.js"},
+                                                {type:"stylesheet", id:"_fr5", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/smoothness/jquery-ui-1.8.21.custom.css"},
+                                                {type:"script", id:"_fr2", src:"'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js"},
+                                                {type:"script", id:"_fr3", src:"'.api_get_path(WEB_LIBRARY_PATH).'fckeditor/editor/plugins/glossary/fck_glossary_automatic.js"}
+                                           ]
+                                      }
+                                      );
+                                //   });';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $web_odf_supported_files = DocumentManager::get_web_odf_extension_list();
@@ -209,8 +260,15 @@ if (in_array(strtolower($pathinfo['extension']), $web_odf_supported_files)) {
 }
 $execute_iframe = true;
 if ($jplayer_supported) {
+<<<<<<< HEAD
     $extension = api_strtolower($pathinfo['extension']);
     $js_path 		= api_get_path(WEB_LIBRARY_JS_PATH);
+=======
+
+    $extension = api_strtolower($pathinfo['extension']);
+
+    $js_path 		= api_get_path(WEB_LIBRARY_PATH).'javascript/';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $htmlHeadXtra[] = '<link rel="stylesheet" href="'.$js_path.'jquery-jplayer/skins/blue/jplayer.blue.monday.css" type="text/css">';
     $htmlHeadXtra[] = '<script type="text/javascript" src="'.$js_path.'jquery-jplayer/jquery.jplayer.min.js"></script>';
 
@@ -306,7 +364,10 @@ if ($jplayer_supported) {
     echo '</div>';
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if ($is_freemind_available) {
 	?>
 	<script type="text/javascript" src="<?php echo api_get_path(WEB_LIBRARY_PATH) ?>swfobject/swfobject.js"></script>
@@ -422,9 +483,12 @@ if ($is_nanogong_available) {
 if ($execute_iframe) {
     echo '<iframe id="mainFrame" name="mainFrame" border="0" frameborder="0" scrolling="no" style="width:100%;" height="600" src="'.$file_url_web.'&amp;rand='.mt_rand(1, 10000).'" height="500"></iframe>';
 }
+<<<<<<< HEAD
 
 if (api_get_setting('show_glossary_in_documents') == 'isautomatic') {
     echo '<div id="glossary_popup"></div>';
 }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 Display::display_footer();

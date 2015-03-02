@@ -126,8 +126,19 @@ if (empty($rows_session_category)) {
     Display::display_warning_message(get_lang('YouNeedToAddASessionCategoryFirst'));
 }
 
+<<<<<<< HEAD
 $sql = "SELECT id, name  FROM $tbl_session $where ORDER BY name";
 $result = Database::query($sql);
+=======
+if (api_get_multiple_access_url()) {
+    $table_access_url_rel_session= Database::get_main_table(TABLE_MAIN_ACCESS_URL_REL_SESSION);
+    $access_url_id = api_get_current_access_url_id();
+    $sql = "SELECT s.id, s.name  FROM $tbl_session s INNER JOIN $table_access_url_rel_session u ON s.id = u.session_id $where AND u.access_url_id = $access_url_id ORDER BY name";
+} else {
+    $sql = "SELECT id, name  FROM $tbl_session $where ORDER BY name";
+} 
+$result=Database::query($sql);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $rows_session = Database::store_result($result);
 ?>
 <form name="formulaire" method="post"

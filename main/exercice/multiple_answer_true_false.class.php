@@ -1,10 +1,10 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
- * CLASS MultipleAnswer
- *
+ * Class MultipleAnswerTrueFalse
  * This class allows to instantiate an object of type MULTIPLE_ANSWER
  * (MULTIPLE CHOICE, MULTIPLE ANSWER), extending the class question
+<<<<<<< HEAD
  * @author Julio Montoya
  * @package chamilo.exercise
  **/
@@ -13,10 +13,15 @@
  */
 /**
  * Class
+=======
+ * @author  Julio Montoya
+ *
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
  * @package chamilo.exercise
  */
 class MultipleAnswerTrueFalse extends Question
 {
+<<<<<<< HEAD
 
     static $typePicture = 'mcmao.gif';
     static $explanationLangVar = 'MultipleAnswerTrueFalse';
@@ -53,6 +58,39 @@ class MultipleAnswerTrueFalse extends Question
         $defaults = array();
 
         $html = '<table class="data_table">
+=======
+	static $typePicture = 'mcmao.gif';
+	static $explanationLangVar = 'MultipleAnswerTrueFalse';
+    public $options;
+
+	/**
+	 * Constructor
+	 */
+	public function MultipleAnswerTrueFalse()
+    {
+		parent::question();
+		$this->type = MULTIPLE_ANSWER_TRUE_FALSE;
+		$this->isContent = $this-> getIsContent();
+        $this->options = array(1 => 'True', 2 => 'False', 3 => 'DoubtScore');
+	}
+
+	/**
+	 * function which redefines Question::createAnswersForm
+	 * @param FormValidator $form
+	 */
+    public function createAnswersForm($form)
+    {
+		$nb_answers  = isset($_POST['nb_answers']) ? $_POST['nb_answers'] : 4;
+		// The previous default value was 2. See task #1759.
+		$nb_answers += (isset($_POST['lessAnswers']) ? -1 : (isset($_POST['moreAnswers']) ? 1 : 0));
+
+        $course_id = api_get_course_int_id();
+		$obj_ex = $_SESSION['objExercise'];
+        $renderer = & $form->defaultRenderer();
+        $defaults = array();
+
+		$html = '<table class="data_table">
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 					<tr style="text-align: center;">
 						<th>
 							'.get_lang('Number').'
@@ -71,6 +109,7 @@ class MultipleAnswerTrueFalse extends Question
             $html .= '<th>'.get_lang('Comment').'</th>';
         }
         $html .= '</tr>';
+<<<<<<< HEAD
         $form->addElement('label', get_lang('Answers').'<br />'.Display::return_icon('fill_field.png'), $html);
 
         $correct = 0;
@@ -89,10 +128,32 @@ class MultipleAnswerTrueFalse extends Question
             $nb_answers = 1;
             Display::display_normal_message(get_lang('YouHaveToCreateAtLeastOneAnswer'));
         }
+=======
+        $form -> addElement('label', get_lang('Answers').'<br /> <img src="../img/fill_field.png">', $html);
+
+		$correct = 0;
+        $answer = null;
+		if (!empty($this -> id)) {
+			$answer = new Answer($this -> id);
+			$answer->read();
+			if (count($answer->nbrAnswers) > 0 && !$form->isSubmitted()) {
+				$nb_answers = $answer->nbrAnswers;
+			}
+		}
+
+		$form -> addElement('hidden', 'nb_answers');
+		$boxes_names = array();
+
+		if ($nb_answers < 1) {
+			$nb_answers = 1;
+			Display::display_normal_message(get_lang('YouHaveToCreateAtLeastOneAnswer'));
+		}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         // Can be more options
         $option_data = Question::readQuestionOption($this->id, $course_id);
 
+<<<<<<< HEAD
         for ($i = 1; $i <= $nb_answers; ++$i) {
 
             $renderer->setElementTemplate(
@@ -123,6 +184,25 @@ class MultipleAnswerTrueFalse extends Question
                 $defaults['comment['.$i.']'] = $answer->comment[$answer_id];
                 $correct                     = $answer->correct[$answer_id];
                 $defaults['correct['.$i.']'] = $correct;
+=======
+		for ($i = 1 ; $i <= $nb_answers ; ++$i) {
+
+            $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'correct['.$i.']');
+            $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'counter['.$i.']');
+            $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'answer['.$i.']');
+            $renderer->setElementTemplate('<td><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --><br/>{element}</td>', 'comment['.$i.']');
+
+            $answer_number=$form->addElement('text', 'counter['.$i.']',null,'value="'.$i.'"');
+            $answer_number->freeze();
+
+			if (is_object($answer)) {
+				$defaults['answer['.$i.']']     = $answer -> answer[$i];
+				$defaults['comment['.$i.']']    = $answer -> comment[$i];
+				//$defaults['weighting['.$i.']']  = float_format($answer -> weighting[$i], 1);
+
+                $correct = $answer->correct[$i];
+                $defaults['correct['.$i.']']    = $correct;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
                 $j = 1;
                 if (!empty($option_data)) {
@@ -132,6 +212,7 @@ class MultipleAnswerTrueFalse extends Question
                         if ($j == 3) {
                             break;
                         }
+<<<<<<< HEAD
 
                     }
                 }
@@ -216,11 +297,49 @@ class MultipleAnswerTrueFalse extends Question
         $form->addElement('text', 'option[1]', get_lang('Correct'), array('class' => 'span1', 'value' => '1'));
         $form->addElement('text', 'option[2]', get_lang('Wrong'), array('class' => 'span1', 'value' => '-0.5'));
         $form->addElement('text', 'option[3]', get_lang('DoubtScore'), array('class' => 'span1', 'value' => '0'));
+=======
+                    }
+                }
+			} else {
+                $form->addElement('radio', 'correct['.$i.']', null, null, 1);
+                $form->addElement('radio', 'correct['.$i.']', null, null, 2);
+
+                $defaults['answer['.$i.']']     = '';
+                $defaults['comment['.$i.']']    = '';
+                $defaults['correct['.$i.']']    = '';
+			}
+
+			$boxes_names[] = 'correct['.$i.']';
+			$form->addElement('html_editor', 'answer['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '100'));
+			$form->addRule('answer['.$i.']', get_lang('ThisFieldIsRequired'), 'required');
+
+			// show comment when feedback is enable
+			if ($obj_ex->selectFeedbackType() != EXERCISE_FEEDBACK_TYPE_EXAM) {
+				$form->addElement('html_editor', 'comment['.$i.']',null, 'style="vertical-align:middle"', array('ToolbarSet' => 'TestProposedAnswer', 'Width' => '100%', 'Height' => '100'));
+			}
+			$form->addElement ('html', '</tr>');
+		}
+
+		$form->addElement('html', '</table>');
+		$form->addElement('html', '<br />');
+
+        $form->addElement('html', '<table><tr><td></td><td>'.get_lang('Correct').'</td><td>'.get_lang('Wrong').'</td><td>'.get_lang('DoubtScore').'</td></tr>');
+
+        $renderer->setElementTemplate('<tr><td><span class="form_required">*</span>'.get_lang('Score').'&nbsp;&nbsp;&nbsp;&nbsp;</td><td>{element} &nbsp;&nbsp; <br /><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --></td>', 'option[1]');
+        $renderer->setElementTemplate('<td>{element} &nbsp;&nbsp;<br /><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --></td>', 'option[2]');
+        $renderer->setElementTemplate('<td>{element} &nbsp;&nbsp;<br /><!-- BEGIN error --><span class="form_error">{error}</span><!-- END error --></td>', 'option[3]');
+
+        // 3 scores
+        $form->addElement('text', 'option[1]', get_lang('Correct'),   array('class'=>'span1','value'=>'1'));
+        $form->addElement('text', 'option[2]', get_lang('Wrong'),     array('class'=>'span1','value'=>'-0.5'));
+        $form->addElement('text', 'option[3]', get_lang('DoubtScore'),array('class'=>'span1','value'=>'0'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $form->addRule('option[1]', get_lang('ThisFieldIsRequired'), 'required');
         $form->addRule('option[2]', get_lang('ThisFieldIsRequired'), 'required');
         $form->addRule('option[3]', get_lang('ThisFieldIsRequired'), 'required');
 
+<<<<<<< HEAD
         $form->addElement('html', '</tr><table>');
         $form->addElement('hidden', 'options_count', 3);
         $form->addElement('html', '</table><br /><br />');
@@ -231,10 +350,23 @@ class MultipleAnswerTrueFalse extends Question
             if (!empty($scores)) {
                 for ($i = 1; $i <= 3; $i++) {
                     $defaults['option['.$i.']'] = $scores[$i - 1];
+=======
+        $form -> addElement ('html', '</tr><table>');
+        $form -> addElement('hidden', 'options_count', 3);
+        $form -> addElement ('html', '</table><br /><br />');
+
+        //Extra values True, false,  Dont known
+        if (!empty($this->extra)) {
+            $scores = explode(':',$this->extra);
+            if (!empty($scores)) {
+                for ($i = 1; $i <=3; $i++) {
+                    $defaults['option['.$i.']']	= $scores[$i-1];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 }
             }
         }
 
+<<<<<<< HEAD
         //$form -> add_multiple_required_rule ($boxes_names , get_lang('ChooseAtLeastOneCheckbox') , 'multiple_required');
 
         $navigator_info = api_get_navigator();
@@ -288,11 +420,61 @@ class MultipleAnswerTrueFalse extends Question
         $nb_answers        = $form->getSubmitValue('nb_answers');
         $options_count     = $form->getSubmitValue('options_count');
         $course_id         = api_get_course_int_id();
+=======
+		$navigator_info = api_get_navigator();
+
+		global $text, $class;
+		if ($obj_ex->edit_exercise_in_lp == true) {
+			//ie6 fix
+			if ($navigator_info['name']=='Internet Explorer' &&  $navigator_info['version']=='6') {
+
+                $form->addElement('submit', 'lessAnswers', get_lang('LessAnswer'),'class="btn minus"');
+                $form->addElement('submit', 'moreAnswers', get_lang('PlusAnswer'),'class="btn plus"');
+                $form->addElement('submit', 'submitQuestion',$text, 'class="'.$class.'"');
+			} else {
+                // setting the save button here and not in the question class.php
+
+                $form->addElement('style_submit_button', 'lessAnswers', get_lang('LessAnswer'),'class="btn minus"');
+                $form->addElement('style_submit_button', 'moreAnswers', get_lang('PlusAnswer'),'class="btn plus"');
+                $form->addElement('style_submit_button', 'submitQuestion',$text, 'class="'.$class.'"');
+			}
+		}
+		$renderer->setElementTemplate('{element}&nbsp;','lessAnswers');
+		$renderer->setElementTemplate('{element}&nbsp;','submitQuestion');
+		$renderer->setElementTemplate('{element}&nbsp;','moreAnswers');
+		$form -> addElement ('html', '</div></div>');
+		$defaults['correct'] = $correct;
+
+		if (!empty($this -> id)) {
+			$form -> setDefaults($defaults);
+		} else {
+			//if ($this -> isContent == 1) {
+				$form -> setDefaults($defaults);
+			//}
+		}
+		$form->setConstants(array('nb_answers' => $nb_answers));
+	}
+
+	/**
+	 * abstract function which creates the form to create / edit the answers of the question
+	 * @param FormValidator $form
+	 */
+    public function processAnswersCreation($form)
+    {
+		$questionWeighting = $nbrGoodAnswers = 0;
+		$objAnswer        = new Answer($this->id);
+		$nb_answers       = $form->getSubmitValue('nb_answers');
+        $options_count    = $form->getSubmitValue('options_count');
+        $course_id        = api_get_course_int_id();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $correct = array();
         $options = Question::readQuestionOption($this->id, $course_id);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (!empty($options)) {
             foreach ($options as $option_data) {
                 $id = $option_data['iid'];
@@ -300,6 +482,7 @@ class MultipleAnswerTrueFalse extends Question
                 Question::updateQuestionOption($id, $option_data, $course_id);
             }
         } else {
+<<<<<<< HEAD
             for ($i = 1; $i <= 3; $i++) {
                 $last_id     = Question::saveQuestionOption($this->id, $this->options[$i], $course_id, $i);
                 $correct[$i] = $last_id;
@@ -336,11 +519,53 @@ class MultipleAnswerTrueFalse extends Question
 
 
         // saves the answers into the data base
+=======
+            for ($i=1 ; $i <= 3 ; $i++) {
+        	   $last_id = Question::saveQuestionOption($this->id, $this->options[$i], $course_id, $i);
+               $correct[$i] = $last_id;
+            }
+        }
+
+        /* Getting quiz_question_options (true, false, doubt) because
+        it's possible that there are more options in the future */
+
+        $new_options = Question::readQuestionOption($this->id, $course_id);
+
+        $sorted_by_position = array();
+        foreach($new_options as $item) {
+        	$sorted_by_position[$item['position']] = $item;
+        }
+
+        /* Saving quiz_question.extra values that has the correct scores of
+        the true, false, doubt options registered in this format
+        XX:YY:ZZZ where XX is a float score value.*/
+        $extra_values = array();
+        for ($i=1 ; $i <= 3 ; $i++) {
+            $score = trim($form -> getSubmitValue('option['.$i.']'));
+            $extra_values[]= $score;
+        }
+        $this->setExtra(implode(':',$extra_values));
+
+		for ($i=1 ; $i <= $nb_answers ; $i++) {
+        	$answer     = trim($form -> getSubmitValue('answer['.$i.']'));
+            $comment    = trim($form -> getSubmitValue('comment['.$i.']'));
+            $goodAnswer = trim($form -> getSubmitValue('correct['.$i.']'));
+            if (empty($options)) {
+                //If this is the first time that the question is created when change the default values from the form 1 and 2 by the correct "option id" registered
+                $goodAnswer = $sorted_by_position[$goodAnswer]['id'];
+            }
+    	    $questionWeighting += $extra_values[0]; //By default 0 has the correct answers
+        	$objAnswer->createAnswer($answer, $goodAnswer, $comment,'',$i);
+        }
+
+    	// saves the answers into the data base
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $objAnswer->save();
 
         // sets the total weighting of the question
         $this->updateWeighting($questionWeighting);
         $this->save();
+<<<<<<< HEAD
     }
 
     /**
@@ -363,4 +588,30 @@ class MultipleAnswerTrueFalse extends Question
 
         return $header;
     }
+=======
+	}
+
+    /**
+     * @param int $feedback_type
+     * @param int $counter
+     * @param float $score
+     * @return null|string
+     */
+    function return_header($feedback_type = null, $counter = null, $score = null)
+    {
+        $header = parent::return_header($feedback_type, $counter, $score);
+  	    $header .= '<table class="'.$this->question_table_class .'">
+		<tr>
+			<th>'.get_lang("Choice").'</th>
+			<th>'. get_lang("ExpectedChoice").'</th>
+			<th>'. get_lang("Answer").'</th>';
+			if ($feedback_type != EXERCISE_FEEDBACK_TYPE_EXAM) {
+				$header .= '<th>'.get_lang("Comment").'</th>';
+			} else {
+				$header .= '<th>&nbsp;</th>';
+			}
+        $header .= '</tr>';
+        return $header;
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

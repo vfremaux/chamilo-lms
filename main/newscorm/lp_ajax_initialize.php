@@ -213,4 +213,7 @@ function initialize_item($lp_id, $user_id, $view_id, $next_item) {
     return $return;
 }
 echo initialize_item($_POST['lid'], $_POST['uid'], $_POST['vid'], $_POST['iid']);
+<<<<<<< HEAD
 exit;
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

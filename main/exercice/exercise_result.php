@@ -1,6 +1,7 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
+<<<<<<< HEAD
  * 	Exercise result
  * 	This script gets information from the script "exercise_submit.php",
  * 	through the session, and calculates the score of the student for
@@ -14,6 +15,20 @@
  * 	@todo	split more code up in functions, move functions to library?
  */
 
+=======
+*	Exercise result
+*	This script gets information from the script "exercise_submit.php",
+*	through the session, and calculates the score of the student for
+*	that exercise.
+*	Then it shows the results on the screen.
+*	@package chamilo.exercise
+*	@author Olivier Brouckaert, main author
+*	@author Roan Embrechts, some refactoring
+* 	@author Julio Montoya Armas switchable fill in blank option added
+*
+*	@todo	split more code up in functions, move functions to library?
+*/
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
  * Code
  */
@@ -47,6 +62,10 @@ if ($debug) {
 }
 
 // general parameters passed via POST/GET
+<<<<<<< HEAD
+=======
+// general parameters passed via POST/GET
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 if (empty($origin)) {
     $origin = Security::remove_XSS($_REQUEST['origin']);
 }
@@ -155,8 +174,21 @@ if (isset($session_control_key) && !ExerciseLib::exercise_time_control_is_valid(
     Database::query($sql_fraud);
 }*/
 
+<<<<<<< HEAD
 // Unset session for clock time.
 ExerciseLib::exercise_time_control_delete($objExercise->id, $learnpath_id, $learnpath_item_id);
+=======
+/*
+$session_control_key = get_session_time_control_key($objExercise->id, $learnpath_id, $learnpath_item_id);
+if (isset($session_control_key) && !exercise_time_control_is_valid($objExercise->id, $learnpath_id, $learnpath_item_id)) {
+	$TBL_TRACK_ATTEMPT		= Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_ATTEMPT);
+	$sql_fraud = "UPDATE $TBL_TRACK_ATTEMPT SET answer = 0, marks = 0, position = 0 WHERE exe_id = $exe_id ";
+	Database::query($sql_fraud);
+}*/
+
+//Unset session for clock time
+exercise_time_control_delete($objExercise->id, $learnpath_id, $learnpath_item_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 ExerciseLib::delete_chat_exercise_session($exe_id);
 
@@ -183,8 +215,14 @@ if ($origin != 'learnpath') {
         Session::erase('exe_id');
         Session::erase('categoryList');
     }
+<<<<<<< HEAD
     // Record the results in the learning path, using the SCORM interface (API)
     echo "<script>window.parent.API.void_save_asset('$total_score', '$total_weight', 0, 'completed');</script>";
+=======
+
+	//record the results in the learning path, using the SCORM interface (API)
+	echo "<script>window.parent.API.void_save_asset('$total_score', '$total_weight', 0, 'completed');</script>";
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     echo '<script type="text/javascript">'.$href.'</script>';
     echo '</body></html>';
 }

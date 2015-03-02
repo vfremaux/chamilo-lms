@@ -14,11 +14,11 @@ require_once 'Course.class.php';
  */
 class CourseArchiver
 {
-
     /**
      * Delete old temp-dirs
      */
-    static function clean_backup_dir() {
+    public static function clean_backup_dir()
+    {
         $dir = api_get_path(SYS_ARCHIVE_PATH);
         if ($handle = @ opendir($dir)) {
             while (($file = readdir($handle)) !== false) {
@@ -34,7 +34,7 @@ class CourseArchiver
      * Write a course and all its resources to a zip-file.
      * @return string A pointer to the zip-file
      */
-    static function write_course($course)
+    public static function write_course($course)
     {
         $perm_dirs = api_get_permissions_for_new_directories();
 
@@ -112,7 +112,6 @@ class CourseArchiver
         }
 
         // Copy announcements attachments.
-
         if (isset($course->resources[RESOURCE_ANNOUNCEMENT]) && is_array($course->resources[RESOURCE_ANNOUNCEMENT])) {
             $doc_dir = dirname($backup_dir . '/upload/announcements/');
             @mkdir($doc_dir, $perm_dirs, true);
@@ -137,9 +136,16 @@ class CourseArchiver
     }
 
     /**
-     *
+     * @param int $user_id
+     * @return array
      */
+<<<<<<< HEAD
     static function get_available_backups($user_id = null) {
+=======
+    public static function get_available_backups($user_id = null)
+    {
+        global $dateTimeFormatLong;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $backup_files = array();
         $dirname = api_get_path(SYS_ARCHIVE_PATH) . '';
         if ($dir = opendir($dirname)) {
@@ -152,7 +158,7 @@ class CourseArchiver
                     $date = $file_parts[0];
                     $ext = $file_parts[1];
                     if ($ext == 'zip' && ($user_id != null && $owner_id == $user_id || $user_id == null)) {
-                        $date = substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) . ' ' . substr($date, 8, 2) . ':' . substr($date, 10, 2) . ':' . substr($date, 12, 2);
+                        $date = substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) . ' ' . substr($date, 9, 2) . ':' . substr($date, 11, 2) . ':' . substr($date, 13, 2);
                         $backup_files[] = array('file' => $file, 'date' => $date, 'course_code' => $course_code);
                     }
                 }
@@ -163,9 +169,11 @@ class CourseArchiver
     }
 
     /**
-     *
+     * @param array $file
+     * @return bool|string
      */
-    static function import_uploaded_file($file) {
+    public static function import_uploaded_file($file)
+    {
         $new_filename = uniqid('') . '.zip';
         $new_dir = api_get_path(SYS_ARCHIVE_PATH);
         if (is_dir($new_dir) && is_writable($new_dir)) {
@@ -177,11 +185,13 @@ class CourseArchiver
 
     /**
      * Read a course-object from a zip-file
-     * @return course The course
+     * @param string $filename
      * @param boolean $delete Delete the file after reading the course?
+     *
+     * @return course The course
      * @todo Check if the archive is a correct Chamilo-export
      */
-    static function read_course($filename, $delete = false)
+    public static function read_course($filename, $delete = false)
     {
         CourseArchiver::clean_backup_dir();
         // Create a temp directory

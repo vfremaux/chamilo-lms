@@ -26,7 +26,11 @@ $wiki->charset = $charset;
 // section (for the tabs)
 $this_section = SECTION_COURSES;
 $current_course_tool  = TOOL_WIKI;
+<<<<<<< HEAD
 //require_once api_get_path(LIBRARY_PATH).'mail.lib.inc.php';
+=======
+require_once api_get_path(LIBRARY_PATH).'mail.lib.inc.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $course_id = api_get_course_int_id();
 $session_id = api_get_session_id();
@@ -102,9 +106,17 @@ $view = isset($_GET['view']) ? $_GET['view'] : null;
 $wiki->page = $page;
 $wiki->action = $action;
 
+<<<<<<< HEAD
 /* MAIN CODE */
 
 /* ACTIONS */
+=======
+// Setting wiki data
+if (!empty($view)) {
+    $wiki->setWikiData($view);
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $wiki->blockConcurrentEditions(api_get_user_id(), $action);
 
 /* MAIN WIKI AREA */
@@ -118,7 +130,10 @@ Display::display_header($tool_name, 'Wiki');
 
 // check last version
 if (!empty($view)) {
+<<<<<<< HEAD
     $wiki->setWikiData($view);
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $wiki->checkLastVersion($view);
 }
 

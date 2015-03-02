@@ -37,7 +37,15 @@ $form->add_html_editor('description', get_lang('Description'), false, false, arr
 if (Gradebook::is_active()) {
     $form->addElement('advanced_settings', 'id_qualify', get_lang('AdvancedParameters'));
 
+<<<<<<< HEAD
     $form->addElement('html','<div id="id_qualify_options" style="display:none">');
+=======
+$advanced = '<a href="javascript://" class = "advanced_parameters" ><span id="img_plus_and_minus">&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).' '.get_lang('AdvancedParameters').'</span></a>';
+if ((api_get_session_id() != 0 && Gradebook::is_active()) || api_get_session_id() == 0) {   
+    $form -> addElement('advanced_settings',$advanced);
+
+    $form->addElement('html','<div id="id_qualify" style="display:none">');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // Qualify Attendance for gradebook option
     $form->addElement('checkbox', 'attendance_qualify_gradebook', '', get_lang('QualifyAttendanceGradebook'),'onclick="javascript: if(this.checked){document.getElementById(\'options_field\').style.display = \'block\';}else{document.getElementById(\'options_field\').style.display = \'none\';}"');

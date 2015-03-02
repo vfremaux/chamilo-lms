@@ -12,9 +12,9 @@
 $language_file = 'admin';
 $cidReset = true;
 require_once '../inc/global.inc.php';
+require_once api_get_path(LIBRARY_PATH).'urlmanager.lib.php';
 $this_section = SECTION_PLATFORM_ADMIN;
 
-//api_protect_admin_script();
 api_protect_global_admin_script();
 
 if (!api_get_multiple_access_url()) {
@@ -25,15 +25,22 @@ if (!api_get_multiple_access_url()) {
 // Create the form
 $form = new FormValidator('add_url');
 
+<<<<<<< HEAD
 if( $form->validate()) {
     $check = Security::check_token('post');
     if($check) {
+=======
+if ($form->validate()) {
+    $check = Security::check_token('post');
+    if ($check) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $url_array = $form->getSubmitValues();
         $url = Security::remove_XSS($url_array['url']);
         $description = Security::remove_XSS($url_array['description']);
         $active = intval($url_array['active']);
         $url_id = $url_array['id'];
         $url_to_go='access_urls.php';
+<<<<<<< HEAD
         if ($url_id!='') {
             //we can't change the status of the url with id=1
             if ($url_id==1)
@@ -43,6 +50,19 @@ if( $form->validate()) {
                 $url_id .= '/';
             }
             UrlManager::udpate($url_id, $url, $description, $active, $url_array['url_type'], $url_array);
+=======
+        if ($url_id != '') {
+            //we can't change the status of the url with id=1
+            if ($url_id == 1) {
+                $active = 1;
+            }
+            //checking url
+            if (substr($url, strlen($url)-1, strlen($url)) == '/') {
+                UrlManager::update($url_id, $url, $description, $active);
+            } else {
+                UrlManager::update($url_id, $url.'/', $description, $active);
+            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             // URL Images
             $url_images_dir = api_get_path(SYS_PATH).'custompages/url-images/';
             $image_fields = array("url_image_1", "url_image_2", "url_image_3");
@@ -50,7 +70,14 @@ if( $form->validate()) {
                 if ($_FILES[$image_field]['error'] == 0) {
                     // Hardcoded: only PNG files allowed
                     if (end(explode('.', $_FILES[$image_field]['name'])) == 'png') {
+<<<<<<< HEAD
                         move_uploaded_file($_FILES[$image_field]['tmp_name'], $url_images_dir.$url_id.'_'.$image_field.'.png');
+=======
+                        move_uploaded_file(
+                            $_FILES[$image_field]['tmp_name'],
+                            $url_images_dir.$url_id.'_'.$image_field.'.png'
+                        );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     }
                     // else fail silently
                 }
@@ -58,6 +85,7 @@ if( $form->validate()) {
             }
             $url_to_go='access_urls.php';
             $message=get_lang('URLEdited');
+<<<<<<< HEAD
         } else {
             $num = UrlManager::url_exist($url);
             if ($num == 0) {
@@ -94,6 +122,45 @@ if( $form->validate()) {
         header('Location: '.$url_to_go.'?action=show_message&message='.urlencode($message).'&sec_token='.$tok);
         exit();
     }
+=======
+		} else {
+			$num = UrlManager::url_exist($url);
+			if ($num == 0) {
+                // checking url
+				if (substr($url, strlen($url)-1, strlen($url))=='/') {
+					UrlManager::add($url, $description, $active);
+				} else {
+					//create
+					UrlManager::add($url.'/', $description, $active);
+				}
+				$message = get_lang('URLAdded');
+				$url_to_go='access_urls.php';
+			} else {
+				$url_to_go='access_url_edit.php';
+				$message = get_lang('URLAlreadyAdded');
+			}
+			// URL Images
+			$url .= (substr($url,strlen($url)-1, strlen($url))=='/') ? '' : '/';
+			$url_id = UrlManager::get_url_id($url);
+			$url_images_dir = api_get_path(SYS_PATH).'custompages/url-images/';
+			$image_fields = array("url_image_1", "url_image_2", "url_image_3");
+			foreach ($image_fields as $image_field) {
+				if ($_FILES[$image_field]['error'] == 0) {
+					// Hardcoded: only PNG files allowed
+					if (end(explode('.', $_FILES[$image_field]['name'])) == 'png') {
+						move_uploaded_file($_FILES[$image_field]['tmp_name'], $url_images_dir.$url_id.'_'.$image_field.'.png');
+					}
+					// else fail silently
+				}
+				// else fail silently
+			}
+		}
+		Security::clear_token();
+		$tok = Security::get_token();
+		header('Location: '.$url_to_go.'?action=show_message&message='.urlencode($message).'&sec_token='.$tok);
+		exit();
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
     if(isset($_POST['submit'])) {
         Security::clear_token();
@@ -103,8 +170,12 @@ if( $form->validate()) {
     $form->setConstants(array('sec_token' => $token));
 }
 
+<<<<<<< HEAD
 
 $form->addElement('text','url', get_lang('URLIP'), array('class'=>'span6'));
+=======
+$form->addElement('text','url', 'URL', array('class'=>'span6'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $form->addRule('url', get_lang('ThisFieldIsRequired'), 'required');
 $form->addRule('url', '', 'maxlength',254);
 
@@ -118,11 +189,14 @@ $form->addElement('select', 'url_type', get_lang('Type'), $types);
 $form->addElement('textarea','description',get_lang('Description'));
 
 //the first url with id = 1 will be always active
+<<<<<<< HEAD
 if (isset($_GET['url_id']) && $_GET['url_id'] != 1) {
     $form->addElement('checkbox','active', null, get_lang('Active'));
+=======
+if ($_GET['url_id'] != 1) {
+	$form->addElement('checkbox','active', null, get_lang('Active'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
-
-//$form->addRule('checkbox', get_lang('ThisFieldIsRequired'), 'required');
 
 $defaults['url']='http://';
 $form->setDefaults($defaults);
@@ -141,8 +215,13 @@ if (isset($_GET['url_id'])) {
     $submit_name = get_lang('AddUrl');
 }
 
+<<<<<<< HEAD
 if (!api_is_multiple_url_enabled()) {
     header('Location: index.php');
+=======
+if (!$_configuration['multiple_access_urls']) {
+	header('Location: index.php');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     exit;
 }
 

@@ -25,7 +25,11 @@ switch ($action) {
             // validating required fields
             $a_required_fields = array($person_name, $person_role, $company_name, $company_activity, $company_country);
             $required_field_error = false;
+<<<<<<< HEAD
             foreach($a_required_fields as $required_file) {
+=======
+            foreach ($a_required_fields as $required_file) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 if (trim($required_file) === '') {
                     $required_field_error = true;
                     break;
@@ -44,6 +48,7 @@ switch ($action) {
 
                 // call method ws_add_contact_information
                 $contact_params = array(
+<<<<<<< HEAD
                     'person_name' => $person_name,
                     'person_email' => $person_email,
                     'person_role' => $person_role,
@@ -54,14 +59,34 @@ switch ($action) {
                     'company_country' => $company_country,
                     'company_city' => $company_city
                 );
+=======
+                                        'person_name' => $person_name,
+                                        'person_email' => $person_email,
+                                        'person_role' => $person_role,
+                                        'financial_decision' => $financial_decision,
+                                        'contact_language' => $contact_language,
+                                        'company_name' => $company_name,
+                                        'company_activity' => $company_activity,
+                                        'company_country' => $company_country,
+                                        'company_city' => $company_city
+                                    );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
                 $result = $client->call('ws_add_contact_information', array('contact_params' => $contact_params));
 
                 echo $result;
             }
+<<<<<<< HEAD
         }
     break;
 default:
     echo '';
+=======
+
+            }
+        break;
+	default:
+		echo '';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 exit;

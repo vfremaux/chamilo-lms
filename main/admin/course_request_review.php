@@ -53,12 +53,10 @@ if ($course_validation_feature) {
             $message = sprintf(get_lang('CourseRequestAcceptanceFailed'), $course_request_code);
             $is_error_message = true;
         }
-    }
-
-    /**
-     * Course rejection
-     */
-    elseif (!empty($reject_course_request)) {
+    } elseif (!empty($reject_course_request)) {
+        /**
+         * Course rejection
+         */
         $course_request_code = CourseRequestManager::get_course_request_code($reject_course_request);
         $result = CourseRequestManager::reject_course_request($reject_course_request);
         if ($result) {
@@ -68,12 +66,12 @@ if ($course_validation_feature) {
             $message = sprintf(get_lang('CourseRequestRejectionFailed'), $course_request_code);
             $is_error_message = true;
         }
-    }
+    } elseif (!empty($request_info)) {
 
-    /**
-     * Sending to the teacher a request for additional information about the proposed course.
-     */
-    elseif (!empty($request_info)) {
+        /**
+         * Sending to the teacher a request for additional information about the proposed course.
+         */
+
         $course_request_code = CourseRequestManager::get_course_request_code($request_info);
         $result = CourseRequestManager::ask_for_additional_info($request_info);
         if ($result) {
@@ -83,12 +81,10 @@ if ($course_validation_feature) {
             $message = sprintf(get_lang('CourseRequestInfoFailed'), $course_request_code);
             $is_error_message = true;
         }
-    }
-
-    /**
-     * Deletion of a course request.
-     */
-    elseif (!empty($delete_course_request)) {
+    } elseif (!empty($delete_course_request)) {
+        /**
+         * Deletion of a course request.
+         */
         $course_request_code = CourseRequestManager::get_course_request_code($delete_course_request);
         $result = CourseRequestManager::delete_course_request($delete_course_request);
         if ($result) {
@@ -98,15 +94,13 @@ if ($course_validation_feature) {
             $message = sprintf(get_lang('CourseRequestDeletionFailed'), $course_request_code);
             $is_error_message = true;
         }
-    }
-
-    /**
-     * Form actions: delete.
-     */
-    elseif (DELETE_ACTION_ENABLED && isset($_POST['action'])) {
+    } elseif (DELETE_ACTION_ENABLED && isset($_POST['action'])) {
+        /**
+         * Form actions: delete.
+         */
         switch ($_POST['action']) {
             // Delete selected courses
-            case 'delete_course_requests' :
+            case 'delete_course_requests':
                 $course_requests = $_POST['course_request'];
                 if (is_array($_POST['course_request']) && !empty($_POST['course_request'])) {
                     $success = true;
@@ -140,7 +134,6 @@ function get_number_of_requests() {
  */
 function get_request_data($from, $number_of_items, $column, $direction) {
     global $keyword;
-
     $course_request_table = Database :: get_main_table(TABLE_MAIN_COURSE_REQUEST);
 
     if (DELETE_ACTION_ENABLED) {

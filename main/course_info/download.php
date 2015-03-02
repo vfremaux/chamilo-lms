@@ -10,15 +10,24 @@
 require_once '../inc/global.inc.php';
 $this_section = SECTION_COURSES;
 
+<<<<<<< HEAD
 if (isset($_GET['session'])) {
     $archive_path = api_get_path(SYS_ARCHIVE_PATH).'temp/';
     $_cid = true;
     $is_courseAdmin = true;
+=======
+require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+
+if (isset($_GET['session']) && $_GET['session']) {
+	$archive_path = api_get_path(SYS_ARCHIVE_PATH).'temp/';
+	$_cid = true;
+	$is_courseAdmin = true;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 } else {
     $archive_path = api_get_path(SYS_ARCHIVE_PATH);
 }
 
-$archive_file = $_GET['archive'];
+$archive_file = isset($_GET['archive']) ? $_GET['archive'] : null;
 $archive_file = str_replace(array('..', '/', '\\'), '', $archive_file);
 
 list($extension) = FileManager::getextension($archive_file);
@@ -45,6 +54,10 @@ if (Security::check_abs_path($archive_path.$archive_file, $archive_path)) {
     header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
     header('Cache-Control: public');
     header('Pragma: no-cache');
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     header('Content-Type: '.$content_type);
     header('Content-Length: '.filesize($archive_path.$archive_file));
     header('Content-Disposition: attachment; filename='.$archive_file);

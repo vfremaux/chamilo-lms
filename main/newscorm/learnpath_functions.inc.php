@@ -1377,7 +1377,6 @@ function export_exercise($item_id)
           <td>
           <table width='100%' cellpadding='4' cellspacing='2' border='0'>";
 
-    $exerciseType = 1; // So to list all questions in one page.
     $test .= $s;
 
     $i = 0;
@@ -1385,6 +1384,7 @@ function export_exercise($item_id)
     foreach ($questionList as $questionId) {
         $i++;
 
+<<<<<<< HEAD
         // For sequential exercises.
         if ($exerciseType == 2) {
             // If it is not the right question, goes to the next loop iteration.
@@ -1409,6 +1409,8 @@ function export_exercise($item_id)
             }
         }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         echo $s = "<tr bgcolor='#e6e6e6'><td valign='top' colspan='2'>".get_lang('Question')." ";
         // Call the showQuestion(). This basically displays the question in a table.
         $question_obj = Question::read($questionId);

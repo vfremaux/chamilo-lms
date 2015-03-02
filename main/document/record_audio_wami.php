@@ -47,8 +47,8 @@ $wamidir=$dir;
 if($wamidir=="/"){
  $wamidir="";
 }
-$wamiurlplay=api_get_path(WEB_COURSE_PATH).api_get_course_path().'/document'.$wamidir."/";
-
+$wamiurlplay = api_get_path(WEB_COURSE_PATH).api_get_course_path().'/document'.$wamidir."/";
+$groupId = api_get_group_id();
 
 $is_allowed_to_edit = api_is_allowed_to_edit(null, true);
 
@@ -78,9 +78,8 @@ if (!is_dir($filepath)) {
 }
 
 //groups //TODO: clean
-if (isset ($_SESSION['_gid']) && $_SESSION['_gid'] != 0) {
-	$req_gid = '&amp;gidReq='.$_SESSION['_gid'];
-	$interbreadcrumb[] = array ("url" => "../group/group_space.php?gidReq=".$_SESSION['_gid'], "name" => get_lang('GroupSpace'));
+if (!empty($groupId)) {
+	$interbreadcrumb[] = array ("url" => "../group/group_space.php?".api_get_cidreq(), "name" => get_lang('GroupSpace'));
 	$noPHP_SELF = true;
 	$to_group_id = $_SESSION['_gid'];
 	$group = GroupManager :: get_group_properties($to_group_id);
@@ -90,12 +89,11 @@ if (isset ($_SESSION['_gid']) && $_SESSION['_gid'] != 0) {
 	}
 }
 
-$interbreadcrumb[] = array ("url" => "./document.php?id=".$document_id.$req_gid, "name" => get_lang('Documents'));
+$interbreadcrumb[] = array("url" => "./document.php?id=".$document_id.'&'.api_get_cidreq(), "name" => get_lang('Documents'));
 
 if (!($is_allowed_to_edit || GroupManager::groupMemberWithUploadRights() || is_my_shared_folder(api_get_user_id(), Security::remove_XSS($dir),api_get_session_id()))) {
 	api_not_allowed(true);
 }
-
 
 /*	Header */
 event_access_tool(TOOL_DOCUMENT);
@@ -124,16 +122,13 @@ if (isset($document_data['parents'])) {
     }
 }
 
-
 //make some vars
-$wamiuserid=api_get_user_id();
+$wamiuserid = api_get_user_id();
 
 Display :: display_header($nameTools, 'Doc');
 echo '<div class="actions">';
 		echo '<a href="document.php?id='.$document_id.'">'.Display::return_icon('back.png',get_lang('BackTo').' '.get_lang('DocumentsOverview'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '</div>';
-
-
 ?>
 <!-- swfobject is a commonly used library to embed Flash content https://ajax.googleapis.com/ajax/libs/swfobject/2.2/ -->
 <script type="text/javascript" src="<?php echo api_get_path(WEB_LIBRARY_PATH) ?>swfobject/swfobject.js"></script>
@@ -143,9 +138,7 @@ echo '</div>';
 
 <!-- GUI code... take it or leave it -->
 <script type="text/javascript" src="<?php echo api_get_path(WEB_LIBRARY_PATH) ?>wami-recorder/gui.js"></script>
-
 <script type="text/javascript">
-
 	function newNameRecord() {
 		location.reload(true)
 	}
@@ -182,12 +175,9 @@ echo '</div>';
 
 		gui.setPlayEnabled(false);
 	}
-
 </script>
 
-
 <div id="wami" style="margin-top:10px;"></div>
-
 <div align="center" style="margin-top:150px;">
 <form name="form_wami_recorder">
 <input placeholder="<?php echo get_lang('InputNameHere'); ?>" type="text" id="audio_title"><br/>

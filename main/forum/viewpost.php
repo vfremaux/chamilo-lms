@@ -22,9 +22,11 @@ require 'forumconfig.inc.php';
 require_once 'forumfunction.inc.php';
 
 $htmlHeadXtra[] = '<script language="javascript">
-                                        $(document).ready(function(){ $(\'.hide-me\').slideUp() });
-                                    function hidecontent(content){ $(content).slideToggle(\'normal\'); }
-                                    </script>';
+$(document).ready(function(){ $(\'.hide-me\').slideUp() });
+    function hidecontent(content){
+        $(content).slideToggle(\'normal\');
+    }
+</script>';
 
 // Are we in a lp ?
 $origin = '';
@@ -38,12 +40,11 @@ if (isset($_GET['origin'])) {
 
 // We are getting all the information about the current forum and forum category.
 // Note pcool: I tried to use only one sql statement (and function) for this,
-// but the problem is that the visibility of the forum AND forum cateogory are stored in the item_property table.
+// but the problem is that the visibility of the forum AND forum category are stored in the item_property table.
 $current_thread = get_thread_information($_GET['thread']); // Note: This has to be validated that it is an existing thread.
 $current_forum = get_forum_information($current_thread['forum_id']); // Note: This has to be validated that it is an existing forum.
 $current_forum_category = get_forumcategory_information($current_forum['forum_category']);
 $whatsnew_post_info = $_SESSION['whatsnew_post_info'];
-
 /* Header and Breadcrumbs */
 
 if (isset($_SESSION['gradebook'])){
@@ -52,9 +53,9 @@ if (isset($_SESSION['gradebook'])){
 
 if (!empty($gradebook) && $gradebook == 'view') {
     $interbreadcrumb[] = array (
-            'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
-            'name' => get_lang('ToolGradebook')
-        );
+        'url' => '../gradebook/'.$_SESSION['gradebook_dest'],
+        'name' => get_lang('ToolGradebook')
+    );
 }
 
 if ($origin == 'learnpath') {
@@ -83,10 +84,10 @@ if (!api_is_allowed_to_edit(false, true) AND ($current_forum['visibility'] == 0 
 /* Actions */
 
 if ($_GET['action'] == 'delete' && isset($_GET['content']) && isset($_GET['id']) && api_is_allowed_to_edit(false, true)) {
-    $message = delete_post($_GET['id']); // Note: This has to be cleaned first.
+    $message = delete_post($_GET['id']);
 }
 if (($_GET['action'] == 'invisible' || $_GET['action'] == 'visible') && isset($_GET['id']) && api_is_allowed_to_edit(false, true)) {
-    $message = approve_post($_GET['id'], $_GET['action']); // Note: This has to be cleaned first.
+    $message = approve_post($_GET['id'], $_GET['action']);
 }
 if ($_GET['action'] == 'move' && isset($_GET['post'])) {
     $message = move_post_form();
@@ -98,7 +99,8 @@ if (!empty($message)) {
     Display :: display_confirmation_message(get_lang($message));
 }
 
-if ($message != 'PostDeletedSpecial') { // In this case the first and only post of the thread is removed.
+// In this case the first and only post of the thread is removed.
+if ($message != 'PostDeletedSpecial') {
     // This increases the number of times the thread has been viewed.
     increase_thread_view($_GET['thread']);
 
@@ -172,9 +174,7 @@ if ($message != 'PostDeletedSpecial') { // In this case the first and only post 
     echo "</table>";
 
     include_once('viewpost.inc.php');
-} // if ($message != 'PostDeletedSpecial') // In this case the first and only post of the thread is removed.
-
-/* FOOTER */
+}
 
 if ($origin != 'learnpath') {
     Display :: display_footer();

@@ -104,6 +104,28 @@ if ($is_allowed_to_edit) {
 $token = Security::get_token();
 
 /* DISPLAY SCORM LIST */
+<<<<<<< HEAD
+=======
+$list = new LearnpathList(api_get_user_id());
+$flat_list = $list->get_flat_list();
+
+if (!empty($flat_list)) {
+    echo '<table class="data_table">';
+    echo '<tr>';
+
+    if ($is_allowed_to_edit) {
+        echo '<th width="40%">'.get_lang('Title').'</th>';
+        echo '<th>'.get_lang('PublicationDate').'</th>';
+        echo '<th>'.get_lang('ExpirationDate').'</th>';
+        echo '<th>'.get_lang('Progress')."</th>";
+        echo '<th width="260px">'.get_lang('AuthoringOptions')."</th>";
+    } else {
+        echo '<th width="50%">'.get_lang('Title').'</th>';
+        echo '<th>'.get_lang('Progress')."</th>";
+        echo '<th>'.get_lang('Actions')."</th>";
+    }
+    echo '</tr>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $categories_temp = learnpath::get_categories(api_get_course_int_id());
 $category_test = new ChamiloLMS\Entity\CLpCategory();
@@ -142,10 +164,21 @@ foreach ($categories as $item) {
     if ($item->getId() > 0 && api_is_allowed_to_edit()) {
         $url = 'lp_controller.php?'.api_get_cidreq().'&action=add_lp_category&id='.$item->getId();
 
+<<<<<<< HEAD
         $edit_link = Display::url(Display::return_icon('edit.png', get_lang('Edit')), $url);
         $delete_url = 'lp_controller.php?'.api_get_cidreq().'&action=delete_lp_category&id='.$item->getId();
         $moveUpUrl = 'lp_controller.php?'.api_get_cidreq().'&action=move_up_category&id='.$item->getId();
         $moveDownUrl = 'lp_controller.php?'.api_get_cidreq().'&action=move_down_category&id='.$item->getId();
+=======
+        $url_start_lp = 'lp_controller.php?'.api_get_cidreq().'&action=view&lp_id='.$id;
+        $name = Security::remove_XSS($details['lp_name']);
+        $extra = null;
+        if ($is_allowed_to_edit) {
+            $url_start_lp .= '&isStudentView=true';
+            $dsp_desc = '<em>'.$details['lp_maker'].'</em>   '.(learnpath::is_lp_visible_for_student($id, api_get_user_id()) ? '' : ' - ('.get_lang('LPNotVisibleToStudent').')');
+            $extra = '<div class ="lp_content_type_label">'.$dsp_desc.'</div>';
+        }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         if ($counterCategories == 1) {
             $moveUpLink = Display::url(Display::return_icon('up_na.png', get_lang('Move')), '#');
@@ -187,8 +220,18 @@ foreach ($categories as $item) {
         $autolunch_exists = false;
         foreach ($flat_list as $id => $details) {
 
+<<<<<<< HEAD
             // Validation when belongs to a session
             $session_img = api_get_session_image($details['lp_session'], $_user['status']);
+=======
+        $token_parameter = "&sec_token=$token";
+        $dsp_edit_lp = null;
+        $dsp_publish = null;
+        $dsp_reinit = null;
+        $dsp_disk = null;
+        $copy = null;
+        $lp_auto_lunch_icon = null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             if (!$is_allowed_to_edit && $details['lp_visibility'] == 0) {
                 // This is a student and this path is invisible, skip.
@@ -409,10 +452,32 @@ foreach ($categories as $item) {
 
                 /* Export */
 
+<<<<<<< HEAD
                 if ($details['lp_type'] == 1) {
                     $dsp_disk = Display::url(Display::return_icon('cd.gif', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id");
                 } elseif ($details['lp_type'] == 2) {
                     $dsp_disk = Display::url(Display::return_icon('cd.gif', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id&export_name=".api_replace_dangerous_char($name, 'strict').".zip");
+=======
+            /* Export */
+
+            if ($details['lp_type'] == 1) {
+                $dsp_disk = Display::url(Display::return_icon('cd.gif', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id");
+            } elseif ($details['lp_type'] == 2) {
+                $dsp_disk = Display::url(Display::return_icon('cd.gif', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id&export_name=".replace_dangerous_char($name, 'strict').".zip");
+            } else {
+                $dsp_disk = Display::return_icon('cd_gray.gif', get_lang('Export'), array(), ICON_SIZE_SMALL);
+            }
+
+            //Copy
+            $copy = Display::url(Display::return_icon('cd_copy.png', get_lang('Copy'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=copy&lp_id=$id");
+
+            /* Auto Lunch LP code */
+            if (api_get_course_setting('enable_lp_auto_launch') == 1) {
+                if ($details['autolaunch'] == 1 && $autolunch_exists == false) {
+                    $autolunch_exists = true;
+                    $lp_auto_lunch_icon = '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=auto_launch&status=0&lp_id='.$id.'">
+                        <img src="../img/launch.png" border="0" title="'.get_lang('DisableLPAutoLaunch').'" /></a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 } else {
                     $dsp_disk = Display::return_icon('cd_gray.gif', get_lang('Export'), array(), ICON_SIZE_SMALL);
                 }

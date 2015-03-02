@@ -17,7 +17,7 @@ require_once 'lib/fe/catform.class.php';
 api_block_anonymous_users();
 block_students();
 
-$edit_cat = isset($_REQUEST['editcat']) ? $_REQUEST['editcat'] : '';
+$edit_cat = isset($_REQUEST['editcat']) ? intval($_REQUEST['editcat']) : '';
 
 $htmlHeadXtra[] = '<script type="text/javascript">
 $(document).ready(function() {

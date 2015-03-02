@@ -63,6 +63,10 @@ define('TABLE_MAIN_USER_FIELD',         'user_field');
 define('TABLE_MAIN_USER_FIELD_OPTIONS', 'user_field_options');
 define('TABLE_MAIN_USER_FIELD_VALUES',  'user_field_values');
 
+define('TABLE_MAIN_LP_FIELD',         'lp_field');
+define('TABLE_MAIN_LP_FIELD_OPTIONS', 'lp_field_options');
+define('TABLE_MAIN_LP_FIELD_VALUES',  'lp_field_values');
+
 //User tags
 define('TABLE_MAIN_TAG',                'tag');
 define('TABLE_MAIN_USER_REL_TAG',       'user_rel_tag');
@@ -78,6 +82,8 @@ define('TABLE_MAIN_ACCESS_URL', 'access_url');
 define('TABLE_MAIN_ACCESS_URL_REL_USER',    'access_url_rel_user');
 define('TABLE_MAIN_ACCESS_URL_REL_COURSE',  'access_url_rel_course');
 define('TABLE_MAIN_ACCESS_URL_REL_SESSION', 'access_url_rel_session');
+define('TABLE_MAIN_ACCESS_URL_REL_USERGROUP', 'access_url_rel_usergroup');
+define('TABLE_MAIN_ACCESS_URL_REL_COURSE_CATEGORY', 'access_url_rel_course_category');
 
 // Global calendar
 define('TABLE_MAIN_SYSTEM_CALENDAR', 'sys_calendar');
@@ -163,6 +169,10 @@ define('TABLE_TOOL_INTRO',                      'tool_intro');
 define('TABLE_SCORMDOC',                        'scormdocument');
 define('TABLE_STUDENT_PUBLICATION',             'student_publication');
 define('TABLE_STUDENT_PUBLICATION_ASSIGNMENT',  'student_publication_assignment');
+define('TABLE_STUDENT_PUBLICATION_REL_DOCUMENT', 'student_publication_rel_document');
+define('TABLE_STUDENT_PUBLICATION_REL_USER', 'student_publication_rel_user');
+
+define('TABLE_STUDENT_PUBLICATION_ASSIGNMENT_COMMENT', 'student_publication_comment');
 
 // Course forum tables
 define('TABLE_FORUM_CATEGORY',              'forum_category');

@@ -1,12 +1,6 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
-*	File containing the MultipleAnswer class.
-*	@package chamilo.exercise
-* 	@author Eric Marguin
-* 	@version $Id: admin.php 10680 2007-01-11 21:26:23Z pcool $
-*/
-/**
  * Code
  */
 /**
@@ -20,15 +14,19 @@
  **/
 class MultipleAnswerCombinationTrueFalse extends MultipleAnswerCombination
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 	static $typePicture = 'mcmaco.gif';
 	static $explanationLangVar = 'MultipleAnswerCombinationTrueFalse';
-    var    $options; 
+    var    $options;
 
 	/**
 	 * Constructor
 	 */
-	function MultipleAnswerCombinationTrueFalse(){
+	function MultipleAnswerCombinationTrueFalse()
+    {
 		parent::question();
 		$this -> type = MULTIPLE_ANSWER_COMBINATION_TRUE_FALSE;
 		$this -> isContent = $this-> getIsContent();

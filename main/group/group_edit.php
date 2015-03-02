@@ -109,7 +109,11 @@ function check_group_members($value)
         return true;
     }
     if (isset($value['max_member']) && isset($value['group_members']) && $value['max_member'] < count($value['group_members'])) {
+<<<<<<< HEAD
         return array('group_members' => get_lang('GroupTooMuchMembers'));
+=======
+        return array ('group_members' => get_lang('GroupTooMuchMembers'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
     return true;
 }
@@ -140,6 +144,7 @@ $form->addElement('textarea', 'description', get_lang('Description'), array('cla
 // Getting course info
 $course = $app['orm.em']->getRepository('ChamiloLMS\Entity\Course')->find(api_get_course_int_id());
 
+<<<<<<< HEAD
 //Getting subscribed students
 $subscribedUsers = $app['orm.em']->getRepository('ChamiloLMS\Entity\Course')->getSubscribedStudents($course);
 $subscribedUsers = $subscribedUsers->getQuery();
@@ -150,6 +155,10 @@ $complete_user_list = array();
 foreach ($subscribedUsers as $user) {
     $complete_user_list[$user->getUserId()] = $user->getCompleteNameWithClasses();
 }
+=======
+$complete_user_list = GroupManager :: fill_groups_list($current_group['id']);
+usort($complete_user_list, 'sort_users');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $possible_users = array();
 foreach ($complete_user_list as $userId => $user) {
@@ -178,9 +187,16 @@ foreach ($group_member_list as $userId => $userName) {
 
 // possible : number_groups_left > 0 and is group member
 $possible_users = array();
+<<<<<<< HEAD
 
 foreach ($complete_user_list as $userId => $userName) {
     $possible_users[$userId] = $userName;
+=======
+foreach ($complete_user_list as $index => $user) {
+     if ($user['number_groups_left'] > 0 || in_array($user['user_id'], $selected_users)) {
+        $possible_users[$user['user_id']] = api_get_person_name($user['firstname'], $user['lastname']).' ('.$user['username'].')';
+     }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $group_members_element = $form->addElement(
@@ -217,6 +233,7 @@ $form->addGroup($group, 'max_member_group', null, '', false);
 $form->addRule('max_member_group', get_lang('InvalidMaxNumberOfMembers'), 'callback', 'check_max_number_of_members');
 
 // Self registration
+<<<<<<< HEAD
 $group = array();
 $group[] = $form->createElement(
     'checkbox',
@@ -241,6 +258,13 @@ $form->addGroup(
     '',
     false
 );
+=======
+$group = array(
+    $form->createElement('checkbox', 'self_registration_allowed', get_lang('GroupSelfRegistration'), get_lang('GroupAllowStudentRegistration'), 1),
+    $form->createElement('checkbox', 'self_unregistration_allowed', null, get_lang('GroupAllowStudentUnregistration'), 1)
+);
+$form->addGroup($group, '', Display::return_icon('user.png', get_lang('GroupSelfRegistration') , array(), ICON_SIZE_SMALL).' '.get_lang('GroupSelfRegistration'), '', false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // Documents settings
 $group = array();
@@ -344,6 +368,7 @@ $form->addGroup(
 );
 
 // Wiki settings
+<<<<<<< HEAD
 $group = array();
 $group[] = $form->createElement(
     'radio',
@@ -380,6 +405,22 @@ $form->addGroup(
     '',
     false
 );
+=======
+$group = array(
+    $form->createElement('radio', 'wiki_state', get_lang('GroupWiki'), get_lang('NotAvailable'), GroupManager::TOOL_NOT_AVAILABLE),
+    $form->createElement('radio', 'wiki_state', null, get_lang('Public'), GroupManager::TOOL_PUBLIC),
+    $form->createElement('radio', 'wiki_state', null, get_lang('Private'), GroupManager::TOOL_PRIVATE)
+);
+$form->addGroup($group, '', Display::return_icon('wiki.png', get_lang('GroupWiki') , array(), ICON_SIZE_SMALL).' '.get_lang('GroupWiki'), '', false);
+
+// Chat settings
+$group = array(
+    $form->createElement('radio', 'chat_state', get_lang('Chat'), get_lang('NotAvailable'), GroupManager::TOOL_NOT_AVAILABLE),
+    $form->createElement('radio', 'chat_state', null, get_lang('Public'), GroupManager::TOOL_PUBLIC),
+    $form->createElement('radio', 'chat_state', null, get_lang('Private'), GroupManager::TOOL_PRIVATE)
+);
+$form->addGroup($group, '', Display::return_icon('chat.png', get_lang('Chat'), array(), ICON_SIZE_SMALL).' '.get_lang('Chat'), '', false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 // submit button
 $form->addElement('style_submit_button', 'submit', get_lang('SaveSettings'), 'class="save"');
@@ -391,10 +432,17 @@ if ($form->validate()) {
     } else {
         $max_member = $values['max_member'];
     }
+<<<<<<< HEAD
     $self_registration_allowed = isset($values['self_registration_allowed']) ? 1 : 0;
     $self_unregistration_allowed = isset($values['self_unregistration_allowed']) ? 1 : 0;
 
     GroupManager :: set_group_properties(
+=======
+    $self_registration_allowed   = isset($values['self_registration_allowed']) ? 1 : 0;
+    $self_unregistration_allowed = isset($values['self_unregistration_allowed']) ? 1 : 0;
+
+    GroupManager::set_group_properties(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $current_group['id'],
         $values['name'],
         $values['description'],
@@ -424,6 +472,7 @@ if ($form->validate()) {
 
     // Returning to the group area (note: this is inconsistent with the rest of chamilo)
     $cat = GroupManager :: get_category_from_group($current_group['id']);
+<<<<<<< HEAD
     if (isset($_POST['group_members']) && count(
         $_POST['group_members']
     ) > $max_member && $max_member != GroupManager::MEMBER_PER_GROUP_NO_LIMIT
@@ -433,6 +482,10 @@ if ($form->validate()) {
                 'GroupTooMuchMembers'
             )
         );
+=======
+    if (isset($_POST['group_members']) && count($_POST['group_members']) > $max_member && $max_member != GroupManager::MEMBER_PER_GROUP_NO_LIMIT) {
+        header('Location: group.php?'.api_get_cidreq(true, false).'&action=warning_message&msg='.get_lang('GroupTooMuchMembers'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     } else {
         header(
             'Location: group.php?'.api_get_cidreq(true, false).'&action=success_message&msg='.get_lang(

@@ -8,8 +8,6 @@ $language_file = array('exercice', 'work', 'document', 'admin', 'gradebook');
 require_once '../inc/global.inc.php';
 $current_course_tool  = TOOL_STUDENTPUBLICATION;
 
-/*	Configuration settings */
-
 api_protect_course_script(true);
 
 // Including necessary files
@@ -17,6 +15,7 @@ require_once 'work.lib.php';
 $this_section = SECTION_COURSES;
 
 $workId = isset($_GET['id']) ? intval($_GET['id']) : null;
+$origin = isset($_REQUEST['origin']) ? Security::remove_XSS($_REQUEST['origin']) : '';
 
 if (empty($workId)) {
     api_not_allowed(true);
@@ -59,58 +58,99 @@ if (!empty($group_id)) {
 $interbreadcrumb[] = array ('url' => api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq(), 'name' => get_lang('StudentPublications'));
 $interbreadcrumb[] = array ('url' => api_get_path(WEB_CODE_PATH).'work/work_list.php?'.api_get_cidreq().'&id='.$workId, 'name' =>  $my_folder_data['title']);
 
+$documentsAddedInWork = getAllDocumentsFromWorkToString($workId, $courseInfo);
+
 Display :: display_header(null);
 
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'">'.Display::return_icon('back.png', get_lang('BackToWorksList'),'',ICON_SIZE_MEDIUM).'</a>';
+echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq().'&origin='.$origin.'">'.Display::return_icon('back.png', get_lang('BackToWorksList'),'',ICON_SIZE_MEDIUM).'</a>';
 if (api_is_allowed_to_session_edit(false, true) && !empty($workId)) {
-    echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/upload.php?'.api_get_cidreq().'&id='.$workId.'&origin='.$origin.'&gradebook='.$gradebook.'">';
-    echo Display::return_icon('upload_file.png', get_lang('UploadADocument'),'',ICON_SIZE_MEDIUM).'</a>';
+    echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/upload.php?'.api_get_cidreq().'&id='.$workId.'&origin='.$origin.'">';
+    echo Display::return_icon('upload_file.png', get_lang('UploadADocument'), '', ICON_SIZE_MEDIUM).'</a>';
 }
 echo '</div>';
 
-$error_message = isset($_GET['error_message']) ? Security::remove_XSS($_GET['error_message']) : null;
+if (!empty($my_folder_data['title'])) {
+    echo Display::page_subheader($my_folder_data['title']);
+}
+
+$error_message = Session::read('error_message');
 if (!empty($error_message)) {
     echo $error_message;
+    Session::erase('error_message');
 }
 
 if (!empty($my_folder_data['description'])) {
     echo '<p><div><strong>'.get_lang('Description').':</strong><p>'.Security::remove_XSS($my_folder_data['description']).'</p></div></p>';
 }
 
+<<<<<<< HEAD
 echo getAllDocumentsFromWorkToString($workId, $courseInfo);
 
+=======
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
+$item_id = isset($_REQUEST['item_id']) ? intval($_REQUEST['item_id']) : null;
+
+switch ($action) {
+    case 'delete':
+        $fileDeleted = deleteWorkItem($item_id, $courseInfo);
+
+        if (!$fileDeleted) {
+            Display::display_error_message(get_lang('YouAreNotAllowedToDeleteThisDocument'));
+        } else {
+            Display::display_confirmation_message(get_lang('TheDocumentHasBeenDeleted'));
+        }
+        break;
+}
+
+$result = getWorkDateValidationStatus($work_data);
+echo $result['message'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $check_qualification = intval($my_folder_data['qualification']);
 
 if (!empty($work_data['enable_qualification']) && !empty($check_qualification)) {
     $type = 'simple';
+<<<<<<< HEAD
     $columns        = array(get_lang('Type'), get_lang('FirstName'), get_lang('LastName'), get_lang('Title'), get_lang('Qualification'), get_lang('Date'), get_lang('Status'), get_lang('Actions'));
+=======
+
+    $columns = array(
+        get_lang('Type'),
+        get_lang('Title'),
+        get_lang('Qualification'),
+        get_lang('Date'),
+        get_lang('Status'),
+        get_lang('Actions')
+    );
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $column_model   = array (
-        array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false'),
-        array('name'=>'firstname',      'index'=>'firstname',       'width'=>'35',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'lastname',		'index'=>'lastname',        'width'=>'35',   'align'=>'left', 'search' => 'true'),
-        //array('name'=>'username',       'index'=>'username',        'width'=>'30',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'title',          'index'=>'title',           'width'=>'40',   'align'=>'left', 'search' => 'false', 'wrap_cell' => 'true'),
-        //                array('name'=>'file',           'index'=>'file',            'width'=>'20',   'align'=>'left', 'search' => 'false'),
-        array('name'=>'qualification',	'index'=>'qualification',	'width'=>'20',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'sent_date',           'index'=>'sent_date',            'width'=>'50',   'align'=>'left', 'search' => 'true', 'wrap_cell' => 'true'),
-        array('name'=>'qualificator_id','index'=>'qualificator_id', 'width'=>'30',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'actions',        'index'=>'actions',         'width'=>'40',   'align'=>'left', 'search' => 'false', 'sortable'=>'false')
+        array('name'=>'type', 'index'=>'file', 'width'=>'5',   'align'=>'left', 'search' => 'false', 'sortable' => 'false'),
+        array('name'=>'title', 'index'=>'title', 'width'=>'40',   'align'=>'left', 'search' => 'false', 'wrap_cell' => 'true'),
+        array('name'=>'qualification',	'index'=>'qualification', 'width'=>'10',   'align'=>'left', 'search' => 'true'),
+        array('name'=>'sent_date', 'index'=>'sent_date', 'width'=>'30',   'align'=>'left', 'search' => 'true', 'wrap_cell' => 'true'),
+        array('name'=>'qualificator_id', 'index'=>'qualificator_id', 'width'=>'20', 'align'=>'left', 'search' => 'true'),
+        array('name'=>'actions', 'index'=>'actions', 'width'=>'20', 'align'=>'left', 'search' => 'false', 'sortable'=>'false')
     );
 } else {
     $type = 'complex';
+<<<<<<< HEAD
     $columns  = array(get_lang('Type'), get_lang('FirstName'), get_lang('LastName'), get_lang('Title'), get_lang('Date'),  get_lang('Actions'));
+=======
+
+    $columns  = array(
+        get_lang('Type'),
+        get_lang('Title'),
+        get_lang('Date'),
+        get_lang('Actions')
+    );
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     $column_model   = array (
-        array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false'),
-        array('name'=>'firstname',      'index'=>'firstname',       'width'=>'35',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'lastname',		'index'=>'lastname',        'width'=>'35',   'align'=>'left', 'search' => 'true'),
-        //array('name'=>'username',       'index'=>'username',        'width'=>'30',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'title',          'index'=>'title',           'width'=>'40',   'align'=>'left', 'search' => 'false', 'wrap_cell' => "true"),
-        //                array('name'=>'file',           'index'=>'file',            'width'=>'20',   'align'=>'left', 'search' => 'false'),
-        //array('name'=>'qualification',	'index'=>'qualification',	'width'=>'20',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'sent_date',       'index'=>'sent_date',            'width'=>'50',   'align'=>'left', 'search' => 'true', 'wrap_cell' => 'true'),
-        //array('name'=>'qualificator_id','index'=>'qualificator_id', 'width'=>'30',   'align'=>'left', 'search' => 'true'),
-        array('name'=>'actions',        'index'=>'actions',         'width'=>'40',   'align'=>'left', 'search' => 'false', 'sortable'=>'false')
+        array('name'=>'type',           'index'=>'file',            'width'=>'5',   'align'=>'left', 'search' => 'false', 'sortable' => 'false'),
+        array('name'=>'title',          'index'=>'title',           'width'=>'60',   'align'=>'left', 'search' => 'false', 'wrap_cell' => "true"),
+        array('name'=>'sent_date',       'index'=>'sent_date',      'width'=>'30',   'align'=>'left', 'search' => 'true', 'wrap_cell' => 'true', 'sortable'=>'false'),
+        array('name'=>'actions',        'index'=>'actions',         'width'=>'20',   'align'=>'left', 'search' => 'false', 'sortable'=>'false')
     );
 }
 

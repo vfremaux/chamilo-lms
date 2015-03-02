@@ -11,6 +11,7 @@
  */
 class Model
 {
+<<<<<<< HEAD
 
     public $table;
     public $columns;
@@ -32,6 +33,16 @@ class Model
             }
         }*/
     }
+=======
+    public $table;
+    public $columns;
+    public $required;
+    public $is_course_model =false;
+
+	public function __construct()
+    {
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     /**
      * Useful finder - experimental akelos like only use in notification.lib.php send function
@@ -49,7 +60,7 @@ class Model
     }
 
     /**
-     * Delets an item
+     * Deletes an item
      */
     public function delete($id)
     {
@@ -62,6 +73,7 @@ class Model
             $params    = array('id = ? AND c_id = ?' => array($id, $course_id));
         }
         // Database table definition
+<<<<<<< HEAD
         $result = Database :: delete($this->table, $params);
         if ($result != 1) {
             return false;
@@ -70,11 +82,28 @@ class Model
         return true;
     }
 
+=======
+        $result = Database::delete($this->table, $params);
+        if ($result != 1) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     private function clean_parameters($params)
     {
         $clean_params = array();
         if (!empty($params)) {
+<<<<<<< HEAD
             foreach ($params as $key => $value) {
+=======
+            foreach ($params as $key=>$value) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 if (in_array($key, $this->columns)) {
                     $clean_params[$key] = $value;
                 }
@@ -87,8 +116,12 @@ class Model
     /**
      * Displays the title + grid
      */
+<<<<<<< HEAD
     public function display()
     {
+=======
+    public function display() {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -99,7 +132,11 @@ class Model
         if (empty($id)) {
             return array();
         }
+<<<<<<< HEAD
         $params = array('id = ?' => intval($id));
+=======
+        $params = array('id = ?'=>intval($id));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if ($this->is_course_model) {
             $course_id = api_get_course_int_id();
             $params    = array('id = ? AND c_id = ?' => array($id, $course_id));
@@ -109,16 +146,30 @@ class Model
         return $result;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @param array $options
+     * @return array
+     */
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function get_all($options = null)
     {
         return Database::select('*', $this->table, $options);
     }
 
+<<<<<<< HEAD
     public function get_first($options = null)
     {
         return Database::select('*', $this->table, $options, 'first');
     }
 
+=======
+    /**
+     * @param array  $options
+     * @return array
+     */
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function get_all_for_export($options = null)
     {
         return Database::select('name, description', $this->table, $options);
@@ -129,6 +180,7 @@ class Model
      */
     public function get_count()
     {
+<<<<<<< HEAD
         $row = Database::select(
             'count(*) as count',
             $this->table,
@@ -136,12 +188,16 @@ class Model
             'first'
         );
 
+=======
+        $row = Database::select('count(*) as count', $this->table, array('where' => array('parent_id = ?' => '0')),'first');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         return $row['count'];
     }
 
     /**
      * a little bit of javascript to display
      */
+<<<<<<< HEAD
     public function javascript()
     {
     }
@@ -154,6 +210,20 @@ class Model
      *
      */
     public function save($params, $show_query = false)
+=======
+	public function javascript()
+    {
+	}
+
+	/**
+	 * Saves an element into the DB
+	 *
+	 * @param array $values
+	 * @return bool
+	 *
+	 */
+	public function save($params, $show_query = false)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     {
         $params = $this->clean_parameters($params);
 
@@ -182,18 +252,28 @@ class Model
 
         if (!empty($params)) {
             $id = Database::insert($this->table, $params, $show_query);
+<<<<<<< HEAD
             if (is_numeric($id)) {
                 return $id;
             }
+=======
+    		if (is_numeric($id)) {
+    			return $id;
+    		}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
 
         return false;
+<<<<<<< HEAD
     }
+=======
+	}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     /**
      * Updates the obj in the database. The $params['id'] must exist in order to update a record
-     *
      * @param array $values
+     * @return bool
      *
      */
     public function update($params)
@@ -219,7 +299,11 @@ class Model
             $id = intval($params['id']);
             unset($params['id']); //To not overwrite the id
             if (is_numeric($id)) {
+<<<<<<< HEAD
                 $result = Database::update($this->table, $params, array('id = ?' => $id));
+=======
+                $result = Database::update($this->table, $params, array('id = ?'=>$id));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 if ($result) {
                     return true;
                 }

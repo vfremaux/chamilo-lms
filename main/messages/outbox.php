@@ -98,6 +98,8 @@ if (isset($_REQUEST['action'])) {
     $action = $_REQUEST['action'];
 }
 
+$social_right_content = '';
+
 if (api_get_setting('allow_social_tool') == 'true') {
     $social_left_content = SocialManager::show_social_menu('messages');
 
@@ -132,6 +134,7 @@ if (api_get_setting('allow_social_tool') == 'true') {
     $social_right_content .= '</div>';
 }
 
+<<<<<<< HEAD
 $tpl = $app['template'];
 $tpl->setTitle(get_lang('Outbox'));
 
@@ -140,3 +143,18 @@ $tpl->assign('actions', $actions);
 $tpl->assign('message', $show_message);
 $tpl->assign('content', $content);
 $tpl->display_one_col_template();
+=======
+$tpl = new Template(get_lang('ComposeMessage'));
+if (api_get_setting('allow_social_tool') == 'true') {
+    $tpl->assign('social_left_content', $social_left_content);
+    $tpl->assign('social_right_content', $social_right_content);
+    $social_layout = $tpl->get_template('layout/social_layout.tpl');
+    $tpl->display($social_layout);
+} else {
+    $content = $social_right_content;
+    $tpl->assign('actions', $actions);
+    $tpl->assign('message', $show_message);
+    $tpl->assign('content', $content);
+    $tpl->display_one_col_template();
+}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

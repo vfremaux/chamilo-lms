@@ -205,29 +205,41 @@ switch ($action) {
             $start = 0;
         }
 
-        $sql = "SELECT  exe_id,
-                        exe_user_id,
-                        firstname,
-                        lastname,
-                        aa.status,
-                        start_date,
-                        exe_result,
-                        exe_weighting,
-                        exe_result/exe_weighting as score,
-                        exe_duration,
-                        questions_to_check,
-                        orig_lp_id
+        $sql = "SELECT
+                    exe_id,
+                    exe_user_id,
+                    firstname,
+                    lastname,
+                    aa.status,
+                    start_date,
+                    exe_result,
+                    exe_weighting,
+                    exe_result/exe_weighting as score,
+                    exe_duration,
+                    questions_to_check,
+                    orig_lp_id
                 FROM $user_table u
                 INNER JOIN (
-                    SELECT  t.exe_id, t.exe_user_id, status,
-                    start_date, exe_result, exe_weighting, exe_result/exe_weighting as score, exe_duration, questions_to_check, orig_lp_id
-                    FROM  $track_exercise  t LEFT JOIN $track_attempt a ON (a.exe_id = t.exe_id AND  t.exe_user_id = a.user_id )
-                    WHERE t.status = 'incomplete' AND
-                          $where_condition
+                    SELECT
+                    t.exe_id,
+                    t.exe_user_id,
+                    status,
+                    start_date,
+                    exe_result,
+                    exe_weighting,
+                    exe_result/exe_weighting as score,
+                    exe_duration,
+                    questions_to_check,
+                    orig_lp_id
+                    FROM  $track_exercise  t
+                    LEFT JOIN $track_attempt a
+                    ON (a.exe_id = t.exe_id AND t.exe_user_id = a.user_id )
+                    WHERE t.status = 'incomplete' AND $where_condition
                     GROUP BY exe_user_id
                 ) as aa
                 ON aa.exe_user_id = user_id
-                ORDER BY $sidx $sord LIMIT $start, $limit";
+                ORDER BY $sidx $sord
+                LIMIT $start, $limit";
 
         $result = Database::query($sql);
         $results = array();
@@ -245,10 +257,14 @@ switch ($action) {
         $i=0;
 
         if (!empty($results)) {
-            foreach($results as $row) {
-                $sql = "SELECT SUM(count_question_id) as count_question_id FROM (
-                            SELECT 1 as count_question_id FROM  $track_attempt a
-                            WHERE user_id = {$row['exe_user_id']} and exe_id = {$row['exe_id']}
+            foreach ($results as $row) {
+                $sql = "SELECT SUM(count_question_id) as count_question_id
+                        FROM (
+                            SELECT 1 as count_question_id
+                            FROM $track_attempt a
+                            WHERE
+                              user_id = {$row['exe_user_id']} AND
+                              exe_id = {$row['exe_id']}
                             GROUP by question_id
                         ) as count_table";
                 $result_count = Database::query($sql);
@@ -284,7 +300,15 @@ switch ($action) {
             Database::query("DELETE FROM $table WHERE session_id = $session_id AND c_id = $course_id");
             //Insert all
             foreach ($new_list as $new_order_id) {
-                Database::insert($table, array('exercise_order' => $counter, 'session_id' => $session_id, 'exercise_id' => intval($new_order_id), 'c_id' => $course_id));
+                Database::insert(
+                    $table,
+                    array(
+                        'exercise_order' => $counter,
+                        'session_id' => $session_id,
+                        'exercise_id' => intval($new_order_id),
+                        'c_id' => $course_id
+                    )
+                );
                 $counter++;
             }
             Display::display_confirmation_message(get_lang('Saved'));
@@ -294,7 +318,6 @@ switch ($action) {
 
         $course_info = api_get_course_info($course_code);
         $course_id = $course_info['real_id'];
-
         $exercise_id = isset($_REQUEST['exercise_id']) ? $_REQUEST['exercise_id'] : null;
 
         if (empty($exercise_id)) {
@@ -308,13 +331,19 @@ switch ($action) {
                 Database::update(
                     $TBL_QUESTIONS,
                     array('question_order' => $counter),
+<<<<<<< HEAD
                     array('question_id = ? AND c_id = ? AND exercice_id = ? '=> array(intval($new_order_id), $course_id, $exercise_id)));
+=======
+                    array('question_id = ? AND c_id = ? AND exercice_id = ? ' => array(intval($new_order_id), $course_id, $exercise_id)))
+                ;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $counter++;
             }
             Display::display_confirmation_message(get_lang('Saved'));
         }
         break;
     case 'add_question_to_reminder':
+<<<<<<< HEAD
     	$objExercise  = $_SESSION['objExercise'];
     	if (empty($objExercise)) {
     		echo 0;
@@ -323,6 +352,21 @@ switch ($action) {
     		$objExercise->edit_question_to_remind($_REQUEST['exe_id'], $_REQUEST['question_id'], $_REQUEST['action']);
     	}
     	break;
+=======
+        /** @var Exercise $objExercise */
+        $objExercise  = $_SESSION['objExercise'];
+        if (empty($objExercise)) {
+            echo 0;
+            exit;
+        } else {
+            $objExercise->edit_question_to_remind(
+                $_REQUEST['exe_id'],
+                $_REQUEST['question_id'],
+                $_REQUEST['action']
+            );
+        }
+        break;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     case 'save_exercise_by_now':
         $course_info = api_get_course_info($course_code);
         $course_id = $course_info['real_id'];
@@ -330,6 +374,7 @@ switch ($action) {
         if (api_is_allowed_to_session_edit()) {
 
             // "all" or "simple" strings means that there's one or all questions exercise type
+<<<<<<< HEAD
             $type                   = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
 
             // Questions choices
@@ -346,35 +391,73 @@ switch ($action) {
             $learnpath_item_id      = isset($_REQUEST['learnpath_item_id']) ? intval($_REQUEST['learnpath_item_id']) : 0;
 
             // Attempt id
+=======
+            $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
+
+            // Questions choices.
+            $choice = isset($_REQUEST['choice']) ? $_REQUEST['choice'] : null;
+
+            // Hot spot coordinates from all questions.
+            $hot_spot_coordinates = isset($_REQUEST['hotspot']) ? $_REQUEST['hotspot'] : null;
+
+            // There is a reminder?
+            $remind_list = isset($_REQUEST['remind_list']) && !empty($_REQUEST['remind_list']) ? array_keys($_REQUEST['remind_list']) : null;
+
+            // Needed in manage_answer.
+            $learnpath_id = isset($_REQUEST['learnpath_id']) ? intval($_REQUEST['learnpath_id']) : 0;
+            $learnpath_item_id = isset($_REQUEST['learnpath_item_id']) ? intval($_REQUEST['learnpath_item_id']) : 0;
+
+            // Attempt id.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $exe_id = $_REQUEST['exe_id'];
 
             if ($debug) {
-                error_log("exe_id = $exe_id ");
-                error_log("type = $type ");
+                error_log("exe_id = $exe_id");
+                error_log("type = $type");
                 error_log("choice = ".print_r($choice, 1)." ");
                 error_log("hot_spot_coordinates = ".print_r($hot_spot_coordinates, 1));
                 error_log("remind_list = ".print_r($remind_list, 1));
             }
 
             // Exercise information.
+<<<<<<< HEAD
             /** @var \Exercise $objExercise */
             $objExercise             = isset($_SESSION['objExercise']) ? $_SESSION['objExercise'] : null;
 
             // Question info.
             $question_id             = isset($_REQUEST['question_id']) ? intval($_REQUEST['question_id']) : null;
             $question_list           = Session::read('question_list_uncompressed');
+=======
+            /** @var Exercise $objExercise */
+            $objExercise = isset($_SESSION['objExercise']) ? $_SESSION['objExercise'] : null;
+
+            // Question info.
+            $question_id = intval($_REQUEST['question_id']);
+            $question_list = $_SESSION['questionList'];
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             // If exercise or question is not set then exit.
             if (empty($question_list) || empty($objExercise)) {
                 echo 'error';
+                if ($debug) {
+                    if (empty($question_list)) {
+                        error_log("question_list is empty");
+                    }
+                    if (empty($objExercise)) {
+                        error_log("objExercise is empty");
+                    }
+                }
                 exit;
             }
 
             // Getting information of the current exercise.
+<<<<<<< HEAD
             $exercise_stat_info = $objExercise->getStatTrackExerciseInfoByExeId($exe_id);
 
+=======
+            $exercise_stat_info = $objExercise->get_stat_track_exercise_info_by_exe_id($exe_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $exercise_id = $exercise_stat_info['exe_exo_id'];
-
             $attempt_list = array();
 
             // First time here we create an attempt (getting the exe_id).
@@ -388,6 +471,7 @@ switch ($action) {
                 $attempt_list  = getAllExerciseEventByExeId($exe_id);
             }
 
+<<<<<<< HEAD
             // Updating Reminder algorythme.
             if ($objExercise->type == ONE_PER_PAGE) {
                 $bd_reminder_list = explode(',', $exercise_stat_info['questions_to_check']);
@@ -407,6 +491,14 @@ switch ($action) {
                 if (empty($remind_list)) {
                     $remind_list = $bd_reminder_list;
 
+=======
+            // Updating Reminder algorythm.
+            if ($objExercise->type == ONE_PER_PAGE) {
+                $bd_reminder_list = explode(',', $exercise_stat_info['questions_to_check']);
+
+                if (empty($remind_list)) {
+                    $remind_list = $bd_reminder_list;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $new_list = array();
                     foreach ($bd_reminder_list as $item) {
                         if ($item != $question_id) {
@@ -424,10 +516,17 @@ switch ($action) {
                 }
             }
 
+<<<<<<< HEAD
             // No exe id? Can't save answer!
+=======
+            // No exe id? Can't save answer.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             if (empty($exe_id)) {
                 // Fires an error.
                 echo 'error';
+                if ($debug) {
+                    error_log("exe_id is empty");
+                }
                 exit;
             } else {
                 $_SESSION['exe_id'] = $exe_id;
@@ -442,7 +541,6 @@ switch ($action) {
                     $total_weight   += $objQuestionTmp->selectWeighting();
                 }
             }
-
             unset($objQuestionTmp);
 
             // Looping the question list
@@ -453,20 +551,31 @@ switch ($action) {
             }
 
             foreach ($question_list as $my_question_id) {
+<<<<<<< HEAD
+=======
+                if ($debug) {
+                    error_log("Saving question_id = $my_question_id ");
+                }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
                 if ($type == 'simple' && $question_id != $my_question_id) {
                     continue;
                 }
 
 
+<<<<<<< HEAD
                 $my_choice = isset($choice[$my_question_id]) ? $choice[$my_question_id] : null;
 
                 if ($debug) {
                     error_log("Saving question_id = $my_question_id ");
+=======
+                if ($debug) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     error_log("my_choice = ".print_r($my_choice, 1)."");
                 }
 
                 // Creates a temporary Question object
+<<<<<<< HEAD
             	$objQuestionTmp = Question::read($my_question_id, $course_id);
 
                 if ($objExercise->type == ONE_PER_PAGE && $objQuestionTmp->type == UNIQUE_ANSWER) {
@@ -482,12 +591,24 @@ switch ($action) {
             	if ($objQuestionTmp->type  == FREE_ANSWER && $type == 'all') {
             	    $my_choice = isset($_REQUEST['free_choice'][$my_question_id]) && !empty($_REQUEST['free_choice'][$my_question_id])? $_REQUEST['free_choice'][$my_question_id]: null;
             	}
+=======
+                $objQuestionTmp = Question::read($my_question_id, $course_id);
+
+                // Getting free choice data.
+                if ($objQuestionTmp->type  == FREE_ANSWER && $type == 'all') {
+                    $my_choice = isset($_REQUEST['free_choice'][$my_question_id]) && !empty($_REQUEST['free_choice'][$my_question_id]) ? $_REQUEST['free_choice'][$my_question_id]: null;
+                }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
                 if ($type == 'all') {
                     $total_weight += $objQuestionTmp->selectWeighting();
                 }
 
+<<<<<<< HEAD
                 // This variable came from exercise_submit_modal.php
+=======
+                // This variable came from exercise_submit_modal.php.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 $hotspot_delineation_result = null;
                 if (isset($_SESSION['hotspot_delineation_result']) && isset($_SESSION['hotspot_delineation_result'][$objExercise->selectId()])) {
             	    $hotspot_delineation_result = $_SESSION['hotspot_delineation_result'][$objExercise->selectId()][$my_question_id];
@@ -495,7 +616,11 @@ switch ($action) {
 
                 if ($type == 'simple') {
                     // Getting old attempt in order to decrees the total score.
+<<<<<<< HEAD
                     $old_result = $objExercise->manageAnswers(
+=======
+                    $old_result = $objExercise->manage_answer(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                         $exe_id,
                         $my_question_id,
                         null,
@@ -503,7 +628,12 @@ switch ($action) {
                         array(),
                         false,
                         true,
+<<<<<<< HEAD
                         false
+=======
+                        false,
+                        $objExercise->selectPropagateNeg()
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     );
 
                     // Removing old score.
@@ -519,11 +649,18 @@ switch ($action) {
                     if ($debug) {
                         error_log("delete_attempt  exe_id : $exe_id, my_question_id: $my_question_id");
                     }
+<<<<<<< HEAD
                     delete_attempt($exe_id, api_get_user_id(), $course_id, $session_id, $my_question_id);
                     if ($objQuestionTmp->type  == HOT_SPOT) {
             	        delete_attempt_hotspot($exe_id, api_get_user_id(), $course_id, $my_question_id);
+=======
+                    delete_attempt($exe_id, api_get_user_id(), $course_code, $session_id, $my_question_id);
+                    if ($objQuestionTmp->type  == HOT_SPOT) {
+                        delete_attempt_hotspot($exe_id, api_get_user_id(), $course_code, $session_id, $my_question_id);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     }
                     if (isset($attempt_list[$my_question_id]) && isset($attempt_list[$my_question_id]['marks'])) {
+<<<<<<< HEAD
             	        $total_score  -= $attempt_list[$my_question_id]['marks'];
             	    }
             	}
@@ -541,8 +678,28 @@ switch ($action) {
                     false,
                     $hotspot_delineation_result
                 );
+=======
+                        $total_score  -= $attempt_list[$my_question_id]['marks'];
+                    }
+                }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-                //Adding the new score
+                // We're inside *one* question. Go through each possible answer for this question
+                $result = $objExercise->manage_answer(
+                    $exe_id,
+                    $my_question_id,
+                    $my_choice,
+                    'exercise_result',
+                    $hot_spot_coordinates,
+                    true,
+                    false,
+                    false,
+                    $objExercise->selectPropagateNeg(),
+                    $hotspot_delineation_result,
+                    true
+                );
+
+                //  Adding the new score.
                 $total_score += $result['score'];
 
                 if ($debug) {
@@ -580,6 +737,7 @@ switch ($action) {
                     }
                 }
 
+<<<<<<< HEAD
                 $durationTime = array(
                     $key => time()
                 );
@@ -588,6 +746,11 @@ switch ($action) {
                 // $_SESSION['duration_time'][$key] = time();
 
                 update_event_exercise(
+=======
+                $_SESSION['duration_time'][$key] = time();
+
+                update_event_exercice(
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     $exe_id,
                     $objExercise->selectId(),
                     $total_score,
@@ -597,15 +760,23 @@ switch ($action) {
                     $exercise_stat_info['orig_lp_item_id'],
                     $exercise_stat_info['orig_lp_item_view_id'],
                     $duration,
+<<<<<<< HEAD
+=======
+                    $question_list,
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     'incomplete',
                     $remind_list
                 );
 
                  // Destruction of the Question object
-            	unset($objQuestionTmp);
-                if ($debug) error_log(" -- end question -- ");
+                unset($objQuestionTmp);
+                if ($debug) {
+                    error_log(" -- end question -- ");
+                }
             }
-            if ($debug) error_log(" ------ end ajax call ------- ");
+            if ($debug) {
+                error_log(" ------ end ajax call ------- ");
+            }
         }
 
         if ($objExercise->type == ONE_PER_PAGE) {

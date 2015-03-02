@@ -1,14 +1,16 @@
 <?php
-
+/* For licensing terms, see /license.txt */
 /**
  * Announcement Email
  *
- * @license see /license.txt
  * @author Laurent Opprecht <laurent@opprecht.info> for the Univesity of Geneva
  * @author Julio Montoya <gugli100@gmail.com> Adding session support
  */
 class AnnouncementEmail
 {
+    protected $course = null;
+    protected $announcement = null;
+    public $session_id = null;
 
     /**
      *
@@ -17,20 +19,22 @@ class AnnouncementEmail
      *
      * @return AnnouncementEmail
      */
-    public static function create($course, $announcement) {
+    public static function create($course, $announcement)
+    {
         return new self($course, $announcement);
     }
 
-    protected $course = null;
-    protected $announcement = null;
-    public $session_id = null;
-
-    function __construct($course, $announcement) {
+    /**
+     * @param int $course
+     * @param int $announcement
+     */
+    public function __construct($course, $announcement)
+    {
         if (empty($course)) {
             $course = api_get_course_int_id();
             $course = CourseManager::get_course_information_by_id($course);
         } else if (is_numeric($course)) {
-            $course = CourseManager::get_course_information_by_id(intval($course));
+            $course = CourseManager::get_course_information_by_id($course);
         }
         $this->course = $course;
         $this->session_id = api_get_session_id();
@@ -45,11 +49,14 @@ class AnnouncementEmail
      * Course info
      *
      * @param string $key
+     *
      * @return array
      */
-    public function course($key = '') {
+    public function course($key = '')
+    {
         $result = $key ? $this->course[$key] : $this->course;
         $result = $key == 'id' ? intval($result) : $result;
+
         return $result;
     }
 
@@ -59,9 +66,11 @@ class AnnouncementEmail
      * @param string $key
      * @return array
      */
-    public function announcement($key = '') {
+    public function announcement($key = '')
+    {
         $result = $key ? $this->announcement[$key] : $this->announcement;
         $result = $key == 'id' ? intval($result) : $result;
+
         return $result;
     }
 
@@ -71,7 +80,8 @@ class AnnouncementEmail
      *
      * @return array
      */
-    public function all_users() {
+    public function all_users()
+    {
         $course_code = $this->course('code');
         if (empty($this->session_id)) {
             $group_id = api_get_group_id();
@@ -88,6 +98,7 @@ class AnnouncementEmail
         } else {
             $user_list = CourseManager::get_user_list_from_course_code($course_code, $this->session_id);
         }
+
         return $user_list;
     }
 
@@ -96,7 +107,8 @@ class AnnouncementEmail
      *
      * @return array Array of users and groups to whom the element has been sent
      */
-    public function sent_to_info() {
+    public function sent_to_info()
+    {
         $result = array();
         $result['groups'] = array();
         $result['users'] = array();
@@ -107,7 +119,13 @@ class AnnouncementEmail
         $id = $this->announcement('id');
         $course_id = $this->course('id');
 
-        $sql = "SELECT to_group_id, to_user_id FROM $tbl_item_property WHERE c_id = $course_id AND tool = '$tool' AND ref = $id AND id_session = {$this->session_id} ";
+        $sql = "SELECT to_group_id, to_user_id
+                FROM $tbl_item_property
+                WHERE
+                    c_id = $course_id AND
+                    tool = '$tool' AND
+                    ref = $id AND
+                    id_session = {$this->session_id} ";
         $rs = Database::query($sql);
 
         while ($row = Database::fetch_array($rs, 'ASSOC')) {
@@ -133,7 +151,8 @@ class AnnouncementEmail
      *
      * @return array
      */
-    public function sent_to() {
+    public function sent_to()
+    {
         $sent_to = $this->sent_to_info();
         $users = $sent_to['users'];
         $users = $users ? $users : array();
@@ -158,6 +177,7 @@ class AnnouncementEmail
 
         //Clean users just in case
         $new_list_users = array();
+
         if (!empty($users)) {
             foreach ($users as $user) {
                 $new_list_users[$user['user_id']] = array('user_id' => $user['user_id']);
@@ -170,9 +190,11 @@ class AnnouncementEmail
      * Sender info
      *
      * @param string $key
+     *
      * @return array
      */
-    public function sender($key = '') {
+    public function sender($key = '')
+    {
         global $_user;
         return $key ? $_user[$key] : $_user;
     }
@@ -182,42 +204,59 @@ class AnnouncementEmail
      *
      * @return string
      */
-    public function subject() {
+    public function subject()
+    {
         $result = $this->course('title').' - '.$this->announcement('title');
         $result = stripslashes($result);
+
         return $result;
     }
 
     /**
      * Email message
+     * @param int $receiverUserId
      *
      * @return string
      */
-    public function message() {
-        $title = $this->announcement('title');
-        $title = stripslashes($title);
-
+    public function message($receiverUserId)
+    {
         $content = $this->announcement('content');
-        $content = stripslashes($content);
-        $content = AnnouncementManager::parse_content($content, $this->course('code'));
+        $session_id = $this->session_id;
+
+        $content = AnnouncementManager::parse_content(
+            $receiverUserId,
+            $content,
+            $this->course('code'),
+            $session_id
+        );
 
         $user_email = $this->sender('mail');
-        $course_param = api_get_cidreq();
+        //$course_param = api_get_cidreq();
+        // Build the link by hand because api_get_cidreq() doesn't accept course params
+        $course_param = 'cidReq='.api_get_course_id().'&amp;id_session='.$session_id.'&amp;gidReq='.api_get_group_id();
         $course_name = $this->course('title');
 
         $result = "<div>$content</div>";
 
-        //Adding attachment
-        $attachment = $this->attachement();
+        // Adding attachment
+        $attachment = $this->attachment();
         if (!empty($attachment)) {
             $result .= '<br />';
-            $result .= Display::url($attachment['filename'], api_get_path(WEB_CODE_PATH).'announcements/download.php?file='.basename($attachment['path']).'&'.$course_param).'<br />';
+            $result .= Display::url(
+                $attachment['filename'],
+                api_get_path(WEB_CODE_PATH).'announcements/download.php?file='.basename($attachment['path']).'&'.$course_param
+            ).'<br />';
         }
 
         $result .= '<hr />';
-        $sender_name = api_get_person_name($this->sender('firstName'), $this->sender('lastName'), PERSON_NAME_EMAIL_ADDRESS);
+        $sender_name = api_get_person_name(
+            $this->sender('firstName'),
+            $this->sender('lastName'),
+            PERSON_NAME_EMAIL_ADDRESS
+        );
         $result .= '<a href="mailto:'.$user_email.'">'.$sender_name.'</a><br/>';
         $result .= '<a href="'.api_get_path(WEB_CODE_PATH).'announcements/announcements.php?'.$course_param.'">'.$course_name.'</a><br/>';
+
         return $result;
     }
 
@@ -226,7 +265,8 @@ class AnnouncementEmail
      *
      * @return array
      */
-    public function attachement() {
+    public function attachment()
+    {
         $result = array();
         $tbl_announcement_attachment = Database::get_course_table(TABLE_ANNOUNCEMENT_ATTACHMENT);
         $id = $this->announcement('id');
@@ -241,22 +281,45 @@ class AnnouncementEmail
         }
 
         $result = $result ? reset($result) : array();
+
         return $result;
     }
 
     /**
      * Send emails to users.
      */
-    public function send() {
+    public function send($sendToUsersInSession = false)
+    {
         $sender = $this->sender();
         $subject = $this->subject();
-        $message = $this->message();
 
         // Send email one by one to avoid antispam
         $users = $this->sent_to();
 
         foreach ($users as $user) {
-            MessageManager::send_message_simple($user['user_id'], $subject, $message, $sender['user_id']);
+            $message = $this->message($user['user_id']);
+            MessageManager::send_message_simple(
+                $user['user_id'],
+                $subject,
+                $message,
+                $sender['user_id']
+            );
+        }
+
+        if ($sendToUsersInSession) {
+            $sessionList = SessionManager::get_session_by_course($this->course['code']);
+            if (!empty($sessionList)) {
+                foreach ($sessionList as $sessionInfo) {
+                    $sessionId = $sessionInfo['id'];
+                    $message = $this->message(null, $sessionId);
+                    $userList = CourseManager::get_user_list_from_course_code($this->course['code'], $sessionId);
+                    if (!empty($userList)) {
+                        foreach ($userList as $user) {
+                            MessageManager::send_message_simple($user['user_id'], $subject, $message, $sender['user_id']);
+                        }
+                    }
+                }
+            }
         }
         $this->log_mail_sent();
     }
@@ -264,12 +327,14 @@ class AnnouncementEmail
     /**
      * Store that emails where sent
      */
-    public function log_mail_sent() {
+    public function log_mail_sent()
+    {
         $id = $this->announcement('id');
         $course_id = $this->course('id');
 
         $tbl_announcement = Database::get_course_table(TABLE_ANNOUNCEMENT);
-        $sql = "UPDATE $tbl_announcement SET email_sent=1 WHERE c_id = $course_id AND id=$id AND session_id = {$this->session_id} ";
+        $sql = "UPDATE $tbl_announcement SET email_sent=1
+                WHERE c_id = $course_id AND id=$id AND session_id = {$this->session_id} ";
         Database::query($sql);
     }
 }

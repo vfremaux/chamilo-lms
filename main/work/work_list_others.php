@@ -1,8 +1,6 @@
 <?php
 /* For licensing terms, see /license.txt */
 
-use ChamiloSession as Session;
-
 $language_file = array('exercice', 'work', 'document', 'admin', 'gradebook');
 
 require_once '../inc/global.inc.php';
@@ -64,7 +62,7 @@ $interbreadcrumb[] = array ('url' => api_get_path(WEB_CODE_PATH).'work/work_list
 Display :: display_header(null);
 
 echo '<div class="actions">';
-echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'">'.
+echo '<a href="'.api_get_path(WEB_CODE_PATH).'work/work.php?'.api_get_cidreq().'>'.
         Display::return_icon('back.png', get_lang('BackToWorksList'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '</div>';
 
@@ -77,10 +75,24 @@ $check_qualification = intval($my_folder_data['qualification']);
 if (!empty($work_data['enable_qualification']) && !empty($check_qualification)) {
     $type = 'simple';
     $columns = array(
+<<<<<<< HEAD
         get_lang('Type'), get_lang('FirstName'), get_lang('LastName'), get_lang('Title'), get_lang('Qualification'), get_lang('Date'),  get_lang('Status'), get_lang('Actions')
     );
     $column_model   = array(
         array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false'),
+=======
+        get_lang('Type'),
+        get_lang('FirstName'),
+        get_lang('LastName'),
+        get_lang('Title'),
+        get_lang('Qualification'),
+        get_lang('Date'),
+        get_lang('Status'),
+        get_lang('Actions')
+    );
+    $column_model = array(
+        array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false', 'sortable' => 'false'),
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         array('name'=>'firstname',      'index'=>'firstname',       'width'=>'35',   'align'=>'left', 'search' => 'true'),
         array('name'=>'lastname',		'index'=>'lastname',        'width'=>'35',   'align'=>'left', 'search' => 'true'),
         array('name'=>'title',          'index'=>'title',           'width'=>'40',   'align'=>'left', 'search' => 'false', 'wrap_cell' => 'true'),
@@ -94,8 +106,13 @@ if (!empty($work_data['enable_qualification']) && !empty($check_qualification)) 
     $columns  = array(
         get_lang('Type'), get_lang('FirstName'), get_lang('LastName'), get_lang('Title'), get_lang('Date'),  get_lang('Actions')
     );
+<<<<<<< HEAD
     $column_model   = array (
         array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false'),
+=======
+    $column_model = array (
+        array('name'=>'type',           'index'=>'file',            'width'=>'12',   'align'=>'left', 'search' => 'false', 'sortable' => 'false'),
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         array('name'=>'firstname',      'index'=>'firstname',       'width'=>'35',   'align'=>'left', 'search' => 'true'),
         array('name'=>'lastname',		'index'=>'lastname',        'width'=>'35',   'align'=>'left', 'search' => 'true'),
         array('name'=>'title',          'index'=>'title',           'width'=>'40',   'align'=>'left', 'search' => 'false', 'wrap_cell' => "true"),

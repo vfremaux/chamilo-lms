@@ -185,7 +185,7 @@ $message = isset($_REQUEST['message']) ? $_REQUEST['message'] : null;
 
 echo '</div>';
 
-//hide bar div
+// hide bar div
 if ($action == 'add_item' && $type == 'document' && !isset($_GET['file'])) {
     echo '<div id="hide_bar_template"></div>';
 }
@@ -198,6 +198,7 @@ if (in_array($message, array('ItemUpdated'))) {
 }
 
 if (isset($new_item_id) && is_numeric($new_item_id)) {
+
     switch ($type) {
         case 'chapter':
             echo $learnPath->display_manipulate($new_item_id, $_POST['type']);
@@ -274,5 +275,8 @@ if (isset($new_item_id) && is_numeric($new_item_id)) {
 echo '</div>';
 echo '</div>';
 
+<<<<<<< HEAD
 /* FOOTER */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 Display::display_footer();

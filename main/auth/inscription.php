@@ -18,7 +18,7 @@ if (!empty($_POST['language'])) { //quick hack to adapt the registration form re
 }
 
 if (api_get_setting('allow_registration') === 'false') {
-    api_not_allowed(true);
+    api_not_allowed(true,get_lang('RegistrationDisabled'));
 }
 
 $htmlHeadXtra[] = api_get_password_checker_js('#username', '#pass1');
@@ -128,6 +128,34 @@ if ($user_already_registered_show_terms == false) {
     if (api_get_setting('allow_registration_as_teacher') != 'false') {
         $form->addElement('radio', 'status', get_lang('Profile'), get_lang('RegStudent'), STUDENT);
         $form->addElement('radio', 'status', null, get_lang('RegAdmin'), COURSEMANAGER);
+    }
+
+    $allowCaptcha = isset($_configuration['allow_captcha']) ? $_configuration['allow_captcha'] : false;
+
+    if ($allowCaptcha) {
+
+        $ajax = api_get_path(WEB_AJAX_PATH).'form.ajax.php?a=get_captcha';
+
+        $options = array(
+                'width'        => 220,
+                'height'       => 90,
+                'callback'     => $ajax.'&var='.basename(__FILE__, '.php'),
+                'sessionVar'   => basename(__FILE__, '.php'),
+                'imageOptions' => array(
+                    'font_size' => 20,
+                    'font_path' => api_get_path(LIBRARY_PATH).'pchart/fonts/',
+                    'font_file' => 'tahoma.ttf',
+                        //'output' => 'gif'
+                )
+        );
+
+        $captcha_question =  $form->addElement('CAPTCHA_Image', 'captcha_question', '', $options);
+        $form->addElement('static', null, null, get_lang('ClickOnTheImageForANewOne'));
+
+        $form->addElement('text', 'captcha', get_lang('EnterTheLettersYouSee'), array('size' => 40));
+        $form->addRule('captcha', get_lang('EnterTheCharactersYouReadInTheImage'), 'required', null, 'client');
+
+        $form->addRule('captcha', get_lang('TheTextYouEnteredDoesNotMatchThePicture'), 'CAPTCHA', $captcha_question);
     }
 
     //	EXTENDED FIELDS
@@ -252,7 +280,7 @@ if (!CustomPages::enabled()) {
 
     // Forbidden to self-register
     if (api_get_setting('allow_registration') == 'false') {
-        api_not_allowed(true);
+        api_not_allowed(true,get_lang('RegistrationDisabled'));
     }
 
     if (api_get_setting('allow_registration') == 'approval') {
@@ -301,7 +329,8 @@ $form->addElement('button', 'submit', get_lang('RegisterUser'), array('class' =>
 
 if ($form->validate()) {
 
-    $values = $form->exportValues();
+    //$values = $form->exportValues();
+    $values = $form->getSubmitValues(1);
     $values['username'] = api_substr($values['username'], 0, USERNAME_MAX_LENGTH); //make *sure* the login isn't too long
 
     if (api_get_setting('allow_registration_as_teacher') == 'false') {
@@ -346,7 +375,15 @@ if ($form->validate()) {
         $extras = array();
         foreach ($values as $key => $value) {
             if (substr($key, 0, 6) == 'extra_') { //an extra field
+<<<<<<< HEAD
                 $extras[substr($key, 6)] = $value;
+=======
+                $extras[substr($key,6)] = $value;
+            } elseif (strpos($key, 'remove_extra_') !== false) {
+                $extra_value = Security::filter_filename(urldecode(key($value)));
+                // To remove from user_field_value and folder
+                UserManager::update_extra_field_value($user_id, substr($key,13), $extra_value);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             }
         }
 
@@ -354,7 +391,23 @@ if ($form->validate()) {
         $count_extra_field = count($extras);
         if ($count_extra_field > 0) {
             foreach ($extras as $key => $value) {
-                UserManager::update_extra_field_value($user_id, $key, $value);
+                // For array $value -> if exists key 'tmp_name' then must not be empty
+                // This avoid delete from user field value table when doesn't upload a file
+                if (is_array($value)) {
+                    if (array_key_exists('tmp_name', $value) && empty($value['tmp_name'])) {
+                        //Nothing to do
+                    } else {
+                        if (array_key_exists('tmp_name', $value)) {
+                            $value['tmp_name'] = Security::filter_filename($value['tmp_name']);
+                        }
+                        if (array_key_exists('name', $value)) {
+                            $value['name'] = Security::filter_filename($value['name']);
+                        }
+                        UserManager::update_extra_field_value($user_id, $key, $value);
+                    }
+                } else {
+                    UserManager::update_extra_field_value($user_id, $key, $value);
+                }
             }
         }
 
@@ -447,8 +500,20 @@ if ($form->validate()) {
         $values = api_get_user_info($user_id);
     }
 
+<<<<<<< HEAD
     // Symfony way to login as a user
     $user = $app['orm.em']->getRepository('ChamiloLMS\Entity\User')->find($user_id);
+=======
+    /* SESSION REGISTERING */
+    /* @todo move this in a function */
+    $_user['firstName'] = stripslashes($values['firstname']);
+    $_user['lastName'] 	= stripslashes($values['lastname']);
+    $_user['mail'] 		= $values['email'];
+    $_user['language'] 	= $values['language'];
+    $_user['user_id']	= $user_id;
+    $is_allowedCreateCourse = $values['status'] == 1;
+    $usersCanCreateCourse = (api_get_setting('allow_users_to_create_courses') == 'true');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     // Here, "secured" is the name of the firewall in your security.yml
     $token = new UsernamePasswordToken($user, $user->getPassword(), 'secured', $user->getRoles());
@@ -476,14 +541,22 @@ if ($form->validate()) {
             $text_after_registration.= '<p>'.get_lang('MailHasBeenSent',null,$_user['language']).'.</p>';
         }
 
+<<<<<<< HEAD
         if (api_is_allowed_to_create_course()) {
             $form_data['message'] = '<p>'. get_lang('NowGoCreateYourCourse',null,$_user['language']). "</p>";
+=======
+        if ($is_allowedCreateCourse) {
+            if ($usersCanCreateCourse) {
+                $form_data['message'] = '<p>'. get_lang('NowGoCreateYourCourse',null,$_user['language']). "</p>";
+            }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             $form_data['action']  = '../create_course/add_course.php';
 
             if (api_get_setting('course_validation') == 'true') {
                 $form_data['button'] = Display::button('next', get_lang('CreateCourseRequest', null, $_user['language']), array('class' => 'btn btn-primary btn-large'));
             } else {
                 $form_data['button'] = Display::button('next', get_lang('CourseCreate', null, $_user['language']), array('class' => 'btn btn-primary btn-large'));
+                $form_data['go_button'] = '&nbsp;&nbsp;<a href="'.api_get_path(WEB_PATH).'index.php'.'">'.Display::span(get_lang('Next', null, $_user['language']), array('class' => 'btn btn-primary btn-large')).'</a>';
             }
         } else {
             if (api_get_setting('allow_students_to_browse_courses') == 'true') {
@@ -519,13 +592,13 @@ if ($form->validate()) {
                     $form_data['button'] = Display::button('next', get_lang('GoToCourse', null, $_user['language']), array('class' => 'btn btn-primary btn-large'));
 
                     $exercise_redirect = intval(Session::read('exercise_redirect'));
-
-                    if (!empty($exercise_redirect)) {
+                    $objExercise = new Exercise();
+                    $result = $objExercise->read($exercise_id);
+                    if (!empty($exercise_redirect) && !empty($result)) {
                         $form_data['action'] = api_get_path(WEB_CODE_PATH).'exercice/overview.php?exerciseId='.intval($exercise_redirect).'&cidReq='.$course_info['code'];
                         $form_data['message'] .= '<br />'.get_lang('YouCanAccessTheExercise');
                         $form_data['button'] = Display::button('next', get_lang('Go', null, $_user['language']), array('class' => 'btn btn-primary btn-large'));
                     }
-
                     if (!empty($form_data['action'])) {
                         header('Location: '.$form_data['action']);
                         exit;
@@ -539,34 +612,36 @@ if ($form->validate()) {
     if (!empty($form_data['message'])) {
         $form_register->addElement('html', $form_data['message'].'<br /><br />');
     }
-    $form_register->addElement('html', $form_data['button']);
+    if ($usersCanCreateCourse) {
+        $form_register->addElement('html', $form_data['button']);
+    } else {
+        $form_register->addElement('html', $form_data['go_button']);
+    }
     $text_after_registration .= $form_register->return_form();
 
     //Just in case
     Session::erase('course_redirect');
     Session::erase('exercise_redirect');
 
-    Display :: display_header($tool_name);
-    echo Display::page_header($tool_name);
-
-    echo $content;
-    echo $text_after_registration;
-
     if (CustomPages::enabled()) {
         CustomPages::display(CustomPages::REGISTRATION_FEEDBACK, array('info' => $text_after_registration));
+    } else {
+        Display :: display_header($tool_name);
+        echo Display::page_header($tool_name);
+
+        echo $content;
+        echo $text_after_registration;
     }
 } else {
-
-    Display :: display_header($tool_name);
-    echo Display::page_header($tool_name);
-
-    echo $content;
-
     // Custom pages
     if (CustomPages::enabled()) {
         CustomPages::display(CustomPages::REGISTRATION, array('form' => $form));
     } else {
+        Display :: display_header($tool_name);
+        echo Display::page_header($tool_name);
+        echo $content;
         $form->display();
     }
 }
 Display :: display_footer();
+

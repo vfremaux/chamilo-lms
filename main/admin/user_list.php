@@ -14,11 +14,14 @@ global $_configuration;
 
 $current_access_url_id = api_get_current_access_url_id();
 
+$action = isset($_REQUEST["action"]) ? $_REQUEST["action"] : null;
+
 // Blocks the possibility to delete a user
 $delete_user_available = true;
 if (isset($_configuration['deny_delete_users']) &&  $_configuration['deny_delete_users']) {
     $delete_user_available = false;
 }
+
 $url = api_get_path(WEB_AJAX_PATH).'course.ajax.php?a=get_user_courses';
 $urlSession = api_get_path(WEB_AJAX_PATH).'session.ajax.php?a=get_user_sessions';
 
@@ -94,6 +97,19 @@ function clear_session_list (div_session) {
 	$("div#"+div_session).hide("");
 }
 
+<<<<<<< HEAD
+=======
+function display_advanced_search_form () {
+    if ($("#advanced_search_form").css("display") == "none") {
+        $("#advanced_search_form").css("display","block");
+        $("#img_plus_and_minus").html(\'&nbsp;'.Display::return_icon('div_hide.gif',get_lang('Hide'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedSearch').'\');
+    } else {
+        $("#advanced_search_form").css("display","none");
+        $("#img_plus_and_minus").html(\'&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedSearch').'\');
+    }
+}
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $(document).ready(function() {
     var select_val = $("#input_select_extra_data").val();
     if ( document.getElementById(\'extra_data_text\')) {
@@ -107,7 +123,11 @@ $(document).ready(function() {
         }
     }
 
+<<<<<<< HEAD
     $(".agenda_opener").on("click", function() {
+=======
+    $(".agenda_opener").live("click", function() {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         var url = this.href;
         var dialog = $("#dialog");
 
@@ -116,12 +136,12 @@ $(document).ready(function() {
         }
         // load remote content
         dialog.load(
-                url,
-                {},
-                function(responseText, textStatus, XMLHttpRequest) {
-                    dialog.dialog({width:720, height:550, modal:true});
-                }
-            );
+            url,
+            {},
+            function(responseText, textStatus, XMLHttpRequest) {
+                dialog.dialog({width:720, height:550, modal:true});
+            }
+        );
         //prevent the browser to follow the link
         return false;
     });
@@ -136,9 +156,21 @@ function load_calendar(user_id, month, year) {
 
 $this_section = SECTION_PLATFORM_ADMIN;
 
+if ($action == 'login_as') {
+    $check = Security::check_token('get');
+
+    if (isset($_GET['user_id']) && api_can_login_as($_GET['user_id']) && $check) {
+        login_user($_GET['user_id']);
+    } else {
+        api_not_allowed(true);
+    }
+    Security::clear_token();
+}
+
 api_protect_admin_script(true);
 
 /**
+<<<<<<< HEAD
  * Get the total number of users on the platform
  * @see SortableTable#get_total_number_of_items()
  */
@@ -146,6 +178,230 @@ function get_number_of_users()
 {
 	$total_rows = get_user_data(null, null, null, null, true);
     return $total_rows;
+=======
+ * Prepares the shared SQL query for the user table.
+ * See get_user_data() and get_number_of_users().
+ *
+ * @param boolean Whether to count, or get data
+ * @return string SQL query
+ */
+function prepare_user_sql_query($is_count) {
+    $sql = "";
+    $user_table = Database::get_main_table(TABLE_MAIN_USER);
+    $admin_table = Database::get_main_table(TABLE_MAIN_ADMIN);
+
+    if ($is_count) {
+        $sql .= "SELECT COUNT(u.user_id) AS total_number_of_items FROM $user_table u";
+    } else {
+        $sql .= "SELECT u.user_id AS col0, u.official_code AS col2, ";
+
+        if (api_is_western_name_order())
+            $sql .= "u.firstname AS col3, u.lastname AS col4, ";
+        else
+            $sql .= "u.lastname AS col3, u.firstname AS col4, ";
+
+        $sql .= "u.username AS col5, u.email AS col6, ".
+                    "u.status AS col7, u.active AS col8, ".
+                    "u.user_id AS col9, u.registration_date AS col10, ".
+                    "u.expiration_date AS exp, u.password ".
+                    "FROM $user_table u";
+    }
+
+    // adding the filter to see the user's only of the current access_url
+    if ((api_is_platform_admin() || api_is_session_admin()) && api_get_multiple_access_url()) {
+        $access_url_rel_user_table= Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
+        $sql.= " INNER JOIN $access_url_rel_user_table url_rel_user ON (u.user_id=url_rel_user.user_id)";
+    }
+
+    foreach ($_GET as $key => $value) {
+        /* Because this query uses LIKE very liberally we need to escape
+         * LIKE wildcards, concretely "_" and "%". This is only relevant
+         * for *LIKE* statements.
+         *
+         * See: http://stackoverflow.com/a/3683868 */
+
+        // Remove buggy whitespaces and escape for both SQL and LIKE.
+        if ($key == "keyword_status")
+            $$key = Database::escape_string(trim($value));
+        else
+            $$key = Database::escape_sql_wildcards(Database::escape_string(trim($value)));
+    }
+
+    if (isset($keyword_extra_data) && !empty($keyword_extra_data)) {
+        $extra_info = UserManager::get_extra_field_information_by_name($keyword_extra_data);
+        $field_id = $extra_info['id'];
+        $sql.= " INNER JOIN user_field_values ufv ON u.user_id=ufv.user_id AND ufv.field_id=$field_id ";
+    }
+
+    if (isset($keyword)) {
+        $sql .= " WHERE (".
+                    "u.firstname LIKE '%". $keyword ."%' ".
+                    "OR u.lastname LIKE '%". $keyword ."%' ".
+                    "OR concat(u.firstname,' ',u.lastname) LIKE '%". $keyword ."%' ".
+                    "OR concat(u.lastname,' ',u.firstname) LIKE '%". $keyword ."%' ".
+                    "OR u.username LIKE '%". $keyword ."%' ".
+                    "OR u.official_code LIKE '%". $keyword ."%' ".
+                    "OR u.email LIKE '%". $keyword ."%')";
+    } elseif (isset($keyword_firstname)) {
+        $query_admin_table = '';
+        $keyword_admin = '';
+
+        if ($keyword_status == SESSIONADMIN) {
+           $keyword_status = '%';
+           $query_admin_table = " , $admin_table a ";
+           $keyword_admin = ' AND a.user_id = u.user_id ';
+        }
+
+        $keyword_extra_value = '';
+
+        if (isset($keyword_extra_data) && !empty($keyword_extra_data) &&
+            !empty($keyword_extra_data_text)) {
+            $keyword_extra_value = " AND ufv.field_value LIKE '%".trim($keyword_extra_data_text)."%' ";
+        }
+
+        $sql .= " $query_admin_table ".
+                "WHERE (u.firstname LIKE '%". $keyword_firstname ."%' ".
+                    "AND u.lastname LIKE '%". $keyword_lastname ."%' ".
+                    "AND u.username LIKE '%". $keyword_username ."%' ".
+                    "AND u.email LIKE '%". $keyword_email ."%' ".
+                    "AND u.official_code LIKE '%". $keyword_officialcode ."%' ".
+                    "AND u.status LIKE '$keyword_status' ".
+                    "$keyword_admin $keyword_extra_value";
+
+        if (isset($keyword_active) && !isset($keyword_inactive)) {
+            $sql .= " AND u.active='1'";
+        } elseif(isset($keyword_inactive) && !isset($keyword_active)) {
+            $sql .= " AND u.active='0'";
+        }
+        $sql .= " ) ";
+    }
+
+    // adding the filter to see the user's only of the current access_url
+    if ((api_is_platform_admin() || api_is_session_admin())
+        && api_get_multiple_access_url()) {
+        $sql .= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
+    }
+
+    return $sql;
+}
+
+/**
+*	Make sure this function is protected because it does NOT check password!
+*
+*	This function defines globals.
+*   @param  int     User ID
+*   @return bool    False on failure, redirection on success
+*	@author Evie Embrechts
+*   @author Yannick Warnier <yannick.warnier@dokeos.com>
+*/
+function login_user($user_id) {
+    $user_id = intval($user_id);
+    $user_info = api_get_user_info($user_id);
+
+    // Check if the user is allowed to 'login_as'
+    $can_login_as = api_can_login_as($user_id);
+
+    if (!$can_login_as) {
+        return false;
+    }
+
+    //Load $_user to be sure we clean it before logging in
+	global $uidReset, $loginFailed, $_user;
+
+	$main_user_table      = Database::get_main_table(TABLE_MAIN_USER);
+	$main_admin_table     = Database::get_main_table(TABLE_MAIN_ADMIN);
+	$track_e_login_table  = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_LOGIN);
+
+	unset($_user['user_id']); // uid not in session ? prevent any hacking
+
+
+	$firstname  = $user_info['firstname'];
+	$lastname   = $user_info['lastname'];
+	$user_id    = $user_info['user_id'];
+
+	//$message = "Attempting to login as ".api_get_person_name($firstname, $lastname)." (id ".$user_id.")";
+	if (api_is_western_name_order()) {
+		$message = sprintf(get_lang('AttemptingToLoginAs'),$firstname,$lastname,$user_id);
+	} else {
+		$message = sprintf(get_lang('AttemptingToLoginAs'), $lastname, $firstname, $user_id);
+	}
+
+	$loginFailed = false;
+	$uidReset = false;
+
+	if ($user_id) { // a uid is given (log in succeeded)
+
+		$sql_query = "SELECT user.*, a.user_id is_admin,
+			UNIX_TIMESTAMP(login.login_date) login_date
+			FROM $main_user_table
+			LEFT JOIN $main_admin_table a
+			ON user.user_id = a.user_id
+			LEFT JOIN $track_e_login_table login
+			ON user.user_id = login.login_user_id
+			WHERE user.user_id = '".$user_id."'
+			ORDER BY login.login_date DESC LIMIT 1";
+
+		$sql_result = Database::query($sql_query);
+
+
+		if (Database::num_rows($sql_result) > 0) {
+			// Extracting the user data
+
+			$user_data = Database::fetch_array($sql_result);
+
+            //Delog the current user
+
+			LoginDelete($_SESSION["_user"]["user_id"]);
+
+			// Cleaning session variables
+			unset($_SESSION['_user']);
+			unset($_SESSION['is_platformAdmin']);
+			unset($_SESSION['is_allowedCreateCourse']);
+			unset($_SESSION['_uid']);
+
+
+			$_user['firstName'] 	= $user_data['firstname'];
+			$_user['lastName'] 		= $user_data['lastname'];
+			$_user['mail'] 			= $user_data['email'];
+			$_user['lastLogin'] 	= $user_data['login_date'];
+			$_user['official_code'] = $user_data['official_code'];
+			$_user['picture_uri'] 	= $user_data['picture_uri'];
+			$_user['user_id']		= $user_data['user_id'];
+            $_user['status']        = $user_data['status'];
+
+			$is_platformAdmin = (bool) (!is_null($user_data['is_admin']));
+			$is_allowedCreateCourse = (bool) ($user_data['status'] == 1);
+
+			// Filling session variables with new data
+			$_SESSION['_uid']                   = $user_id;
+			$_SESSION['_user']                  = $_user;
+			$_SESSION['is_platformAdmin']       = $is_platformAdmin;
+			$_SESSION['is_allowedCreateCourse'] = $is_allowedCreateCourse;
+			$_SESSION['login_as']               = true; // will be useful later to know if the user is actually an admin or not (example reporting)s
+
+			$target_url = api_get_path(WEB_PATH)."user_portal.php";
+			$message .= '<br />'.sprintf(get_lang('LoginSuccessfulGoToX'),'<a href="'.$target_url.'">'.$target_url.'</a>');
+			Display :: display_header(get_lang('UserList'));
+			Display :: display_normal_message($message,false);
+			Display :: display_footer();
+			exit;
+		} else {
+			exit ("<br />WARNING UNDEFINED UID !! ");
+		}
+	}
+}
+
+/**
+ * Get the total number of users on the platform
+ * @see SortableTable#get_total_number_of_items()
+ */
+function get_number_of_users() {
+    $sql = prepare_user_sql_query (true);
+
+    $res = Database::query($sql);
+    $obj = Database::fetch_object($res);
+    return $obj->total_number_of_items;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 /**
@@ -157,6 +413,7 @@ function get_number_of_users()
  * @param   bool
  * @see SortableTable#get_table_data($from)
  */
+<<<<<<< HEAD
 function get_user_data($from, $number_of_items, $column, $direction, $get_count = false)
 {
 	$user_table = Database :: get_main_table(TABLE_MAIN_USER);
@@ -266,6 +523,10 @@ function get_user_data($from, $number_of_items, $column, $direction, $get_count 
 	if ((api_is_platform_admin() || api_is_session_admin()) && api_get_multiple_access_url()) {
 		$sql.= " AND url_rel_user.access_url_id=".api_get_current_access_url_id();
     }
+=======
+function get_user_data($from, $number_of_items, $column, $direction) {
+    $sql = prepare_user_sql_query (false);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     $checkPassStrength = isset($_GET['check_easy_passwords']) && $_GET['check_easy_passwords'] == 1 ? true : false;
 
@@ -391,6 +652,7 @@ function modify_filter($user_id, $url_params, $row) {
 		}
 	}
 
+<<<<<<< HEAD
     //only allow platform admins to login_as, or session admins only for
     // students (not teachers nor other admins), and only if all options
     // match to say this user has the permission to do so
@@ -429,6 +691,22 @@ function modify_filter($user_id, $url_params, $row) {
 
 
     //$result .= Display::url('<i class="icon-key icon-large"></i>', 'roles');
+=======
+    //only allow platform admins to login_as, or session admins only for students (not teachers nor other admins)
+    if (api_is_platform_admin() || (api_is_session_admin() && $current_user_status_label == $statusname[STUDENT])) {
+    	if (!$user_is_anonymous) {
+            if (api_global_admin_can_edit_admin($user_id)) {
+                $result .= '<a href="user_list.php?action=login_as&amp;user_id='.$user_id.'&amp;sec_token='.$_SESSION['sec_token'].'">'.Display::return_icon('login_as.png', get_lang('LoginAs')).'</a>&nbsp;&nbsp;';
+            } else {
+                $result .= Display::return_icon('login_as_na.png', get_lang('LoginAs')).'&nbsp;&nbsp;';
+            }
+    	} else {
+    		$result .= Display::return_icon('login_as_na.png', get_lang('LoginAs')).'&nbsp;&nbsp;';
+    	}
+    } else {
+    	$result .= Display::return_icon('login_as_na.png', get_lang('LoginAs')).'&nbsp;&nbsp;';
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 	if ($current_user_status_label != $statusname[STUDENT]) {
 		$result .= Display::return_icon('statistics_na.gif', get_lang('Reporting')).'&nbsp;&nbsp;';
@@ -445,13 +723,11 @@ function modify_filter($user_id, $url_params, $row) {
 		}
 	}
 
-
 	if ($is_admin) {
 		$result .= Display::return_icon('admin_star.png', get_lang('IsAdministrator'),array('width'=> ICON_SIZE_SMALL, 'heigth'=> ICON_SIZE_SMALL));
 	} else {
 		$result .= Display::return_icon('admin_star_na.png', get_lang('IsNotAdministrator'));
 	}
-
 
 	// actions for assigning sessions, courses or users
 	if (api_is_session_admin()) {
@@ -531,8 +807,6 @@ function status_filter($status) {
 	return $statusname[$status];
 }
 
-$action = isset($_REQUEST["action"]) ? $_REQUEST["action"] : null;
-
 if (isset($_GET['keyword']) || isset($_GET['keyword_firstname'])) {
     $interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAdmin'));
     $interbreadcrumb[] = array ("url" => 'user_list.php', "name" => get_lang('UserList'));
@@ -545,7 +819,7 @@ if (isset($_GET['keyword']) || isset($_GET['keyword_firstname'])) {
 $message = '';
 
 if (!empty($action)) {
-	$check = Security::check_token('get');
+    $check = Security::check_token('get');
 	if ($check) {
 		switch ($action) {
             case 'add_user_to_my_url':
@@ -557,23 +831,18 @@ if (!empty($action)) {
                     $message  = Display::return_message($message, 'confirmation');
                 }
                 break;
-            case 'login_as':
-                $login_as_user_id = $_GET["user_id"];
-                if (isset ($login_as_user_id)) {
-                    login_user($login_as_user_id);
-                }
-                break;
 			case 'show_message' :
                 if (!empty($_GET['warn'])) {
-                	// to prevent too long messages
-                	if ($_GET['warn'] == 'session_message'){
-                		$_GET['warn'] = $_SESSION['session_message_import_users'];
-                	}
-                	$message = Display::return_message(urldecode($_GET['warn']),'warning', false);
+                    // to prevent too long messages
+                    if ($_GET['warn'] == 'session_message'){
+                        $_GET['warn'] = $_SESSION['session_message_import_users'];
+                    }
+                    $message .= Display::return_message(Security::remove_XSS($_GET['warn']), 'warning', false);
                 }
                 if (!empty($_GET['message'])) {
-                    $message = Display :: return_message(stripslashes($_GET['message']), 'confirmation');
+                    $message .= Display::return_message(stripslashes($_GET['message']), 'confirmation');
                 }
+
 				break;
 			case 'delete_user' :
 				if (api_is_platform_admin()) {
@@ -617,19 +886,41 @@ if (!empty($action)) {
 }
 
 // Create a search-box
+<<<<<<< HEAD
 $form = new FormValidator('search_simple','get', '', '', array('class' => 'form-search'),false);
 /*$renderer =& $form->defaultRenderer();
 $renderer->setElementTemplate('<span>{element}</span> ');*/
 $form->addElement('text', 'keyword', get_lang('keyword'));
 $form->addElement('button', 'submit' ,get_lang('Search'));
 $form->addElement('advanced_settings', 'user_list_filter', get_lang('AdvancedSearch'));
+=======
+$form = new FormValidator('search_simple', 'get', '', '', array('class' => 'form-search'), false);
+$renderer = & $form->defaultRenderer();
+$renderer->setElementTemplate('<span>{element}</span> ');
+$form->addElement('text','keyword', get_lang('keyword'), 'size="25"');
+$form->addElement('style_submit_button', 'submit', get_lang('Search'),'class="btn"');
+$form->addElement(
+    'static',
+    'search_advanced_link',
+    null,
+    '<a href="javascript://" class = "advanced_parameters" onclick="display_advanced_search_form();">
+        <span id="img_plus_and_minus">&nbsp;'.
+        Display::return_icon('div_show.gif', get_lang('Show'), array('style'=>'vertical-align:middle')).' '.get_lang('AdvancedSearch').'
+        </span>
+    </a>'
+);
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $actions  = '';
 if (api_is_platform_admin()) {
 	$actions .= '<a href="'.api_get_path(WEB_CODE_PATH).'admin/user_add.php">'.
             Display::return_icon('new_user.png',get_lang('AddUsers'),'',ICON_SIZE_MEDIUM).'</a>';
 }
 $actions .= $form->return_form();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (isset ($_GET['keyword'])) {
 	$parameters = array ('keyword' => Security::remove_XSS($_GET['keyword']));
@@ -656,8 +947,13 @@ while ($row_admin = Database::fetch_row($res_admin)) {
 	$_admins_list[] = $row_admin[0];
 }
 
+<<<<<<< HEAD
 // display advanced search form
 $form = new FormValidator('advanced_search','get');
+=======
+// Display Advanced search form.
+$form = new FormValidator('advanced_search', 'get');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 $form->addElement('html','<div id="user_list_filter_options" style="display:none;">');
 $form->addElement('header', get_lang('AdvancedSearch'));
@@ -688,7 +984,6 @@ $status_options[DRH] = get_lang('Drh');
 $status_options[SESSIONADMIN] = get_lang('Administrator');
 $form->addElement('select','keyword_status',get_lang('Profile'),$status_options, array('style'=>'margin-left:17px'));
 $form->addElement('html', '</td></tr>');
-
 $form->addElement('html', '<tr><td>');
 $active_group = array();
 $active_group[] = $form->createElement('checkbox','keyword_active','', get_lang('Active'));
@@ -737,8 +1032,16 @@ $table->set_column_filter(7, 'status_filter');
 $table->set_column_filter(8, 'active_filter');
 $table->set_column_filter(10, 'modify_filter');
 
+<<<<<<< HEAD
 if (api_is_platform_admin()) {
 	$table->set_form_actions(array ('delete' => get_lang('DeleteFromPlatform')));
+=======
+// Only show empty actions bar if delete users has been blocked
+if (api_is_platform_admin() && !(isset($_configuration['deny_delete_users']) && $_configuration['deny_delete_users'])) {
+    $table->set_form_actions(array ('delete' => get_lang('DeleteFromPlatform')));
+} else {
+    $table->set_form_actions(array ('none' => get_lang('NoActionAvailable')));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 
 $table_result = $table->return_table();
@@ -801,9 +1104,13 @@ if ($table->get_total_number_of_items() == 0) {
     }
 }
 
+<<<<<<< HEAD
 $app['title'] = $tool_name;
 $tpl = $app['template'];
 
+=======
+$tpl = new Template($tool_name);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $tpl->assign('actions', $actions);
 $tpl->assign('message', $message);
 $tpl->assign('content', $form.$table_result.$extra_search_options);

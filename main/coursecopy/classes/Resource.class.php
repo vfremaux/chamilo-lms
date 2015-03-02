@@ -19,6 +19,7 @@ define('RESOURCE_FORUM', 'forum');
 define('RESOURCE_FORUMTOPIC', 'thread');
 define('RESOURCE_FORUMPOST', 'post');
 define('RESOURCE_QUIZ', 'quiz');
+define('RESOURCE_TEST_CATEGORY', 'test_category');
 define('RESOURCE_QUIZQUESTION', 'Exercise_Question');
 define('RESOURCE_TOOL_INTRO', 'Tool introduction');
 define('RESOURCE_LINKCATEGORY', 'Link_Category');
@@ -43,7 +44,10 @@ define('RESOURCE_WORK', 'work');
  */
 class Resource
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     /**
      * The id from this resource in the source course
      */
@@ -104,6 +108,7 @@ class Resource
     /**
      * Checks if this resource links to a given resource
      */
+<<<<<<< HEAD
     function links_to(& $resource)
     {
         if (isset($this->linked_resources[$resource->get_type()]) && is_array(
@@ -111,6 +116,17 @@ class Resource
             )
         ) {
             return in_array($resource->get_id(), $this->linked_resources[$resource->get_type()]);
+=======
+    function links_to(& $resource) {
+        $type = $resource->get_type();
+        if (isset($this->linked_resources[$type]) &&
+            is_array($this->linked_resources[$type])
+        ) {
+            return in_array(
+                $resource->get_id(),
+                $this->linked_resources[$type]
+            );
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
         return false;
     }
@@ -169,6 +185,8 @@ class Resource
                 return TOOL_POST;
             case RESOURCE_QUIZ:
                 return TOOL_QUIZ;
+            case RESOURCE_TEST_CATEGORY:
+                return TOOL_TEST_CATEGORY;
             //case RESOURCE_QUIZQUESTION: //no corresponding global constant
             //	return TOOL_QUIZ_QUESTION;
             //case RESOURCE_TOOL_INTRO:

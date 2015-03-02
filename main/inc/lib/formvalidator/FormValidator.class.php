@@ -1,6 +1,21 @@
 <?php
 /* For licensing terms, see /license.txt */
 
+<<<<<<< HEAD
+=======
+require_once api_get_path(LIBRARY_PATH).'pear/HTML/QuickForm.php';
+require_once api_get_path(LIBRARY_PATH).'pear/HTML/QuickForm/advmultiselect.php';
+
+/**
+ * Filter
+ */
+define('NO_HTML', 1);
+define('STUDENT_HTML', 2);
+define('TEACHER_HTML', 3);
+define('STUDENT_HTML_FULLPAGE', 4);
+define('TEACHER_HTML_FULLPAGE', 5);
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 /**
  * Objects of this class can be used to create/manipulate/validate user input.
  */
@@ -18,6 +33,7 @@ class FormValidator extends HTML_QuickForm
      * @param bool $track_submit (optional)		Whether to track if the form was
      * submitted by adding a special hidden field (default = true)
      */
+<<<<<<< HEAD
     public function __construct(
         $form_name = null,
         $method = 'post',
@@ -27,6 +43,11 @@ class FormValidator extends HTML_QuickForm
         $track_submit = true
     ) {
         // Default form class
+=======
+    function __construct($form_name, $method = 'post', $action = '', $target = '', $attributes = null, $track_submit = true)
+    {
+        // Default form class.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (is_array($attributes) && !isset($attributes['class']) || empty($attributes)) {
             $attributes['class'] = 'form-horizontal';
         }
@@ -48,13 +69,22 @@ class FormValidator extends HTML_QuickForm
         parent::__construct($form_name, $method, $action, $target, $attributes, $track_submit);
 
         // Load some custom elements and rules
+<<<<<<< HEAD
         $dir = api_get_path(LIBRARY_PATH).'formvalidator/';
+=======
+        $dir = api_get_path(LIBRARY_PATH) . 'formvalidator/';
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $this->registerElementType('html_editor', $dir . 'Element/html_editor.php', 'HTML_QuickForm_html_editor');
         $this->registerElementType('date_range_picker', $dir . 'Element/DateRangePicker.php', 'DateRangePicker');
         $this->registerElementType('date_time_picker', $dir . 'Element/DateTimePicker.php', 'DateTimePicker');
         $this->registerElementType('date_picker', $dir . 'Element/DatePicker.php', 'DatePicker');
+<<<<<<< HEAD
 
         $this->registerElementType('datepicker', $dir . 'Element/datepicker.php', 'HTML_QuickForm_datepicker');
+=======
+        $this->registerElementType('datepicker', $dir . 'Element/datepicker_old.php', 'HTML_QuickForm_datepicker');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $this->registerElementType('datepickerdate', $dir . 'Element/datepickerdate.php', 'HTML_QuickForm_datepickerdate');
         $this->registerElementType('receivers', $dir . 'Element/receivers.php', 'HTML_QuickForm_receivers');
         $this->registerElementType('select_language', $dir . 'Element/select_language.php', 'HTML_QuickForm_Select_Language');
@@ -76,7 +106,10 @@ class FormValidator extends HTML_QuickForm
         $this->registerRule('multiple_required', 'required', 'HTML_QuickForm_Rule_MultipleRequired', $dir . 'Rule/MultipleRequired.php');
         $this->registerRule('url', null, 'HTML_QuickForm_Rule_Url', $dir . 'Rule/Url.php');
         $this->registerRule('compare_fields', null, 'HTML_QuickForm_Compare_Fields', $dir . 'Rule/CompareFields.php');
+<<<<<<< HEAD
         $this->registerRule('compare_datetime_text', null, 'HTML_QuickForm_Rule_CompareDateTimeText', $dir . 'Rule/CompareDateTimeText.php');
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $this->registerRule('CAPTCHA', 'rule', 'HTML_QuickForm_Rule_CAPTCHA', 'HTML/QuickForm/Rule/CAPTCHA.php');
 
         // Modify the default templates
@@ -94,6 +127,17 @@ class FormValidator extends HTML_QuickForm
             $element_template = ' {label}  {element} ';
             $renderer->setElementTemplate($element_template);
         } else {
+<<<<<<< HEAD
+=======
+            $element_template = '
+            <div class="control-group {error_class}">
+                <label class="control-label" {label-for}>
+                    <!-- BEGIN required --><span class="form_required">*</span><!-- END required -->
+                    {label}
+                </label>
+                <div class="controls">
+                    {element}
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             if (is_array($attributes) && isset($attributes['class']) && $attributes['class'] == 'form-inline') {
                 $element_template = $this->getDefaultInlineElementTemplate();
@@ -108,7 +152,7 @@ class FormValidator extends HTML_QuickForm
             $renderer->setElementTemplate($button_element_template_simple, 'submit_in_actions');
 
             //Display a gray div in the buttons + makes the button available when scrolling
-            $button_element_template_in_bottom = '<div class="form-actions bottom_actions">{label} {element}</div>';
+            $button_element_template_in_bottom = '<div class="form-actions bottom_actions bg-form">{label} {element}</div>';
             $renderer->setElementTemplate($button_element_template_in_bottom, 'submit_fixed_in_bottom');
             $renderer->setElementTemplate($button_element_template_simple, 'buttons_in_action');
 
@@ -130,6 +174,7 @@ EOT;
     }
 
     /**
+<<<<<<< HEAD
      * @return string
      */
     private function getFormTemplate()
@@ -203,6 +248,8 @@ EOT;
     }
 
     /**
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Adds a text field to the form.
      * A trim-filter is attached to the field.
      * @param string $label						The label for the form-element
@@ -326,6 +373,7 @@ EOT;
      * A rule is added to check if the date is a valid one
      * @param string $label						The label for the form-element
      * @param string $name						The element name
+     * @deprecated
      */
     public function add_datepicker($name, $label)
     {
@@ -364,6 +412,21 @@ EOT;
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Adds a button to the form to add resources.
+     * @deprecated
+     */
+    function add_resource_button()
+    {
+        $group = array();
+        $group[] = $this->createElement('static', 'add_resource_img', null, '<img src="' . api_get_path(WEB_IMG_PATH) . 'attachment.gif" alt="' . get_lang('Attachment') . '"/>');
+        $group[] = $this->createElement('submit', 'add_resource', get_lang('Attachment'), 'class="link_alike"');
+        $this->addGroup($group);
+    }
+
+    /**
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Adds a progress bar to the form.
      *
      * Once the user submits the form, a progress bar (animated gif) is
@@ -393,7 +456,6 @@ EOT;
      */
     public function add_real_progress_bar($upload_id, $element_after, $delay = 2, $wait_after_upload = false)
     {
-
         if (!function_exists('uploadprogress_get_info')) {
             $this->add_progress_bar($delay);
             return;
@@ -483,7 +545,10 @@ EOT;
         $error = false;
         $addDateLibraries = false;
         $dateElementTypes = array('date_range_picker', 'date_time_picker', 'date_picker', 'datepicker', 'datetimepicker');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         /** @var HTML_QuickForm_element $element */
         foreach ($this->_elements as $element) {
             if (in_array($element->getType(), $dateElementTypes)) {
@@ -498,6 +563,7 @@ EOT;
         $return_value = '';
         $js = null;
         if ($addDateLibraries) {
+<<<<<<< HEAD
             $js = api_get_js('jquery-ui/jquery-ui-i18n.min.js');
             $js .= '<script src="'.api_get_path(WEB_LIBRARY_JS_PATH).'datetimepicker/jquery-ui-timepicker-addon.js" type="text/javascript"></script>';
             $js .= '<link href="'.api_get_path(WEB_LIBRARY_JS_PATH).'datetimepicker/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css" />';
@@ -512,6 +578,24 @@ EOT;
                 $(function(){
                     $.datepicker.setDefaults($.datepicker.regional["'.$isocode.'"]);
                      moment.lang("'.$isocode.'");
+=======
+
+            $js .= '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/daterange/moment.min.js" type="text/javascript"></script>';
+            $js .= '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/datetimepicker/jquery-ui-timepicker-addon.js" type="text/javascript"></script>';
+            $js .= '<link href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/datetimepicker/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css" />';
+            $js .= '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/daterange/daterangepicker.js" type="text/javascript"></script>';
+            $js .= '<link href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/daterange/daterangepicker-bs2.css" rel="stylesheet" type="text/css" />';
+
+            $isoCode = api_get_language_isocode();
+
+            if ($isoCode != 'en') {
+                $js .= api_get_js('jquery-ui/jquery-ui-i18n.min.js');
+                $js .= '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/datetimepicker/i18n/jquery-ui-timepicker-'.$isoCode.'.js" type="text/javascript"></script>';
+                $js .= '<script>
+                $(function(){
+                    moment.lang("'.$isoCode.'");
+                    $.datepicker.setDefaults($.datepicker.regional["'.$isoCode.'"]);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 });
                 </script>';
             }
@@ -529,6 +613,7 @@ EOT;
         }
         return $return_value;
     }
+<<<<<<< HEAD
 
     /**
      * @param string $name
@@ -661,6 +746,8 @@ EOT;
         $result->setDefaults($defaults);
         return $result;
     }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }
 // Used when applying filters
 

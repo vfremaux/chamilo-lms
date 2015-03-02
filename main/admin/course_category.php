@@ -2,28 +2,38 @@
 /* For licensing terms, see /license.txt */
 /**
  * 	@package chamilo.admin
- * 	@todo use formvalidator for the form
  */
 /**
  * Code
  */
 // name of the language file that needs to be included
 $language_file = 'admin';
-
 $cidReset = true;
-
 require_once '../inc/global.inc.php';
+require_once api_get_path(LIBRARY_PATH).'course_category.lib.php';
 $this_section = SECTION_PLATFORM_ADMIN;
 
 api_protect_admin_script();
+<<<<<<< HEAD
 $category = Database::escape_string($_GET['category']);
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
+=======
+$category = isset($_GET['category']) ? $_GET['category'] : null;
 
-$tbl_course = Database::get_main_table(TABLE_MAIN_COURSE);
-$tbl_category = Database::get_main_table(TABLE_MAIN_CATEGORY);
+if (!empty($category)) {
+    $parentInfo = getCategory($category);
+}
+$categoryId = isset($_GET['id']) ? Security::remove_XSS($_GET['id']) : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
+
+if (!empty($categoryId)) {
+    $categoryInfo = getCategory($categoryId);
+}
+$action = isset($_GET['action']) ? $_GET['action'] : null;
 
 $errorMsg = '';
+<<<<<<< HEAD
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 $categoryCode = isset($_POST['categoryCode']) ? $_POST['categoryCode'] : null;
@@ -38,16 +48,25 @@ if (!empty($action)) {
         if (api_get_multiple_access_url()) {
             if (api_get_current_access_url_id() == 1) {
                 deleteNode($id);
+=======
+if (!empty($action)) {
+    if ($action == 'delete') {
+        if (api_get_multiple_access_url()) {
+            if (api_get_current_access_url_id() == 1 ||
+                (isset($_configuration['enable_multiple_url_support_for_course_category']) &&
+                $_configuration['enable_multiple_url_support_for_course_category'])
+            ) {
+                deleteNode($categoryId);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                 header('Location: ' . api_get_self() . '?category=' . Security::remove_XSS($category));
                 exit();
-            } else {
-                $delError = 1;
             }
         } else {
-            deleteNode($_GET['id']);
+            deleteNode($categoryId);
             header('Location: ' . api_get_self() . '?category=' . Security::remove_XSS($category));
             exit();
         }
+<<<<<<< HEAD
     } elseif (($action == 'add' || $action == 'edit') && $_POST['formSent']) {
         $_POST['categoryCode'] = trim($_POST['categoryCode']);
         $_POST['categoryName'] = trim($_POST['categoryName']);
@@ -64,9 +83,20 @@ if (!empty($action)) {
             } else {
                 $errorMsg = get_lang('CatCodeAlreadyUsed');
             }
+=======
+    } elseif (($action == 'add' || $action == 'edit') && isset($_POST['formSent']) && $_POST['formSent']) {
+        if ($action == 'add') {
+            $ret = addNode($_POST['code'], $_POST['name'], $_POST['auth_course_child'], $category);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         } else {
-            $errorMsg = get_lang('PleaseEnterCategoryInfo');
+            $ret = editNode($_POST['code'], $_POST['name'], $_POST['auth_course_child'], $categoryId);
         }
+        if ($ret) {
+            $action = '';
+        } else {
+            $errorMsg = get_lang('CatCodeAlreadyUsed');
+        }
+<<<<<<< HEAD
     } elseif ($action == 'edit') {
 
         if (!empty($id)) {
@@ -79,36 +109,22 @@ if (!empty($action)) {
     } elseif ($action == 'moveUp') {
         moveNodeUp($id, $_GET['tree_pos'], $category);
 
+=======
+    } elseif ($action == 'moveUp') {
+        moveNodeUp($categoryId, $_GET['tree_pos'], $category);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         header('Location: ' . api_get_self() . '?category=' . Security::remove_XSS($category));
         exit();
     }
 }
 
 $tool_name = get_lang('AdminCategories');
-
 $interbreadcrumb[] = array('url' => 'index.php', "name" => get_lang('PlatformAdmin'));
-//$interbreadcrumb[]=array('url' => 'configure_homepage.php',"name" => get_lang('ConfigureHomePage'));
 
 Display::display_header($tool_name);
 
-if (!empty($category)) {
-    $myquery = "SELECT * FROM $tbl_category WHERE code ='$category'";
-    $result = Database::query($myquery);
-    if (Database::num_rows($result) == 0) {
-        $category = '';
-    }
-}
-
-if (empty($action)) {
-    $myquery = "SELECT t1.name,t1.code,t1.parent_id,t1.tree_pos,t1.children_count,COUNT(DISTINCT t3.code) AS nbr_courses 
-			 	FROM $tbl_category t1 LEFT JOIN $tbl_category t2 ON t1.code=t2.parent_id LEFT JOIN $tbl_course t3 ON t3.category_code=t1.code 
-				WHERE t1.parent_id " . (empty($category) ? "IS NULL" : "='$category'") . " 
-				GROUP BY t1.name,t1.code,t1.parent_id,t1.tree_pos,t1.children_count ORDER BY t1.tree_pos";
-    $result = Database::query($myquery);
-    $Categories = Database::store_result($result);
-}
-
 if ($action == 'add' || $action == 'edit') {
+<<<<<<< HEAD
     if ((api_get_multiple_access_url() && api_get_current_access_url_id() == 1) || !api_get_multiple_access_url() ) { ?>
     <div class="actions">
         <a href="<?php echo api_get_self(); ?>?category=<?php echo Security::remove_XSS($category); ?>"><?php echo Display::return_icon('folder_up.png', get_lang("Back"), '', ICON_SIZE_MEDIUM);
@@ -263,22 +279,59 @@ function deleteNode($node) {
         if (!empty($row['parent_id'])) {
             updateFils($row['parent_id']);
         }
+=======
+    if ((api_get_multiple_access_url() && api_get_current_access_url_id() == 1) ||
+        !api_get_multiple_access_url() ||
+        (isset($_configuration['enable_multiple_url_support_for_course_category']) &&
+         $_configuration['enable_multiple_url_support_for_course_category'])
+    ) {
+        echo '<div class="actions">';
+        echo Display::url(
+            Display::return_icon('folder_up.png', get_lang("Back"), '', ICON_SIZE_MEDIUM),
+            api_get_path(WEB_CODE_PATH).'admin/course_category.php?category='.$category
+        );
+        echo '</div>';
+
+        $form_title = ($action == 'add') ? get_lang('AddACategory') : get_lang('EditNode');
+        if (!empty($category)) {
+            $form_title .= ' ' . get_lang('Into') . ' ' . Security::remove_XSS($category);
+        }
+        $url = api_get_self().'?action='.Security::remove_XSS($action).'&category='.Security::remove_XSS($category).'&id='.$categoryId;
+        $form = new FormValidator('course_category', 'post', $url);
+        $form->addElement('header', '', $form_title);
+        $form->addElement('hidden', 'formSent', 1);
+        $form->addElement('text', 'code', get_lang("CategoryCode"));
+        $form->addElement('text', 'name', get_lang("CategoryName"));
+        $form->addRule('name', get_lang('PleaseEnterCategoryInfo'), 'required');
+        $form->addRule('code', get_lang('PleaseEnterCategoryInfo'), 'required');
+        $group = array(
+            $form->createElement('radio', 'auth_course_child', get_lang("AllowCoursesInCategory"), get_lang('Yes'), 'TRUE'),
+            $form->createElement('radio', 'auth_course_child', null, get_lang('No'), 'FALSE')
+        );
+        $form->addGroup($group, null, get_lang("AllowCoursesInCategory"));
+
+        if (!empty($categoryInfo)) {
+            $class = "save";
+            $text = get_lang('CategoryMod');
+            $form->setDefaults($categoryInfo);
+        } else {
+            $class = "add";
+            $text = get_lang('AddCategory');
+            $form->setDefaults(array('auth_course_child' => 'TRUE'));
+        }
+        $form->addElement('button', 'submit', $text);
+        $form->display();
+    } elseif (api_get_multiple_access_url() && api_get_current_access_url_id() != 1) {
+        // If multiple URLs and not main URL, prevent edition and inform user
+        Display::display_warning_message(get_lang('CourseCategoriesAreGlobal'));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
-}
-
-function addNode($code, $name, $canHaveCourses, $parent_id) {
-    global $tbl_category;
-
-    $canHaveCourses = $canHaveCourses ? 'TRUE' : 'FALSE';
-    $code = Database::escape_string($code);
-    $name = Database::escape_string($name);
-    $parent_id = Database::escape_string($parent_id);
-
-    $result = Database::query("SELECT 1 FROM $tbl_category WHERE code='$code'");
-
-    if (Database::num_rows($result)) {
-        return false;
+} else {
+    // If multiple URLs and not main URL, prevent deletion and inform user
+    if ($action == 'delete' && api_get_multiple_access_url() && api_get_current_access_url_id() != 1) {
+        Display::display_warning_message(get_lang('CourseCategoriesAreGlobal'));
     }
+<<<<<<< HEAD
 
     $result = Database::query("SELECT MAX(tree_pos) AS maxTreePos FROM $tbl_category");
 
@@ -323,32 +376,33 @@ function moveNodeUp($code, $tree_pos, $parent_id) {
     $parent_id = Database::escape_string($parent_id);
 
     $result = Database::query("SELECT code,tree_pos FROM $tbl_category WHERE parent_id " . (empty($parent_id) ? "IS NULL" : "='$parent_id'") . " AND tree_pos<'$tree_pos' ORDER BY tree_pos DESC LIMIT 0,1");
+=======
+    echo '<div class="actions">';
+    $link = null;
+    if (!empty($parentInfo)) {
+        $parentCode = $parentInfo['parent_id'];
+        echo Display::url(
+            Display::return_icon('back.png', get_lang("Back"), '', ICON_SIZE_MEDIUM),
+            api_get_path(WEB_CODE_PATH).'admin/course_category.php?category='.$parentCode
+        );
+    }
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
-    if (!$row = Database::fetch_array($result)) {
-        $result = Database::query("SELECT code,tree_pos FROM $tbl_category WHERE parent_id " . (empty($parent_id) ? "IS NULL" : "='$parent_id'") . " AND tree_pos>'$tree_pos' ORDER BY tree_pos DESC LIMIT 0,1");
-
-        if (!$row = Database::fetch_array($result)) {
-            return false;
-        }
+    if (empty($parentInfo) || $parentInfo['auth_cat_child'] == 'TRUE') {
+        echo Display::url(
+            Display::return_icon('new_folder.png', get_lang("AddACategory"), '', ICON_SIZE_MEDIUM),
+            api_get_path(WEB_CODE_PATH).'admin/course_category.php?action=add&category='.$category
+        );
     }
 
-    Database::query("UPDATE $tbl_category SET tree_pos='" . $row['tree_pos'] . "' WHERE code='$code'");
-    Database::query("UPDATE $tbl_category SET tree_pos='$tree_pos' WHERE code='$row[code]'");
-}
-
-function updateFils($category) {
-    global $tbl_category;
-    $category = Database::escape_string($category);
-    $result = Database::query("SELECT parent_id FROM $tbl_category WHERE code='$category'");
-
-    if ($row = Database::fetch_array($result)) {
-        updateFils($row['parent_id']);
+    echo '</div>';
+    if (!empty($parentInfo)) {
+        echo Display::page_subheader($parentInfo['name'].' ('.$parentInfo['code'].')');
     }
-
-    $children_count = compterFils($category, 0) - 1;
-    Database::query("UPDATE $tbl_category SET children_count='$children_count' WHERE code='$category'");
+    echo listCategories($category);
 }
 
+<<<<<<< HEAD
 function compterFils($pere, $cpt) {
     global $tbl_category;
     $pere = Database::escape_string($pere);
@@ -360,3 +414,6 @@ function compterFils($pere, $cpt) {
 
     return ($cpt + 1);
 }
+=======
+Display::display_footer();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84

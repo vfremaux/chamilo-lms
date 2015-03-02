@@ -2,6 +2,7 @@
 /* For licensing terms, see /license.txt */
 
 /**
+<<<<<<< HEAD
 *	Main page for the group module.
 *	This script displays the general group settings,
 *	and a list of groups with buttons to view, edit...
@@ -17,6 +18,29 @@
 $is_allowed_in_course = api_is_allowed_in_course();
 $userId = api_get_user_id();
 
+=======
+ *	Main page for the group module.
+ *	This script displays the general group settings,
+ *	and a list of groups with buttons to view, edit...
+ *
+ *	@author Thomas Depraetere, Hugues Peeters, Christophe Gesche: initial versions
+ *	@author Bert Vanderkimpen, improved self-unsubscribe for cvs
+ *	@author Patrick Cool, show group comment under the group name
+ *	@author Roan Embrechts, initial self-unsubscribe code, code cleaning, virtual course support
+ *	@author Bart Mollet, code cleaning, use of Display-library, list of courseAdmin-tools, use of GroupManager
+ *	@author Isaac Flores, code cleaning and improvements
+ *	@package chamilo.group
+ */
+/*		INIT SECTION	*/
+// Name of the language file that needs to be included
+$language_file = 'group';
+
+require_once '../inc/global.inc.php';
+
+$is_allowed_in_course = api_is_allowed_in_course();
+$userId = api_get_user_id();
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $this_section = SECTION_COURSES;
 $current_course_tool  = TOOL_GROUP;
 
@@ -24,9 +48,15 @@ $current_course_tool  = TOOL_GROUP;
 api_protect_course_script(true);
 
 $htmlHeadXtra[] = '<script>
+<<<<<<< HEAD
 $(document).ready(function() {
     var i;
 	for (i = 0; i<$(".actions").length; i++) {
+=======
+$(document).ready( function() {
+    var i;
+	for (i=0; i<$(".actions").length; i++) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 		if ($(".actions:eq("+i+")").html()=="<table border=\"0\"></table>" || $(".actions:eq("+i+")").html()=="" || $(".actions:eq("+i+")").html()==null) {
 			$(".actions:eq("+i+")").hide();
 		}
@@ -58,12 +88,21 @@ Display::display_introduction_section(TOOL_GROUP);
 /*
  * Self-registration and un-registration
  */
+<<<<<<< HEAD
  $my_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
  $my_msg	  = isset($_GET['msg']) ? Security::remove_XSS($_GET['msg']) : null;
  $my_group    = isset($_REQUEST['group']) ? Security::remove_XSS($_REQUEST['group']) : null;
  $my_get_id1  = isset($_GET['id1']) ? Security::remove_XSS($_GET['id1']) : null;
  $my_get_id2  = isset($_GET['id2']) ? Security::remove_XSS($_GET['id2']) : null;
  $my_get_id   = isset($_GET['id']) ? Security::remove_XSS($_GET['id']) : null;
+=======
+$my_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
+$my_msg	= isset($_GET['msg']) ? Security::remove_XSS($_GET['msg']) : null;
+$my_group = isset($_REQUEST['group']) ? Security::remove_XSS($_REQUEST['group']) : null;
+$my_get_id1 = isset($_GET['id1']) ? Security::remove_XSS($_GET['id1']) : null;
+$my_get_id2 = isset($_GET['id2']) ? Security::remove_XSS($_GET['id2']) : null;
+$my_get_id  = isset($_GET['id']) ? Security::remove_XSS($_GET['id']) : null;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 if (isset($_GET['action']) && $is_allowed_in_course) {
     switch ($_GET['action']) {
@@ -80,6 +119,7 @@ if (isset($_GET['action']) && $is_allowed_in_course) {
             }
             break;
         case 'show_msg':
+<<<<<<< HEAD
             Display :: display_confirmation_message($my_msg);
             break;
         case 'warning_message':
@@ -87,6 +127,15 @@ if (isset($_GET['action']) && $is_allowed_in_course) {
             break;
         case 'success_message':
             Display :: display_confirmation_message($my_msg);
+=======
+            Display::display_confirmation_message($my_msg);
+            break;
+        case 'warning_message':
+            Display::display_warning_message($my_msg);
+            break;
+        case 'success_message':
+            Display::display_confirmation_message($my_msg);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             break;
     }
 }
@@ -102,7 +151,11 @@ if (api_is_allowed_to_edit(false, true)) {
         switch ($_POST['action']) {
             case 'delete_selected':
                 if (is_array($_POST['group'])) {
+<<<<<<< HEAD
                     GroupManager :: delete_groups($my_group);
+=======
+                    GroupManager::delete_groups($my_group);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
                     Display :: display_confirmation_message(get_lang('SelectedGroupsDeleted'));
                 }
                 break;
@@ -161,14 +214,25 @@ if (api_is_allowed_to_edit(false, true)) {
     echo  '<a href="import.php?'.api_get_cidreq().'&action=import">'.
         Display::return_icon('import_csv.png', get_lang('Import'), '', ICON_SIZE_MEDIUM).'</a>';
 
+<<<<<<< HEAD
     echo  '<a href="group_overview.php?'.api_get_cidreq().'&action=export_all&type=csv">'.
         Display::return_icon('export_csv.png', get_lang('Export'), '', ICON_SIZE_MEDIUM).'</a>';
+=======
+    echo  '<a href="group_overview.php?'.api_get_cidreq().'&action=export&type=csv">'.
+        Display::return_icon('export_csv.png', get_lang('ExportAsCSV'), '', ICON_SIZE_MEDIUM).'</a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     echo  '<a href="group_overview.php?'.api_get_cidreq().'&action=export&type=xls">'.
         Display::return_icon('export_excel.png', get_lang('ExportAsXLS'), '', ICON_SIZE_MEDIUM).'</a>';
 
     echo  '<a href="group_overview.php?'.api_get_cidreq().'&action=export_pdf">'.
         Display::return_icon('pdf.png', get_lang('ExportToPDF'), '', ICON_SIZE_MEDIUM).'</a>';
+<<<<<<< HEAD
+=======
+
+    echo  '<a href="group_overview.php?'.api_get_cidreq().'&action=export_all&type=xls">'.
+        Display::return_icon('export_excel.png', get_lang('ExportSettingsAsXLS'), '', ICON_SIZE_MEDIUM).'</a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     echo '<a href="group_overview.php?'.api_get_cidreq().'">'.
         Display::return_icon('group_summary.png', get_lang('GroupOverview'), '', ICON_SIZE_MEDIUM).'</a>';
@@ -182,11 +246,19 @@ if (api_is_allowed_to_edit(false, true)) {
 $group_cats = GroupManager::get_categories(api_get_course_id());
 echo '</div>';
 
+<<<<<<< HEAD
+=======
+/*  List all categories */
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 /*  List all categories */
 if (api_get_setting('allow_group_categories') == 'true') {
     foreach ($group_cats as $index => $category) {
+<<<<<<< HEAD
         $group_list = GroupManager::get_group_list($category['id']);
+=======
+        $group_list = GroupManager :: get_group_list($category['id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $label = Display::label(count($group_list).' '.get_lang('ExistingGroups'), 'info');
 
         $actions = null;
@@ -206,15 +278,27 @@ if (api_get_setting('allow_group_categories') == 'true') {
         }
 
         echo Display::page_header($category['title'].' '. $label.' '.$actions);
+<<<<<<< HEAD
         echo '<p style="margin: 0px;margin-left: 50px;">'.$category['description'].'</p><p/>';
         GroupManager ::process_groups($group_list, $category['id']);
+=======
+        echo $category['description'];
+        GroupManager::process_groups($group_list, $category['id']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 } else {
     $group_list = GroupManager::get_group_list();
     GroupManager::process_groups($group_list);
+<<<<<<< HEAD
 }
 
 if (!isset ($_GET['origin']) || $_GET['origin'] != 'learnpath') {
+=======
+
+}
+
+if (!isset($_GET['origin']) || $_GET['origin'] != 'learnpath') {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     Display::display_footer();
 }
 $_SESSION['_gid'] = 0;

@@ -14,6 +14,10 @@ $language_file = array ('course_description', 'userInfo', 'admin');
 
 // including files
 require_once '../inc/global.inc.php';
+<<<<<<< HEAD
+=======
+require_once api_get_path(LIBRARY_PATH).'attendance.lib.php';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 require_once api_get_path(LIBRARY_PATH).'app_view.php';
 require_once 'thematic_controller.php';
 

@@ -82,8 +82,7 @@ function storage_get($sv_user, $sv_course, $sv_sco, $sv_key) {
 		$row = Database::fetch_assoc($res);
 		if (get_magic_quotes_gpc()) {
 			return stripslashes($row['sv_value']);
-		}
-		else {
+		} else {
 			return $row['sv_value'];
 		}
 	}
@@ -229,12 +228,10 @@ function storage_stack_pop($sv_user, $sv_course, $sv_sco, $sv_key) {
 		Database::query("commit");
 		if (get_magic_quotes_gpc()) {
 			return stripslashes($rowselect['sv_value']);
-		}
-		else {
+		} else {
 			return $rowselect['sv_value'];
 		}
-	}
-	else {
+	} else {
 		Database::query("rollback");
 		return null;
 	}

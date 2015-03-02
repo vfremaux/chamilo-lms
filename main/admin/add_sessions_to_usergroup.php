@@ -66,6 +66,16 @@ function remove_item(origin) {
     }
 }
 
+function display_advanced_search () {
+        if ($("#advancedSearch").css("display") == "none") {
+                $("#advancedSearch").css("display","block");
+                $("#img_plus_and_minus").html(\'&nbsp;'.Display::return_icon('div_hide.gif',get_lang('Hide'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedSearch').'\');
+        } else {
+                $("#advancedSearch").css("display","none");
+                $("#img_plus_and_minus").html(\'&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).'&nbsp;'.get_lang('AdvancedSearch').'\');
+        }
+}
+
 function validate_filter() {
     document.formulaire.add_type.value = \''.$add_type.'\';
     document.formulaire.form_sent.value=0;
@@ -117,7 +127,7 @@ function search_sessions($needle,$type) {
     global $tbl_user,$elements_in;
     $xajax_response = new XajaxResponse();
     $return = '';
-    if (!empty($needle) && !empty($type)) {
+    if (isset($needle) && !empty($type)) {
 
         // xajax send utf8 datas... datas in db can be non-utf8 datas
         $charset = api_get_system_encoding();
@@ -132,10 +142,17 @@ function search_sessions($needle,$type) {
                 OR lastname LIKE "'.$needle.'%") AND user.user_id<>"'.$user_anonymous.'"   AND user.status<>'.DRH.''.
                 $order_clause.
                 ' LIMIT 11';*/
-        } else {
+        } else if ($type == 'searchbox') {
+            $session_list = SessionManager::get_sessions_list(array('s.name LIKE' => "%$needle%"));
+        }
+        else {
             $session_list = SessionManager::get_sessions_list(array('s.name LIKE' => "$needle%"));
         }
+<<<<<<< HEAD
         $i=0;
+=======
+        $i=0;        
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if ($type=='single') {
             /*
             while ($user = Database :: fetch_array($rs)) {
@@ -175,10 +192,19 @@ if ($add_type == 'multiple') {
 }
 
 echo '<div class="actions">';
+<<<<<<< HEAD
 echo '<a href="usergroups.php">'.Display::return_icon('back.png',get_lang('Back'),'',ICON_SIZE_MEDIUM).'</a>';
+=======
+echo '<a href="usergroups.php">'.Display::return_icon('back.png',get_lang('Back'),'',ICON_SIZE_MEDIUM).'</a>'; 
+echo '<a href="javascript://" class="advanced_parameters" style="margin-top: 8px" onclick="display_advanced_search();"><span id="img_plus_and_minus">&nbsp;'.Display::return_icon('div_show.gif',get_lang('Show'),array('style'=>'vertical-align:middle')).' '.get_lang('AdvancedSearch').'</span></a>';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 echo '</div>';
 
 ?>
+
+<?php echo '<div id="advancedSearch" style="display: none">'. get_lang('SearchSessions'); ?> :
+     <input name="SearchSession" onchange = "xajax_search_sessions(this.value,'searchbox')" onkeyup="this.onchange()">
+     </div>
 <form name="formulaire" method="post" action="<?php echo api_get_self(); ?>?id=<?php echo $id; if(!empty($_GET['add'])) echo '&add=true' ; ?>" style="margin:0px;" <?php if($ajax_search){echo ' onsubmit="valide();"';}?>>
 <?php
 echo '<legend>'.$data['name'].': '.$tool_name.'</legend>';
@@ -236,6 +262,7 @@ if(!empty($errorMsg)) {
         echo Display :: get_alphabet_options();
       ?>
      </select>
+<?php echo '<br />'; ?>
 </td>
 <td align="center">&nbsp;</td>
 </tr>
