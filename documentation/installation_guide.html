@@ -60,6 +60,7 @@
   <li><a href="#11._Chamilo_rapid_ppt_conversion">Chamilo Rapid - PPT conversion system</a></li>
   <li><a href="#12._Setting_cron_up">Setting chronological tasks</a></li>
   <li><a href="#13._Changing_language_name_order">Changing the language's firstname/lastname order</a></li>
+  <li><a hreg="#14._Improving_files_download">Improving files download time</a></li>
 </ol>
 
 <br />
@@ -73,7 +74,11 @@ optimal flexibility, remote control and scalability. <br />
 
 <br />
 
+<<<<<<< HEAD
 Chamilo is mainly a LMS running from <span style="font-weight: bold;">Apache (1.3, 2.0 or 2.2)</span>, with a <span style="font-weight: bold;">MySQL 5.1 (or MariaDB)</span> database backend and <span style="font-weight: bold;">PHP 5.3.3 (or 5.4)</span> (the so called <span style="font-weight: bold;">AMP</span> trilogy). <br />
+=======
+Chamilo is mainly a LMS running <span style="font-weight: bold;">Apache (2.2 recommended)</span>, <span style="font-weight: bold;">MySQL 5.1 or 5.5 (or MariaDB)</span> and <span style="font-weight: bold;">PHP 5.3, 5.4 or 5.5 (5.5 recommended for greater efficiency)</span> (the so called <span style="font-weight: bold;">AMP</span> trilogy). <br />
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 
 <br />
@@ -103,9 +108,20 @@ For instance, on an Ubuntu server,&nbsp;use apt-get from the Shell or Synaptic f
 <h3><span style="font-weight: bold;">MySQL or MariaDB database server</span></h3>
 
 You will need a login and password allowing to manage and create
+<<<<<<< HEAD
 a database. Usually, the default configuration on local computers is to allow you to connect as root with an empty password. It is highly recommended to change the password and define a user with access to only a specific database. Please refer to the MySQL or MariaDB documentation in order to do this.<br />
 <span class="muted">Note that this has been greatly simplified since version 1.9, as it
 previously required to choose between multiple databases and a deprecated single-database mode.</span><br />
+=======
+a database. Usually, the default configuration on local computers is
+to allow you to connect as root with an empty password. It is HIGHLY
+RECOMMENDED to change the password and define a user with access to
+only a specific database. Please refer to the MySQL or MariaDB documentation
+in order to do this.<br />
+<span class="muted">Note that this has been greatly simplified since
+version 1.9, as it previously required to choose between multiple databases
+and a deprecated single-database mode.</span><br />
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 <hr style="width: 100%; height: 2px;" />
 <h2><a name="2._Installation_of_Chamilo_LMS"></a><span style="font-weight: bold;">2. Installation of Chamilo LMS</span></h2>
@@ -141,9 +157,20 @@ On the RewriteBase line, where it normally says "/", change it to whatever subdi
   <li>Process through the web installation process. You can safely accept all default values. Consider changing the admin password to remember it.</li>
 </ol>
 <br />
+<<<<<<< HEAD
 Only the following directories need to be readable, writeable and executable by your web server.
 <span class="muted">This usually requires no specific action on Windows servers, but will require a "chmod" under Linux/UNIX and Mac. See instructions below.</span>
 <br />Replace [chamilo] with the directory where your Chamilo installation is located:
+=======
+<span class="muted">Note: if installing Chamilo locally using localhost or
+the IP address of your computer during the installation, you might get issues
+while accessing from another computer. To avoid this, you can
+<a href="http://beeznest.wordpress.com/2013/01/15/answering-to-different-addresses-with-chamilo/">apply a little
+change to your configuration file</a>.</span>
+<br />
+The following directories need to be readable, writeable and executable by your web server.
+<span class="muted">This usually requires no specific action on Windows servers, but will require a "chmod" under Linux and Mac. See instructions below.</span><br />Replace [chamilo] with the directory where your Chamilo installation is located):
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 <ul>
   <li>[chamilo]/config</li>
   <li>[chamilo]/data</li>
@@ -158,12 +185,21 @@ Optionally, you can do the same to the following directories if you want to enab
 </ul>
 Since Chamilo 1.8.8, you can also enable full-text indexing features which
 require the php5-xapian PHP's extension module to be installed. If you do use
+<<<<<<< HEAD
 it, you will need to allow your system to write into the searchdb directory:
 <ul>
   <li>[chamilo]/data/searchdb</li>
 </ul>
 If you find a tests/ directory at the root of your package, please delete it.
 This is a development directory (automated tests) that has not been checked for security issues,
+=======
+it, you will need to allow your system to write into the sarchdb directory:
+<ul>
+  <li>[chamilo]/searchdb</li>
+</ul>
+If you find a tests/ directory at the root of your package, please delete it.
+This is a development directory that has not been checked for security issues,
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 an it should *never* be accessible to final users on a production server.
 
 <p>On Linux, Mac OS X and BSD operating systems you can use the <em>chmod
@@ -190,7 +226,11 @@ Do not edit the home_*.html files directly. Instead,
 choose "Configure the homepage" in the Chamilo administration section.</p>
 
 <p><span style="font-weight: bold;">Windows</span> : with all-in-one packages
+<<<<<<< HEAD
 like XAMPP, you can easily install Chamilo. In this case (and unless you use it
+=======
+like XAMPP, you can install Chamilo easily. In this case (and unless you use it
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 in production), the login and password for MySQL will probably remain empty.</p>
 
 <p></p>
@@ -202,34 +242,57 @@ in production), the login and password for MySQL will probably remain empty.</p>
 
   <li><strong>Protect your configuration directory: </strong>
 make sure no one (but you) can overwrite it. You can find the config directory in
+<<<<<<< HEAD
 <em>[chamilo]</em>/config
 Make it read-only (Windows: right-click the file to edit its
 permissions. Linux/UNIX/MacOsX: use the ""chmod 0555" command). The config
 file is created by your web server (Apache + PHP, usually) so you may
 need to be a privileged user to change its permissions afterwards.</li>
+=======
+<em>(chamilo folder)</em>/main/inc/conf.
+Make it read-only (windows/xwindows: right-click the file to edit the
+properties. linux/bsd/macosx: use the chmod 0555 command). The config
+file is created by your web server (Apache + PHP, usually) so you may
+need to be root user to change its permissions.</li>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
   <li><strong>Protect your installation folder: </strong>
 if the <em>[chamilo]</em>/main/install
 folder is still accessible, someone could install over your existing
 version (you could lose your data that way). Move the folder somewhere
+<<<<<<< HEAD
 out of the web directories so it is no longer accessible, rename it,
 delete it completely or edit its permissions so no one can read or
+=======
+out of the web directories so it is not accessible, change its name,
+delete it completely or edit its properties so no one can read or
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 execute it.</li>
 
   <li><strong>For better security: </strong>
 making the files world-writeable will help you install, and it solves many
+<<<<<<< HEAD
 issues for people without much sysadmin experience. Be aware though that it is more
 secure to create a distinct user owning all the Chamilo files and folders,
 and only give read access to the web server to all files, and write access
 only to the directories previously mentioned. This way, these files need
 only be readable and writeable by the Apache process owner, not by the
 entire world. It would also be adviseable to make all writeable directories
+=======
+issues for people without much admin experience. However, it's more
+secure to make a distinct user owner of all the chamilo files and folders,
+and only give read access to the web server to all files, and write access
+only to the directories previously mentioned. This way, these files need
+only be readable and writeable by the Apache process owner, not by the
+entire world. It would also be adviseable to make all writeable directory
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 refuse the interpretation of PHP files (except for the root of the courses
 directories). Don't hesitate to hire an experienced administrator to do that, you'd be happy not to lose
 all of your data in case a hacker ever attacks your site.</li>
 
   <li><strong>Configure your Chamilo installation: </strong>
-in the administration section of Chamilo, you can use the Chamilo Configuration Settings to adjust the behavior of your installation.</li>
+in the administration section of Chamilo, you can use the Chamilo Configuration
+Settings to adjust the behavior of your installation.</li>
 
   <li><strong>Configure Chamilo mail: </strong>
 Chamilo uses the mail settings from your PHP configuration file (php.ini) by default. However,
@@ -268,14 +331,21 @@ To get the best out of Chamilo, you need to finetune your PHP settings. Consider
 
 <ul>
 
+<<<<<<< HEAD
   <li>Editing php.ini file (on Windows can be located at
   <span style="font-weight: bold;">C:\xampp\php\php.ini</span>,
   on Ubuntu :
+=======
+  <li>Editing php.ini file (on windows can be located at
+  <span style="font-weight: bold;">C:\xampp\php\php.ini</span>,
+  on Ubuntu Linux :
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
   <span style="font-weight: bold;">/etc/php5/apache2/php.ini</span></li>
   <li>search the word "_max" and increase the two values (post_max_size and upload_max_filesize) to optimise the server</li>
   <li>we recommend the following values : </li>
 </ul>
 
+<<<<<<< HEAD
 <ul>
   <li>max_execution_time = 300; Maximum execution time of each script, in seconds</li>
   <li>max_input_time = 600; Maximum amount of time each script may spend parsing request data</li>
@@ -284,6 +354,15 @@ To get the best out of Chamilo, you need to finetune your PHP settings. Consider
   <li>upload_max_filesize = 100M</li>
   <li>session.cookie_httponly = On</li>
 </ul>
+=======
+<div class="code">
+      max_execution_time = 300 ;Maximum execution time of each script, in seconds<br />
+      max_input_time = 600 ;Maximum amount of time each script may spend parsing request data<br />
+      memory_limit = 256M ;Maximum amount of memory a script may consume (128MB)<br />
+      post_max_size = 100M<br />
+      upload_max_filesize = 100M<br />
+</div>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 <p>Some users could meet problems if their PHP settings don't match the following:</p>
 
@@ -296,6 +375,7 @@ To get the best out of Chamilo, you need to finetune your PHP settings. Consider
 On any recent Debian/Ubuntu, just copying those lines into a new .ini file installed in /etc/php5/conf.d/ (e.g. /etc/php5/conf.d/chamilo.ini) and reloading Apache's config (i.e. "sudo service apache2 reload") would do the trick. Any later php.ini modification in this documentation could/should subsequently as well be applied in this file instead.
 
 <p>
+<<<<<<< HEAD
 Past Chamilo releases required register_globals to be set to On. This is
 no longer necessary, and should preferably be set to Off.
 <span class="muted">It is considered a bad choice in terms of security to set register_globals to On.</a></p>
@@ -304,6 +384,16 @@ no longer necessary, and should preferably be set to Off.
 your <em>date.timezone</em> setting to whatever your server's timezone is.
 For example, if your server is in the 'America/New_York' timezone, set this
 in your PHP .ini file:</p>
+=======
+Past Chamilo versions required register_globals to be set to On. This is
+no longer necessary, this can (and should) be set to Off.
+<span class="muted">It is considered a bad choice in terms of security to set register_globals to On.</a></p>
+
+<p><strong>Note:</strong> if you are using PHP 5.3 or higher, you need to set
+your <em>date.timezone</em> setting to whatever your server's timezone is.
+For example, if your server is in the 'America/New_York' timezone, set this
+in your php.ini:</p>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 <div class="code">
 date.timezone = 'America/New_York'
@@ -356,7 +446,11 @@ a full backup of your system before you upgrade.</em>
 <div class="muted"> NOTE: This version of Chamilo can only be used to upgrade from
 smaller versions of Chamilo or Dok€os. For example, you cannot use the normal
 upgrade scripts from Chamilo 1.9 to upgrade from Dok€os 2.0. If you need this,
+<<<<<<< HEAD
 please contact one of the Chamilo Association's official providers <providers@chamilo.org>)</div>
+=======
+please contact one of the Chamilo Association's official providers &lt;providers@chamilo.org&gt;)</div>
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 <p></p>
 
@@ -778,7 +872,7 @@ You may need to alter the setting to be for example:</p>
     <li><div class="code">var AMTcgiloc = "http://mychamiloserver.org/cgi-bin/mimetex.cgi";</div></li>
     <li><div class="code">var AMTcgiloc = "http://mychamiloserver.org/cgi-bin/mathtex.cgi";</div></li>
     <li><div class="code">var AMTcgiloc = "http://www.mathtran.org/cgi-bin/mathtran?tex=";</div></li>
-    <li><div class="code">var AMTcgiloc = "http://chart.apis.google.com/chart?cht=tx&amp;chs=1x0&amp;chl=";</div></li>
+    <li><div class="code">var AMTcgiloc = "http://chart.googleapis.com/chart?cht=tx&amp;chs=1x0&amp;chl=";</div></li>
     <li>... or something else</li>
 </ul>
 <p>For testing how the variable <strong>AMTcgiloc</strong> may be set, there are some examples (as comments) inside the script.</p>
@@ -851,6 +945,18 @@ This can easily be modified by editing the main/inc/lib/internationalization_dat
 Feel free to change this to<br />
 <pre>'simpl_chinese' => array( 'format' => 'title first_name lastname', 'sort_by' => 'last_name' ), // Eastern order</pre><br />
 for example. The effect should be immediate.
+</p>
+<hr style="width: 100%; height: 2px;" />
+<h2><a name="14._Improving_files_download"></a>Improving files download efficiency</h2>
+<p>
+File download can be very slow when passing through a PHP script to control permissions. One solution to this
+    is to use the X-Sendfile header, which depends on a module on the webserver. <a href="http://stackoverflow.com/a/3731639/1406662">Check http://stackoverflow.com/a/3731639/1406662 for more details on implementing Sendfile</a>.
+Chamilo LMS 1.9.8 (and following versions) supports the X-Sendfile headers, but requires a specific line of configuration to be
+    added to configuration.php:
+<pre>
+$_configuration['enable_x_sendfile_headers'] = true;
+</pre>
+If you have issues with files taking a long time to download, make sure you reconfigure your webserver and add this line. You should see an notable difference in download time.
 </p>
 <hr style="width: 100%; height: 2px;" />
 <p>
