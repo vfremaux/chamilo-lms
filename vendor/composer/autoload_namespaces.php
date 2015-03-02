@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+<<<<<<< HEAD
     'Zend\\Validator\\' => array($vendorDir . '/zendframework/zend-validator'),
     'Zend\\Uri\\' => array($vendorDir . '/zendframework/zend-uri'),
     'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib'),
@@ -108,4 +109,15 @@ return array(
     'Assetic' => array($vendorDir . '/kriswallsmith/assetic/src'),
     'Alchemy' => array($vendorDir . '/alchemy/zippy/src', $vendorDir . '/alchemy/binary-driver/src'),
     '' => array($vendorDir . '/opauth/openid', $vendorDir . '/opauth/facebook', $vendorDir . '/opauth/google'),
+=======
+    'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
+    'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
+    'Sabre\\VObject' => array($vendorDir . '/sabre/vobject/lib'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log'),
+    'Neutron' => array($vendorDir . '/neutron/temporary-filesystem/src'),
+    'FFMpeg' => array($vendorDir . '/php-ffmpeg/php-ffmpeg/src'),
+    'Evenement' => array($vendorDir . '/evenement/evenement/src'),
+    'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib'),
+    'Alchemy' => array($vendorDir . '/alchemy/binary-driver/src'),
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 );

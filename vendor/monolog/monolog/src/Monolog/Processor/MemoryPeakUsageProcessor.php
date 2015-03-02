@@ -26,7 +26,11 @@ class MemoryPeakUsageProcessor extends MemoryProcessor
     public function __invoke(array $record)
     {
         $bytes = memory_get_peak_usage($this->realUsage);
+<<<<<<< HEAD
         $formatted = $this->formatBytes($bytes);
+=======
+        $formatted = self::formatBytes($bytes);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
         $record['extra'] = array_merge(
             $record['extra'],

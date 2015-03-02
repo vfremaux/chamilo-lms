@@ -24,10 +24,17 @@ class FrameFilters
 
     /**
      * Fixes the display ratio of the output frame.
+<<<<<<< HEAD
      *
      * In case the sample ratio and display ratio are different, image may be
      * anamorphozed. This filter fixes this by specifying the output size.
      *
+=======
+     * 
+     * In case the sample ratio and display ratio are different, image may be
+     * anamorphozed. This filter fixes this by specifying the output size.
+     * 
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * @return FrameFilters
      */
     public function fixDisplayRatio()

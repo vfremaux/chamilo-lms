@@ -18,6 +18,7 @@ namespace Monolog\Processor;
  */
 abstract class MemoryProcessor
 {
+<<<<<<< HEAD
     /**
      * @var boolean If true, get the real size of memory allocated from system. Else, only the memory used by emalloc() is reported.
      */
@@ -52,6 +53,28 @@ abstract class MemoryProcessor
             return $bytes;
         }
 
+=======
+    protected $realUsage;
+
+    /**
+     * @param boolean $realUsage
+     */
+    public function __construct($realUsage = true)
+    {
+        $this->realUsage = (boolean) $realUsage;
+    }
+
+    /**
+     * Formats bytes into a human readable string
+     *
+     * @param  int    $bytes
+     * @return string
+     */
+    protected static function formatBytes($bytes)
+    {
+        $bytes = (int) $bytes;
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if ($bytes > 1024*1024) {
             return round($bytes/1024/1024, 2).' MB';
         } elseif ($bytes > 1024) {

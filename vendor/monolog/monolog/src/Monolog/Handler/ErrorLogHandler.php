@@ -11,7 +11,10 @@
 
 namespace Monolog\Handler;
 
+<<<<<<< HEAD
 use Monolog\Formatter\LineFormatter;
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 use Monolog\Logger;
 
 /**
@@ -55,6 +58,7 @@ class ErrorLogHandler extends AbstractProcessingHandler
     }
 
     /**
+<<<<<<< HEAD
      * {@inheritDoc}
      */
     protected function getDefaultFormatter()
@@ -63,6 +67,8 @@ class ErrorLogHandler extends AbstractProcessingHandler
     }
 
     /**
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * {@inheritdoc}
      */
     protected function write(array $record)

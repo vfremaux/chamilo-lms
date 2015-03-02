@@ -20,19 +20,32 @@ namespace Monolog\Formatter;
  */
 class JsonFormatter implements FormatterInterface
 {
+<<<<<<< HEAD
     protected $batchMode;
     protected $appendNewline;
+=======
+
+    protected $batch_mode;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
     const BATCH_MODE_JSON = 1;
     const BATCH_MODE_NEWLINES = 2;
 
     /**
+<<<<<<< HEAD
      * @param int $batchMode
      */
     public function __construct($batchMode = self::BATCH_MODE_JSON, $appendNewline = true)
     {
         $this->batchMode = $batchMode;
         $this->appendNewline = $appendNewline;
+=======
+     * @param int $batch_mode
+     */
+    public function __construct($batch_mode = self::BATCH_MODE_JSON)
+    {
+        $this->batch_mode = $batch_mode;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -46,6 +59,7 @@ class JsonFormatter implements FormatterInterface
      */
     public function getBatchMode()
     {
+<<<<<<< HEAD
         return $this->batchMode;
     }
 
@@ -57,6 +71,9 @@ class JsonFormatter implements FormatterInterface
     public function isAppendingNewlines()
     {
         return $this->appendNewline;
+=======
+        return $this->batch_mode;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -64,7 +81,11 @@ class JsonFormatter implements FormatterInterface
      */
     public function format(array $record)
     {
+<<<<<<< HEAD
         return json_encode($record) . ($this->appendNewline ? "\n" : '');
+=======
+        return json_encode($record);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -72,13 +93,22 @@ class JsonFormatter implements FormatterInterface
      */
     public function formatBatch(array $records)
     {
+<<<<<<< HEAD
         switch ($this->batchMode) {
+=======
+        switch ($this->batch_mode) {
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             case static::BATCH_MODE_NEWLINES:
                 return $this->formatBatchNewlines($records);
 
             case static::BATCH_MODE_JSON:
             default:
                 return $this->formatBatchJson($records);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
     }
 
@@ -104,6 +134,7 @@ class JsonFormatter implements FormatterInterface
     {
         $instance = $this;
 
+<<<<<<< HEAD
         $oldNewline = $this->appendNewline;
         $this->appendNewline = false;
         array_walk($records, function (&$value, $key) use ($instance) {
@@ -113,4 +144,13 @@ class JsonFormatter implements FormatterInterface
 
         return implode("\n", $records);
     }
+=======
+        array_walk($records, function (&$value, $key) use ($instance) {
+            $value = $instance->format($value);
+        });
+
+        return implode("\n", $records);
+    }
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

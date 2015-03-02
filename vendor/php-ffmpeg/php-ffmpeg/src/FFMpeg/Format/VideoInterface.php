@@ -21,6 +21,16 @@ interface VideoInterface extends AudioInterface
     public function getKiloBitrate();
 
     /**
+<<<<<<< HEAD
+=======
+     * Returns the number of passes.
+     *
+     * @return string
+     */
+    public function getPasses();
+
+    /**
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Returns the modulus used by the Resizable video.
      *
      * This used to calculate the target dimensions while maintaining the best

@@ -51,6 +51,7 @@ abstract class AbstractData implements \Countable
     }
 
     /**
+<<<<<<< HEAD
      * Sets the property value given its name.
      *
      * @param string $property
@@ -66,6 +67,8 @@ abstract class AbstractData implements \Countable
     }
 
     /**
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Returns all property names.
      *
      * @return array

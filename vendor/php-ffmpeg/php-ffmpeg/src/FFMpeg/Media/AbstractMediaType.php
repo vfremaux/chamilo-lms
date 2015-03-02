@@ -12,6 +12,10 @@
 namespace FFMpeg\Media;
 
 use FFMpeg\Driver\FFMpegDriver;
+<<<<<<< HEAD
+=======
+use FFMpeg\Exception\InvalidArgumentException;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 use FFMpeg\FFProbe;
 use FFMpeg\Filters\FiltersCollection;
 use FFMpeg\Media\MediaTypeInterface;
@@ -29,6 +33,11 @@ abstract class AbstractMediaType implements MediaTypeInterface
 
     public function __construct($pathfile, FFMpegDriver $driver, FFProbe $ffprobe)
     {
+<<<<<<< HEAD
+=======
+        $this->ensureFileIsPresent($pathfile);
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $this->pathfile = $pathfile;
         $this->driver = $driver;
         $this->ffprobe = $ffprobe;
@@ -103,6 +112,18 @@ abstract class AbstractMediaType implements MediaTypeInterface
         return $this->filters;
     }
 
+<<<<<<< HEAD
+=======
+    protected function ensureFileIsPresent($filename)
+    {
+        if (!is_file($filename) || !is_readable($filename)) {
+            throw new InvalidArgumentException(sprintf(
+                '%s is not present or not readable', $filename
+            ));
+        }
+    }
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     protected function cleanupTemporaryFile($filename)
     {
         if (file_exists($filename) && is_writable($filename)) {

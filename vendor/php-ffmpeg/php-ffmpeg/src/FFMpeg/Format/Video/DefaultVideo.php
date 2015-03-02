@@ -87,6 +87,17 @@ abstract class DefaultVideo extends DefaultAudio implements VideoInterface
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * {@inheritDoc}
+     */
+    public function getPasses()
+    {
+        return 1;
+    }
+
+    /**
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * @return integer
      */
     public function getModulus()

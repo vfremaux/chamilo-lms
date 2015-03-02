@@ -85,6 +85,7 @@ class LogstashFormatter extends NormalizerFormatter
 
     protected function formatV0(array $record)
     {
+<<<<<<< HEAD
         if (empty($record['datetime'])) {
             $record['datetime'] = gmdate('c');
         }
@@ -106,12 +107,30 @@ class LogstashFormatter extends NormalizerFormatter
         if ($this->applicationName) {
             $message['@type'] = $this->applicationName;
         }
+=======
+        $message = array(
+            '@timestamp' => $record['datetime'],
+            '@message' => $record['message'],
+            '@tags' => array($record['channel']),
+            '@source' => $this->systemName,
+            '@fields' => array(
+                'channel' => $record['channel'],
+                'level' => $record['level']
+            )
+        );
+
+        if ($this->applicationName) {
+            $message['@type'] = $this->applicationName;
+        }
+
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         if (isset($record['extra']['server'])) {
             $message['@source_host'] = $record['extra']['server'];
         }
         if (isset($record['extra']['url'])) {
             $message['@source_path'] = $record['extra']['url'];
         }
+<<<<<<< HEAD
         if (!empty($record['extra'])) {
             foreach ($record['extra'] as $key => $val) {
                 $message['@fields'][$this->extraPrefix . $key] = $val;
@@ -121,6 +140,14 @@ class LogstashFormatter extends NormalizerFormatter
             foreach ($record['context'] as $key => $val) {
                 $message['@fields'][$this->contextPrefix . $key] = $val;
             }
+=======
+        foreach ($record['extra'] as $key => $val) {
+            $message['@fields'][$this->extraPrefix . $key] = $val;
+        }
+
+        foreach ($record['context'] as $key => $val) {
+            $message['@fields'][$this->contextPrefix . $key] = $val;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
 
         return $message;
@@ -128,6 +155,7 @@ class LogstashFormatter extends NormalizerFormatter
 
     protected function formatV1(array $record)
     {
+<<<<<<< HEAD
         if (empty($record['datetime'])) {
             $record['datetime'] = gmdate('c');
         }
@@ -158,6 +186,28 @@ class LogstashFormatter extends NormalizerFormatter
             foreach ($record['context'] as $key => $val) {
                 $message[$this->contextPrefix . $key] = $val;
             }
+=======
+        $message = array(
+            '@timestamp' => $record['datetime'],
+            '@version' => 1,
+            'message' => $record['message'],
+            'host' => $this->systemName,
+            'type' => $record['channel'],
+            'channel' => $record['channel'],
+            'level' => $record['level_name']
+        );
+
+        if ($this->applicationName) {
+            $message['type'] = $this->applicationName;
+        }
+
+        foreach ($record['extra'] as $key => $val) {
+            $message[$this->extraPrefix . $key] = $val;
+        }
+
+        foreach ($record['context'] as $key => $val) {
+            $message[$this->contextPrefix . $key] = $val;
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         }
 
         return $message;

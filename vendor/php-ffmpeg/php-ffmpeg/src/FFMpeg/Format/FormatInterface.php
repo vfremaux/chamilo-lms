@@ -12,6 +12,7 @@ namespace FFMpeg\Format;
 
 interface FormatInterface
 {
+<<<<<<< HEAD
     /**
      * Returns the number of passes.
      *
@@ -25,4 +26,6 @@ interface FormatInterface
      * @return array()
      */
     public function getExtraParams();
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

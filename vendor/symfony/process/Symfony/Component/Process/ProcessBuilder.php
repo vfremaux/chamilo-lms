@@ -30,16 +30,20 @@ class ProcessBuilder
     private $inheritEnv = true;
     private $prefix = array();
 
+<<<<<<< HEAD
     /**
      * Constructor
      *
      * @param string[] $arguments An array of arguments
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function __construct(array $arguments = array())
     {
         $this->arguments = $arguments;
     }
 
+<<<<<<< HEAD
     /**
      * Creates a process builder instance.
      *
@@ -47,6 +51,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public static function create(array $arguments = array())
     {
         return new static($arguments);
@@ -83,12 +89,16 @@ class ProcessBuilder
     }
 
     /**
+<<<<<<< HEAD
      * Sets the arguments of the process.
      *
      * Arguments must not be escaped.
      * Previous arguments are removed.
      *
      * @param string[] $arguments
+=======
+     * @param array $arguments
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      *
      * @return ProcessBuilder
      */
@@ -99,6 +109,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Sets the working directory.
      *
@@ -106,6 +117,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function setWorkingDirectory($cwd)
     {
         $this->cwd = $cwd;
@@ -113,6 +126,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Sets whether environment variables will be inherited or not.
      *
@@ -120,6 +134,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function inheritEnvironmentVariables($inheritEnv = true)
     {
         $this->inheritEnv = $inheritEnv;
@@ -127,6 +143,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Sets an environment variable
      *
@@ -138,6 +155,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function setEnv($name, $value)
     {
         $this->env[$name] = $value;
@@ -152,6 +171,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Sets the input of the process.
      *
@@ -159,6 +179,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function setInput($stdin)
     {
         $this->stdin = $stdin;
@@ -196,6 +218,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Adds a proc_open option.
      *
@@ -204,6 +227,8 @@ class ProcessBuilder
      *
      * @return ProcessBuilder
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function setOption($name, $value)
     {
         $this->options[$name] = $value;
@@ -211,6 +236,7 @@ class ProcessBuilder
         return $this;
     }
 
+<<<<<<< HEAD
     /**
      * Creates a Process instance and returns it.
      *
@@ -218,6 +244,8 @@ class ProcessBuilder
      *
      * @throws LogicException In case no arguments have been provided
      */
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function getProcess()
     {
         if (0 === count($this->prefix) && 0 === count($this->arguments)) {

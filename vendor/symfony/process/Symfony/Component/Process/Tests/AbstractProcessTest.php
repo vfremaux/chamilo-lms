@@ -12,7 +12,10 @@
 namespace Symfony\Component\Process\Tests;
 
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
+<<<<<<< HEAD
 use Symfony\Component\Process\Exception\LogicException;
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\ProcessPipes;
@@ -158,6 +161,7 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedLength, strlen($p->getErrorOutput()));
     }
 
+<<<<<<< HEAD
     public function testSetStdinWhileRunningThrowsAnException()
     {
         $process = $this->getProcess('php -r "usleep(500000);"');
@@ -172,6 +176,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         $process->stop();
     }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function chainedCommandsOutputProvider()
     {
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
@@ -285,7 +291,11 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         }
 
         $process = $this->getProcess('echo "foo" >> /dev/null && php -r "usleep(100000);"');
+<<<<<<< HEAD
         $process->setTty(true);
+=======
+        $process->setTTY(true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $process->start();
         $this->assertTrue($process->isRunning());
         $process->wait();
@@ -300,12 +310,17 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         }
 
         $process = $this->getProcess('echo "foo" >> /dev/null');
+<<<<<<< HEAD
         $process->setTty(true);
+=======
+        $process->setTTY(true);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $process->run();
 
         $this->assertTrue($process->isSuccessful());
     }
 
+<<<<<<< HEAD
     public function testTTYInWindowsEnvironment()
     {
         if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
@@ -318,6 +333,8 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
         $process->setTty(true);
     }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     public function testExitCodeTextIsNullWhenExitCodeIsNull()
     {
         $process = $this->getProcess('');
@@ -864,7 +881,11 @@ abstract class AbstractProcessTest extends \PHPUnit_Framework_TestCase
      * @param null    $cwd
      * @param array   $env
      * @param null    $stdin
+<<<<<<< HEAD
      * @param int     $timeout
+=======
+     * @param integer $timeout
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * @param array   $options
      *
      * @return Process

@@ -103,6 +103,7 @@ abstract class DefaultAudio extends EventEmitter implements AudioInterface, Prog
 
         return array($listener);
     }
+<<<<<<< HEAD
 
     /**
      * {@inheritDoc}
@@ -111,4 +112,6 @@ abstract class DefaultAudio extends EventEmitter implements AudioInterface, Prog
     {
         return 1;
     }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

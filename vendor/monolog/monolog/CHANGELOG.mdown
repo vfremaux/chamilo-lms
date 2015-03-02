@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### 1.9.1 (2014-04-24)
 
   * Fixed regression in RotatingFileHandler file permissions
@@ -17,6 +18,8 @@
   * Fixed empty headers issue when ChromePHPHandler received no records
   * Fixed default format of the ErrorLogHandler
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 ### 1.8.0 (2014-03-23)
 
   * Break: the LineFormatter now strips newlines by default because this was a bug, set $allowInlineLineBreaks to true if you need them

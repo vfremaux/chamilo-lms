@@ -68,6 +68,7 @@ class VideoFilters extends AudioFilters
     }
 
     /**
+<<<<<<< HEAD
      * Clips (cuts) the video.
      *
      * @param TimeCode $start
@@ -83,6 +84,8 @@ class VideoFilters extends AudioFilters
     }
 
     /**
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * Resamples the audio file.
      *
      * @param Integer $rate
@@ -95,6 +98,7 @@ class VideoFilters extends AudioFilters
 
         return $this;
     }
+<<<<<<< HEAD
 
     public function rotate($angle)
     {
@@ -102,4 +106,6 @@ class VideoFilters extends AudioFilters
 
         return $this;
     }
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 }

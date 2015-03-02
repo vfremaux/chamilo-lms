@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+<<<<<<< HEAD
     'AMFReader' => $baseDir . '/main/inc/lib/getid3/module.audio-video.flv.php',
     'AMFStream' => $baseDir . '/main/inc/lib/getid3/module.audio-video.flv.php',
     'Absolute_Positioner' => $baseDir . '/main/inc/lib/phpdocx/pdf/include/absolute_positioner.cls.php',
@@ -784,4 +785,6 @@ return array(
     'wsdlcache' => $baseDir . '/main/inc/lib/nusoap/class.wsdlcache.php',
     'xajax' => $baseDir . '/main/inc/lib/xajax/xajax.inc.php',
     'xajaxResponse' => $baseDir . '/main/inc/lib/xajax/xajaxResponse.inc.php',
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 );

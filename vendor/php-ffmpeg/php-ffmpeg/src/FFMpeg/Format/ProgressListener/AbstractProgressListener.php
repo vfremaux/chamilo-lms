@@ -154,10 +154,13 @@ abstract class AbstractProgressListener extends EventEmitter implements Listener
             $this->initialize();
         }
 
+<<<<<<< HEAD
         if (null === $this->totalSize || null === $this->duration) {
             return;
         }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         $matches = array();
 
         if (preg_match($this->getPattern(), $progress, $matches) !== 1) {
@@ -230,6 +233,7 @@ abstract class AbstractProgressListener extends EventEmitter implements Listener
 
     private function initialize()
     {
+<<<<<<< HEAD
         try {
             $format = $this->ffprobe->format($this->pathfile);
         } catch (RuntimeException $e) {
@@ -238,6 +242,11 @@ abstract class AbstractProgressListener extends EventEmitter implements Listener
 
         if (false === $format->has('size') || false === $format->has('duration')) {
             return;
+=======
+        $format = $this->ffprobe->format($this->pathfile);
+
+        if (false === $format->has('size') || false === $format->has('duration')) {
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
             throw new RuntimeException(sprintf('Unable to probe format for %s', $this->pathfile));
         }
 

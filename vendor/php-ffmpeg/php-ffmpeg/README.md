@@ -2,28 +2,39 @@
 
 [![Build Status](https://secure.travis-ci.org/alchemy-fr/PHP-FFmpeg.png?branch=master)](http://travis-ci.org/alchemy-fr/PHP-FFmpeg)
 
+<<<<<<< HEAD
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/607f3111-e2d7-44e8-8bcc-54dd64521983/big.png)](https://insight.sensiolabs.com/projects/607f3111-e2d7-44e8-8bcc-54dd64521983)
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 An Object Oriented library to convert video/audio files with FFmpeg / AVConv.
 
 Check another amazing repo : [PHP FFMpeg extras](https://github.com/alchemy-fr/PHP-FFMpeg-Extras), you will find lots of Audio/Video formats there.
 
 ## Your attention please
 
+<<<<<<< HEAD
 ### How this library works :
 
 This library requires a working FFMpeg install. You will need both FFMpeg and FFProbe binaries to use it.
 Be sure that these binaries can be located with system PATH to get the benefit of the binary detection,
+=======
+This library requires a working FFMpeg install. You will need both FFMpeg and FFProbe binaries to use it.
+Be sure that these binaries can be located with system PATH to get the benefit of the binary detection, 
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 otherwise you should have to explicitely give the binaries path on load.
 
 For Windows users : Please find the binaries at http://ffmpeg.zeranoe.com/builds/.
 
+<<<<<<< HEAD
 ### Known issues :
 
 - Using rotate and resize will produce a corrupted output when using 
 [libav](http://libav.org/) 0.8. The bug is fixed in version 9. This bug does not 
 appear in latest ffmpeg version.
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 ## Installation
 
 The recommended way to install PHP-FFMpeg is through [Composer](https://getcomposer.org).
@@ -31,7 +42,11 @@ The recommended way to install PHP-FFMpeg is through [Composer](https://getcompo
 ```json
 {
     "require": {
+<<<<<<< HEAD
         "php-ffmpeg/php-ffmpeg": "~0.4"
+=======
+        "php-ffmpeg/php-ffmpeg": "0.3.x-dev@dev"
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }
 ```
@@ -83,6 +98,7 @@ $ffmpeg = FFMpeg\FFMpeg::create(array(
 
 ### Manipulate media
 
+<<<<<<< HEAD
 `FFMpeg\FFMpeg` creates media based on URIs. URIs could be either a pointer to a
 local filesystem resource, an HTTP resource or any resource supported by FFmpeg.
 
@@ -94,6 +110,10 @@ ffmpeg -protocols
 ```
 
 To open a resource, use the `FFMpeg\FFMpeg::open` method.
+=======
+`FFMpeg\FFMpeg` creates media based on file paths. To open a file path, use the
+`FFMpeg\FFMpeg::open` method.
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 ```php
 $ffmpeg->open('video.mpeg');
@@ -112,18 +132,24 @@ video. Frames can be extracted.
 You can transcode videos using the `FFMpeg\Media\Video:save` method. You will
 pass a `FFMpeg\Format\FormatInterface` for that.
 
+<<<<<<< HEAD
 Please note that audio and video bitrate are set on the format.
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 ```php
 $format = new Format\Video\X264();
 $format->on('progress', function ($video, $format, $percentage) {
     echo "$percentage % transcoded";
 });
 
+<<<<<<< HEAD
 $format
     -> setKiloBitrate(1000)
     -> setAudioKiloBitrate(256);
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $video->save($format, 'video.avi');
 ```
 
@@ -162,6 +188,7 @@ $video
     ->synchronize();
 ```
 
+<<<<<<< HEAD
 ###### Rotate
 
 Rotates a video to a given angle.
@@ -176,6 +203,8 @@ The `$angle` parameter must be one of the following constants :
 - `FFMpeg\Filters\Video\RotateFilter::ROTATE_180` : 180°
 - `FFMpeg\Filters\Video\RotateFilter::ROTATE_270` : 90° counterclockwise
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 ###### Resize
 
 Resizes a video to a given size.
@@ -214,6 +243,7 @@ filters solves this issue.
 $video->filters()->synchronize();
 ```
 
+<<<<<<< HEAD
 ###### Clip
 
 Cuts the video at a desired point.
@@ -227,6 +257,8 @@ The clip filter takes two parameters:
 - `$start`, an instance of `FFMpeg\Coordinate\TimeCode`, specifies the start point of the clip
 - `$duration`, optional, an instance of `FFMpeg\Coordinate\TimeCode`, specifies the duration of the clip
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 #### Audio
 
 `FFMpeg\Media\Audio` can be transcoded, ie : change codec, isolate audio or
@@ -237,17 +269,23 @@ video. Frames can be extracted.
 You can transcode audios using the `FFMpeg\Media\Audio:save` method. You will
 pass a `FFMpeg\Format\FormatInterface` for that.
 
+<<<<<<< HEAD
 Please note that audio kilobitrate is set on the audio format.
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 ```php
 $format = new Format\Audio\Flac();
 $format->on('progress', function ($$audio, $format, $percentage) {
     echo "$percentage % transcoded";
 });
 
+<<<<<<< HEAD
 $format
     -> setAudioKiloBitrate(256);
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 $audio->save($format, 'track.flac');
 ```
 

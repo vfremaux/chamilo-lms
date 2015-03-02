@@ -1,6 +1,7 @@
 CHANGELOG
 ---------
 
+<<<<<<< HEAD
 * 0.4.4 (12-17-2013)
 
   * Fix width / height dimensions extraction.
@@ -24,6 +25,8 @@ CHANGELOG
   * Add support for video to audio transcoding
   * BC Break : Add FormatInterface::getPasses and FormatInterface::getExtraParams
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 * 0.3.5 (10-21-2013)
 
   * Add vorbis audio format (@jacobbudin).

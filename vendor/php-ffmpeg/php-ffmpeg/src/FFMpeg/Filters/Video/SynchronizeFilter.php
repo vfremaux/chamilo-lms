@@ -39,6 +39,10 @@ class SynchronizeFilter implements VideoFilterInterface
      */
     public function apply(Video $video, VideoInterface $format)
     {
+<<<<<<< HEAD
         return array('-async', '1', '-metadata:s:v:0', 'start_time=0');
+=======
+        return array('-async', '1');
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 }

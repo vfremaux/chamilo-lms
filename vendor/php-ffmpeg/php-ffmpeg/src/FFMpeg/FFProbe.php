@@ -226,6 +226,7 @@ class FFProbe
         $parseIsToDo = false;
 
         if ($allowJson && $this->optionsTester->has('-print_format')) {
+<<<<<<< HEAD
             // allowed in latest PHP-FFmpeg version
             $commands[] = '-print_format';
             $commands[] = 'json';
@@ -233,6 +234,10 @@ class FFProbe
             // option has changed in avconv 9
             $commands[] = '-of';
             $commands[] = 'json';
+=======
+            $commands[] = '-print_format';
+            $commands[] = 'json';
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         } else {
             $parseIsToDo = true;
         }

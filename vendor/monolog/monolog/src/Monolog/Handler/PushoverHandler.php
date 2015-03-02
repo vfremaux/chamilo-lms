@@ -32,6 +32,7 @@ class PushoverHandler extends SocketHandler
     private $emergencyLevel;
 
     /**
+<<<<<<< HEAD
      * Sounds the api supports by default
      * @see https://pushover.net/api#sounds
      * @var array
@@ -43,6 +44,8 @@ class PushoverHandler extends SocketHandler
     );
 
     /**
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
      * @param string       $token             Pushover api token
      * @param string|array $users             Pushover user id or array of ids the message will be sent to
      * @param string       $title             Title sent to the Pushover API
@@ -101,12 +104,15 @@ class PushoverHandler extends SocketHandler
             $dataArray['priority'] = 1;
         }
 
+<<<<<<< HEAD
         if (isset($record['context']['sound']) && in_array($record['context']['sound'], $this->sounds)) {
             $dataArray['sound'] = $record['context']['sound'];
         } elseif (isset($record['extra']['sound']) && in_array($record['extra']['sound'], $this->sounds)) {
             $dataArray['sound'] = $record['extra']['sound'];
         }
 
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
         return http_build_query($dataArray);
     }
 

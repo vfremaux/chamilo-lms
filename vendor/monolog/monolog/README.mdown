@@ -136,7 +136,10 @@ Handlers
 - _LogglyHandler_: Logs records to a [Loggly](http://www.loggly.com/) account.
 - _RollbarHandler_: Logs records to a [Rollbar](https://rollbar.com/) account.
 - _SyslogUdpHandler_: Logs records to a remote [Syslogd](http://www.rsyslog.com/) server.
+<<<<<<< HEAD
 - _LogEntriesHandler_: Logs records to a [LogEntries](http://logentries.com/) account.
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 ### Logging in development
 
@@ -207,14 +210,20 @@ Processors
 - _ProcessIdProcessor_: Adds the process id to a log record.
 - _UidProcessor_: Adds a unique identifier to a log record.
 - _GitProcessor_: Adds the current git branch and commit to a log record.
+<<<<<<< HEAD
 - _TagProcessor_: Adds an array of predefined tags to a log record.
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 Utilities
 ---------
 
+<<<<<<< HEAD
 - _Registry_: The `Monolog\Registry` class lets you configure global loggers that you
   can then statically access from anywhere. It is not really a best practice but can
   help in some older codebases or for ease of use.
+=======
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 - _ErrorHandler_: The `Monolog\ErrorHandler` class allows you to easily register
   a Logger instance as an exception handler, error handler or fatal error handler.
 - _ErrorLevelActivationStrategy_: Activates a FingersCrossedHandler when a certain log
@@ -228,7 +237,12 @@ About
 Requirements
 ------------
 
+<<<<<<< HEAD
 - Monolog works with PHP 5.3 or above, and is also tested to work with HHVM.
+=======
+- Any flavor of PHP 5.3 or above should do
+- [optional] PHPUnit 3.5+ to execute the test suite (phpunit --version)
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
 Submitting bugs and feature requests
 ------------------------------------

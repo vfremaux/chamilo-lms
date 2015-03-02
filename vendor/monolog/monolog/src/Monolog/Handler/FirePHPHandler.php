@@ -131,6 +131,7 @@ class FirePHPHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
+<<<<<<< HEAD
         if (!self::$sendHeaders) {
             return;
         }
@@ -143,16 +144,30 @@ class FirePHPHandler extends AbstractProcessingHandler
             if (!self::$sendHeaders) {
                 return;
             }
+=======
+        // WildFire-specific headers must be sent prior to any messages
+        if (!self::$initialized) {
+            self::$sendHeaders = $this->headersAccepted();
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
 
             foreach ($this->getInitHeaders() as $header => $content) {
                 $this->sendHeader($header, $content);
             }
+<<<<<<< HEAD
         }
 
         $header = $this->createRecordHeader($record);
         if (trim(current($header)) !== '') {
             $this->sendHeader(key($header), current($header));
         }
+=======
+
+            self::$initialized = true;
+        }
+
+        $header = $this->createRecordHeader($record);
+        $this->sendHeader(key($header), current($header));
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
@@ -162,11 +177,17 @@ class FirePHPHandler extends AbstractProcessingHandler
      */
     protected function headersAccepted()
     {
+<<<<<<< HEAD
         if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('{\bFirePHP/\d+\.\d+\b}', $_SERVER['HTTP_USER_AGENT'])) {
             return true;
         }
 
         return isset($_SERVER['HTTP_X_FIREPHP_VERSION']);
+=======
+        return !isset($_SERVER['HTTP_USER_AGENT'])
+               || preg_match('{\bFirePHP/\d+\.\d+\b}', $_SERVER['HTTP_USER_AGENT'])
+               || isset($_SERVER['HTTP_X_FIREPHP_VERSION']);
+>>>>>>> 671b81dac4dc97d884c25abdb2468903ec20cf84
     }
 
     /**
